@@ -25,7 +25,7 @@ case $ROFI_RETV in
     # execute custom input
     2)
         [[ -n "$1" ]] && \
-            res=$(exec "$SCRIPTPATH/ghelper" "$1")
+            res=$(exec "$SCRIPTPATH/helper" "$1")
         case $? in
             1) echo -en "$res\nNothing found :(\0nonselectable\x1ftrue\n" ;;
             0) echo -en "$res" ;;
