@@ -31,6 +31,8 @@ case $ROFI_RETV in
             0) echo -en "$res" ;;
         esac
     ;;
+    # kb-custom-2 - clear list rows
+    11) echo -en "\x00urgent\x1ftrue\n \x00nonselectable\x1ftrue" ;;
 esac
 
 # print banner on start and kb-custom-1 press
