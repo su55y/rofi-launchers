@@ -3,7 +3,7 @@
 SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1 ; pwd -P)"
 
 [ -f "$SCRIPTPATH/helper.sh" ] || {
-    notify-send "rofi" "wiki helper executable not found"
+    notify-send "gruvbox palette" "helper script not found"
     exit 1
 }
 
