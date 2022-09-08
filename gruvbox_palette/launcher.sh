@@ -7,7 +7,11 @@ SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1 ; pwd -P)"
     exit 1
 }
 
+# palette logo
 logo="$(printf "\Ue22b") "
+# if nerd fonts are installed and logo is not displayed, use this instead
+# logo="$(printf $(printf '\\%o' $(printf %08x 0xe22b 0xA | sed 's/../0x& /g')) | iconv -f UTF-32BE -t UTF-8)"
+
 
 theme() { cat <<EOF
 * {
