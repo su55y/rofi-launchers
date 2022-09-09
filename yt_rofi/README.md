@@ -4,5 +4,4 @@
 # to build the downloader
 go build downloader.go
 ```
-
-https://user-images.githubusercontent.com/78869105/189313599-f6393a40-1950-446d-9bfa-4cfa2b5bacb3.mp4
+[demo.webm](https://user-images.githubusercontent.com/78869105/189316747-bdfcdbb5-9174-4684-8aa7-2e7d41105709.webm)
