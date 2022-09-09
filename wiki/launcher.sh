@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1 ; pwd -P)"
 
@@ -13,7 +13,7 @@ SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1 ; pwd -P)"
 }
 
 # wiki logo:  
-logo="$(printf "\Uf266")"
+logo="$(printf '\uf266')"
 
 rofi -i -show "$logo" \
     -modi "$logo:$SCRIPTPATH/helper.sh" \

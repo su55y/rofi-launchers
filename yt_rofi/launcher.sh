@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1 ; pwd -P)"
 
@@ -8,9 +8,7 @@ SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1 ; pwd -P)"
 }
 
 # yt logo: 
-logo="$(printf "\Uf16a")"
-# if nerd fonts are installed and logo is not displayed, use this instead
-# logo="$(printf $(printf '\\%o' $(printf %08x 0xf16a 0xA | sed 's/../0x& /g')) | iconv -f UTF-32BE -t UTF-8)"
+logo="$(printf '\uf16a')"
 
 # theme string
 theme() { cat <<EOF
