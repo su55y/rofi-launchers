@@ -1,10 +1,8 @@
 ## yt search rofi launcher
 
-
-https://user-images.githubusercontent.com/78869105/189312420-4cab1771-e964-4c0b-a576-738b395fa841.mp4
-
-
 ```bash
 # to build the downloader
 go build downloader.go
 ```
+
+https://user-images.githubusercontent.com/78869105/189313599-f6393a40-1950-446d-9bfa-4cfa2b5bacb3.mp4
