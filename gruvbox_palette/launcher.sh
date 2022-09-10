@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1 ; pwd -P)"
 
@@ -6,9 +6,6 @@ SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1 ; pwd -P)"
     notify-send "gruvbox palette" "helper script not found"
     exit 1
 }
-
-# palette logo
-logo="$(printf '\ue22b') "
 
 theme() { cat <<EOF
 * {
@@ -24,8 +21,10 @@ listview {
     border: none;
 }
 inputbar {
-    spacing: 10px;
-    children: [prompt,entry];
+  children: [ "textbox-prompt-colon","entry","num-filtered-rows","textbox-num-sep","num-rows","case-indicator" ];
+}
+textbox-prompt-colon {
+  str: "";
 }
 entry {
     placeholder: "";
@@ -33,7 +32,7 @@ entry {
 EOF
 }
 
-rofi -i -show "$logo" \
-    -modi "$logo:$SCRIPTPATH/helper.sh" \
-    -no-config \
+rofi -i -show palette\
+    -modi "palette:$SCRIPTPATH/helper.sh"\
+    -no-config\
     -theme-str "$(theme)"

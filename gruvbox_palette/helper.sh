@@ -18,10 +18,14 @@ palette() {
 case $ROFI_RETV in
     # select line
     1)
-        [[ "${ROFI_INFO}" =~ ^#[0-9a-fA-F]{6}$ ]] && \
+        [[ "${ROFI_INFO}" =~ ^#[0-9a-fA-F]{6}$ ]] && {
             echo -n "$ROFI_INFO" | xsel -ib
+            exit 0
+        }
+        palette
+    ;;
+    # on start or custom
+    *) 
+        palette
     ;;
 esac
-
-# print palette on start
-[[ "${ROFI_RETV}" -eq 0 ]] && palette

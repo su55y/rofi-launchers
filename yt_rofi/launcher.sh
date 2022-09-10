@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1 ; pwd -P)"
 
@@ -6,9 +6,6 @@ SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1 ; pwd -P)"
     notify-send -a "rofi" "helper script not found"
     exit 1
 }
-
-# yt logo: 
-logo="$(printf '\uf16a')"
 
 # theme string
 theme() { cat <<EOF
@@ -19,11 +16,12 @@ window {
   height: 90%;
 }
 inputbar {
-  children: [prompt,entry,num-filtered-rows,textbox-num-sep,num-rows];
+  children:   [ "textbox-prompt-colon","entry","num-filtered-rows","textbox-num-sep","num-rows","case-indicator" ];
 }
-prompt {
-  padding: 0 10px 0 5px;
+textbox-prompt-colon {
+  str: "";
   text-color: #f00;
+  padding: 0 10px 0 5px;
 }
 element {
   children: [element-text,element-icon];
@@ -42,8 +40,8 @@ element.selected.urgent {
 EOF
 }
 
-rofi -i -show "$logo" \
-    -modi "$logo:$SCRIPTPATH/helper.sh" \
+rofi -i -show "yt_rofi" \
+    -modi "yt_rofi:$SCRIPTPATH/helper.sh" \
     -no-config \
     -show-icons \
     -normal-window \
