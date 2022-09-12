@@ -8,7 +8,7 @@ window {
   anchor: west;
 }
 inputbar {
-  children:   [ "textbox-prompt-colon","entry","num-filtered-rows","textbox-num-sep","num-rows","case-indicator" ];
+  children: ["textbox-prompt-colon","entry","num-filtered-rows","textbox-num-sep","num-rows","case-indicator"];
 }
 textbox-prompt-colon {
   str: "Man:";
@@ -25,8 +25,7 @@ showall() {
         rofi -i -dmenu -no-custom -no-config\
             -theme-str "$(theme)" "$@") || exit 1
 
-    [ -n "$choice" ] && {
+    [ -n "$choice" ] &&\
         exec man -Tpdf "$choice" | zathura -
-    }
 }
 showall "$@"
