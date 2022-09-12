@@ -24,5 +24,5 @@ case $ROFI_RETV in
     # execute custom input
     2) [ -n "$1" ] && exec "$SCRIPTPATH/helper" "$1";;
     # kb-custom-2 - clear list rows
-    11) printf "\000urgent\037true\n \037nonselectable\037true" ;;
+    11) printf "\000urgent\037true\n \000nonselectable\037true";;
 esac
