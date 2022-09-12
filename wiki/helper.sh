@@ -1,39 +1,28 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1 ; pwd -P)"
-[[ ! -f "$SCRIPTPATH/ghelper" ]] && echo "go helper not found =(" && exit 0
+[ ! -f "$SCRIPTPATH/helper" ] &&\
+    printf "go helper not found\000nonselectable\037true\n" &&\
+    exit 0
 
 # activate hotkeys
-echo -en "\x00use-hot-keys\x1ftrue\n"
+printf "\000use-hot-keys\037true\n"
 
 banner() {
-    echo -en "ua wiki\x00icon\x1fwikipedia\x1finfo\x1fhttps://uk.wikipedia.org/\n"
-    echo -en "en wiki\x00icon\x1fwikipedia\x1finfo\x1fhttps://en.wikipedia.org/\n"
-    echo -en "ua search\x00icon\x1fua_square\x1finfo\x1fhttps://uk.wikipedia.org/w/index.php?search\n"
-    echo -en "en search\x00icon\x1fuk_square\x1finfo\x1fhttps://en.wikipedia.org/wiki/Special:Search\n"
+printf "ua wiki\000icon\037wikipedia\037info\037https://uk.wikipedia.org/\nen wiki\000icon\037wikipedia\037info\037https://en.wikipedia.org/\nua search\000icon\037ua_square\037info\037https://uk.wikipedia.org/w/index.php?search\nen search\000icon\037uk_square\037info\037https://en.wikipedia.org/wiki/Special:Search"
 }
 
 case $ROFI_RETV in
+    # print banner on start and kb-custom-1 press
+    0|10) banner;;
     # select line
     1)
-        [[ "${ROFI_INFO}" =~ ^https\:\/\/(en|uk)\.wikipedia\.org.+$ ]] && {
-            coproc { surf "${ROFI_INFO}"  >/dev/null 2>&1; }
-            exec 1>&-
-            exit;
-        } && exit 0
+        [ "$(printf '%s' "$ROFI_INFO" |\
+            awk '{if ($0 ~ /^https:\/\/(en|uk)\.wikipedia\.org.+/){print "go"}}')" = "go" ] &&\
+            setsid -f "$BROWSER" "$ROFI_INFO" >/dev/null 2>&1
     ;;
     # execute custom input
-    2)
-        [[ -n "$1" ]] && \
-            res=$(exec "$SCRIPTPATH/helper" "$1")
-        case $? in
-            1) echo -en "$res\nNothing found :(\0nonselectable\x1ftrue\n" ;;
-            0) echo -en "$res" ;;
-        esac
-    ;;
+    2) [ -n "$1" ] && exec "$SCRIPTPATH/helper" "$1";;
     # kb-custom-2 - clear list rows
-    11) echo -en "\x00urgent\x1ftrue\n \x00nonselectable\x1ftrue" ;;
+    11) printf "\000urgent\037true\n \037nonselectable\037true" ;;
 esac
-
-# print banner on start and kb-custom-1 press
-[[ "${ROFI_RETV}" -eq 0 || "${ROFI_RETV}" -eq 10 ]] && banner

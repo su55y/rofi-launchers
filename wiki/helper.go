@@ -10,19 +10,19 @@ import (
 )
 
 const (
-	errBadRequest = "bad request 😠\\x00nonselectable\\x1ftrue"
+	errBadRequest = "bad request 😠\000nonselectable\037true"
 )
 
 var langs = []map[string]string{
 	{
 		"url":      "https://uk.wikipedia.org/w/api.php?action=opensearch&namespace=0&format=json&search=%s",
-		"notFound": "нічого не знайдено 😴\\x00icon\\x1fua_square\\x1fnonselectable\\x1ftrue",
-		"format":   "%d) %s\\x00icon\\x1fua_square\\x1finfo\\x1f%s\n",
+		"notFound": "нічого не знайдено 😴\000icon\037ua_square\037nonselectable\037true",
+		"format":   "%d) %s\000icon\037ua_square\037info\037%s\n",
 	},
 	{
 		"url":      "https://en.wikipedia.org/w/api.php?action=opensearch&namespace=0&format=json&search=%s",
-		"notFound": "nothing found 😴\\x00icon\\x1fuk_square\\x1fnonselectable\\x1ftrue",
-		"format":   "%d) %s\\x00icon\\x1fuk_square\\x1finfo\\x1f%s\n",
+		"notFound": "nothing found 😴\000icon\037uk_square\037nonselectable\037true",
+		"format":   "%d) %s\000icon\037uk_square\037info\037%s\n",
 	},
 }
 
