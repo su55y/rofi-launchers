@@ -1,16 +1,16 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1 ; pwd -P)"
 
 # activate markup
-echo -en "\x00markup-rows\x1ftrue\n"
+printf "\000markup-rows\037true\n"
 
+# print the palette
 palette() {
-    [[ -f "$SCRIPTPATH/palette" ]] && {
+    [ -f "$SCRIPTPATH/palette" ] && {
         while IFS= read -r line; do
-            color_name="${line% *}"
-            color_hex="${line#* }"
-            echo -e "<span background='$color_hex'>     </span> <span color='$color_hex'>$color_name</span>\x00info\x1f$color_hex"
+            printf "<span background='%s'>\t</span> <span color='%s'>%s</span>\000info\037%s\n"\
+                "${line#* }" "${line#* }" "${line% *}" "${line#* }"
         done < "$SCRIPTPATH/palette"
     }
 }
@@ -18,14 +18,13 @@ palette() {
 case $ROFI_RETV in
     # select line
     1)
-        [[ "${ROFI_INFO}" =~ ^#[0-9a-fA-F]{6}$ ]] && {
-            echo -n "$ROFI_INFO" | xsel -ib
+        [ "$(printf '%s' "$ROFI_INFO" |\
+        awk '{if ($0 ~ /^#[0-9a-fA-F]{6}$/){print "y"}}')" = "y" ] && {
+            printf '%s' "$ROFI_INFO" | xsel -ib
             exit 0
         }
         palette
     ;;
     # on start or custom
-    *) 
-        palette
-    ;;
+    *) palette;;
 esac
