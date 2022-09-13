@@ -16,7 +16,7 @@ printf "\000use-hot-keys\037true\n"
 case $ROFI_RETV in
     # select line
     1)
-        [ "$(awk 'BEGIN {if (ARGV[1] ~ /^[0-9a-zA-Z_\-]{11}$/){print "go"}}' "$ROFI_INFO")" = "go" ] &&\
+        [ "$(gawk 'BEGIN {if (ARGV[1] ~ /^[0-9a-zA-Z_\-]{11}$/){print "go"}}' "$ROFI_INFO")" = "go" ] &&\
             setsid -f mpv "https://youtu.be/$ROFI_INFO" >/dev/null 2>&1
     ;;
     # execute custom input
