@@ -22,7 +22,7 @@ EOF
 showall() {
     choice=$(man -k . |\
         awk '! /[_:]/{print $1}' | sort |\
-        rofi -i -dmenu -no-custom -no-config\
+        rofi -i -dmenu -no-custom -no-config -sort\
             -theme-str "$(theme)" "$@") || exit 1
 
     [ -n "$choice" ] &&\
