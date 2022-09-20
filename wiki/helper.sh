@@ -17,7 +17,8 @@ case $ROFI_RETV in
     0|10) banner;;
     # select line
     1)
-        [ "$(gawk 'BEGIN {if (ARGV[1] ~ /^https:\/\/(en|uk)\.wikipedia\.org.+/){print "go"}}' "$ROFI_INFO")" = "go" ] &&\
+        [ "$(printf '%s' "$ROFI_INFO" |\
+            grep -oP "^https?:\/\/(en|uk)\.wikipedia\.org.+")" = "$ROFI_INFO" ] &&\
             setsid -f "$BROWSER" "$ROFI_INFO" >/dev/null 2>&1
     ;;
     # execute custom input
