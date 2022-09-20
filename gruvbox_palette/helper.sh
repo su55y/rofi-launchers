@@ -18,7 +18,8 @@ palette() {
 case $ROFI_RETV in
     # select line
     1)
-        [ "$(awk 'BEGIN {if (ARGV[1] ~ /^#[0-9a-fA-F]{6}$/){print "y"}}' "$ROFI_INFO")" = "y" ] && {
+        [ "$(printf '%s' "$ROFI_INFO" |\
+            grep -oP "^#[0-9a-fA-F]{6}$")" = "$ROFI_INFO" ] && {
             printf '%s' "$ROFI_INFO" | xsel -ib
             exit 0
         }
