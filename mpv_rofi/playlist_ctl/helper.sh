@@ -5,7 +5,10 @@ MPV_PLAYLIST_FILE="/tmp/mpv_current_playlist"
 
 
 play_index(){
-    [ -S "$MPV_SOCKET_FILE" ] || printf 'sock' && return
+    [ -S "$MPV_SOCKET_FILE" ] || {
+        printf 'sock'
+        return
+    }
     printf '%s' "$(printf '{"command": ["playlist-play-index", "%s"]}\n' "$1" |\
         nc -NU "$MPV_SOCKET_FILE" |\
         jq .error)"
