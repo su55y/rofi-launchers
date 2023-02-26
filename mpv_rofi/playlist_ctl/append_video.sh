@@ -14,15 +14,24 @@ append_play(){
         jq .error)"
 }
 
-update_playlist(){ 
+update_playlist(){
     i=0
     for url in $(printf '{"command": ["get_property", "playlist"]}\n' |\
             nc -NU "$MPV_SOCKET_FILE" |\
             jq '.data[]? | .filename'); do
+        
+        current_entry="$(sed -n "$((i+1))p" $MPV_PLAYLIST_FILE)"
+        current_entry_url="${current_entry##* }"
+        current_entry_id="${current_entry%% *}"
+        [ "$i" = "$current_entry_id" ] && [ "$url" = "$current_entry_url" ] && {
+            i=$((i+1))
+            continue
+        }
+
         title="$(yt-dlp -e "$(printf '%s' "$url" | sed 's/\"//g')" 2>/dev/null)" || continue
         case $i in
-            0) echo "$i $title" > "$MPV_PLAYLIST_FILE" ;;
-            *) echo "$i $title" >> "$MPV_PLAYLIST_FILE" ;;
+            0) echo "$i $title $url" > "$MPV_PLAYLIST_FILE" ;;
+            *) echo "$i $title $url" >> "$MPV_PLAYLIST_FILE" ;;
         esac
         i=$((i+1))
     done
