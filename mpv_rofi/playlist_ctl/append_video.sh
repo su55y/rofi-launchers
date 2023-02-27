@@ -46,7 +46,8 @@ pidof mpv >/dev/null 2>&1 || {
     [ -S "$MPV_SOCKET_FILE" ] && rm "$MPV_SOCKET_FILE"
     setsid -f mpv --idle --no-terminal --input-ipc-server="$MPV_SOCKET_FILE"
 
-    for _ in $(seq 10); do
+    # 5 sec timeout
+    for _ in $(seq 50); do
         [ -S "$MPV_SOCKET_FILE" ] && pidof mpv >/dev/null 2>&1 && break
         sleep 0.1
     done
