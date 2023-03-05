@@ -1,15 +1,31 @@
 ## mpv rofi launchers
 
+##### common dependencies:
+
+- [mpv](https://github.com/mpv-player/mpv)
+- [rofi](https://github.com/davatorium/rofi)
+- [youtube-dl](https://github.com/ytdl-org/youtube-dl) (_or [yt-dlp](https://github.com/yt-dlp/yt-dlp), or any other script specified in_ `$XDG_CONFIG_HOME/mpv/mpv.conf` _as_ `script-opts=ytdl_hook-ytdl_path=scriptname`)
+
+---
+
+### playlist-ctl
+
 ##### dependencies:
 
-- rofi
-- mpv
-- youtube-dl (_or yt-dlp, or any other script specified in_ `$XDG_CONFIG_HOME/mpv/mpv.conf` _as_ `script-opts=ytdl_hook-ytdl_path=scriptname`)
-- go (_for building alternative downloader_)
+- [jq](https://github.com/stedolan/jq)
+- [xclip](https://github.com/astrand/xclip) (_append script_)
 
-##### building downloader:
+---
 
-```bash
+### search
+
+##### optional dependencies:
+
+- [go](https://github.com/golang/go)
+
+##### to build downloader:
+
+```shell
 go build downloader.go
 ```
 
