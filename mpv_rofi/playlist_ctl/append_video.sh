@@ -2,7 +2,7 @@
 
 MPV_SOCKET_FILE="/tmp/mpv.sock"
 MPV_PLAYLIST_FILE="/tmp/mpv_current_playlist"
-RX_URL=".*youtube\.com\/watch\?v=([\w\d_\-]{11})(\&[\w]+\=[\w\d\-_]+)*|.*youtu\.be\/([\w\d_\-]{11})|.*twitch\.tv\/videos\/(\d{10})$"
+RX_URL=".*youtube\.com\/watch\?v=([\w\d_\-]{11})(\&[\w]+\=[\w\d\-_]+)*|.*youtu\.be\/([\w\d_\-]{11})|.*twitch\.tv\/videos\/(\d{10})(\?.+)?$"
 
 notify(){
     [ -n "$1" ] && notify-send -i mpv -a mpv "$1"
