@@ -19,7 +19,7 @@ wikipages() {
            ${ROFI} 'Arch Wiki: ' "$@")" || die "can't print pages"
 
     [ -n "$choice" ] || die "choice is empty"
-    page="${WIKIDIR}${choice}"
+    page="${WIKIDIR}${choice}.html"
     [ -f "$page" ] || die "page '$page' not found"
     ${BROWSER} "$page"
 }
