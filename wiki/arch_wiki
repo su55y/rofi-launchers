@@ -1,0 +1,27 @@
+#!/bin/sh
+
+ROFI="rofi -i -normal-window -dmenu -sort true -no-custom"
+BROWSER="${BROWSER:-qutebrowser}"
+WIKIDIR="/usr/share/doc/arch-wiki/html/en/"
+
+die(){
+    [ -n "$1" ] || return
+    notify-send -a "Arch Wiki Launcher" "$1"
+    exit 1
+}
+
+wikipages() {
+    choice="$(find ${WIKIDIR} -iname "*.html" |\
+        awk '! /[_:]/{print $1}' | sort |\
+           cut -d '/' -f8- | \
+           sed -e 's/_/ /g' -e 's/.html//g' | \
+           sort -g | \
+           ${ROFI} 'Arch Wiki: ' "$@")" || die "can't print pages"
+
+    [ -n "$choice" ] || die "choice is empty"
+    page="${WIKIDIR}${choice}"
+    [ -f "$page" ] || die "page '$page' not found"
+    ${BROWSER} "$page"
+}
+
+wikipages "$@"
