@@ -18,7 +18,7 @@ case $ROFI_RETV in
     0) print_list ;;
     1)
         [ -f "$ROFI_INFO" ] || {
-            notify-send -a "arch wiki" "can't find '$ROFI_INFO'"
+            notify-send -i "rofi" -a "arch wiki" "can't find '$ROFI_INFO'"
             exit 1
         }
         setsid -f "$BROWSER" "$ROFI_INFO" >/dev/null 2>&1
