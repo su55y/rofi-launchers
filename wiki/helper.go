@@ -3,37 +3,42 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
 )
 
 const (
-	errBadRequest = "bad request 😠\000nonselectable\037true"
+	apiUrl  = "https://%s.wikipedia.org/w/api.php?action=opensearch&namespace=0&format=json&formatversion=2&limit=10&search=%s"
+	errRead = "<span color='#f00' weight='bold'>[ERROR]</span> can't read response 😧\000nonselectable\037true"
+	errReq  = "<span color='#f00' weight='bold'>[ERROR]</span> bad request 😠\000nonselectable\037true"
 )
 
 var langs = []map[string]string{
 	{
-		"url":      "https://uk.wikipedia.org/w/api.php?action=opensearch&namespace=0&format=json&search=%s",
-		"notFound": "нічого не знайдено 😴\000icon\037ua_square\037nonselectable\037true",
-		"format":   "%d) %s\000icon\037ua_square\037info\037%s\n",
+		"lang":   "uk",
+		"empty":  "<span color='gray'>нічого не знайдено</span> 😴\000icon\037ua_square\037nonselectable\037true",
+		"format": "<span weight='bold'>%d</span>) %s\000icon\037ua_square\037info\037%s\n",
 	},
 	{
-		"url":      "https://en.wikipedia.org/w/api.php?action=opensearch&namespace=0&format=json&search=%s",
-		"notFound": "nothing found 😴\000icon\037uk_square\037nonselectable\037true",
-		"format":   "%d) %s\000icon\037uk_square\037info\037%s\n",
+		"lang":   "en",
+		"empty":  "<span color='gray'>nothing found</span> 😴\000icon\037uk_square\037nonselectable\037true",
+		"format": "<span weight='bold'>%d</span>) %s\000icon\037uk_square\037info\037%s\n",
 	},
 }
 
-type WSRes struct {
+type SearchResult struct {
 	Search           string
 	Titles, Links, S []string
 }
 
-func formatOutput(result WSRes, l int) {
+func parseUrl(lang string, query string) string {
+	return fmt.Sprintf(apiUrl, lang, query)
+}
+
+func formatOutput(result SearchResult, l int) {
 	if len(result.Links) == 0 {
-		fmt.Println(langs[l]["notFound"])
+		fmt.Println(langs[l]["empty"])
 		return
 	}
 
@@ -44,20 +49,23 @@ func formatOutput(result WSRes, l int) {
 
 func find(subj string) {
 	for i, lang := range langs {
-		if res, err := http.Get(fmt.Sprintf(lang["url"], url.QueryEscape(subj))); err == nil {
-			wsr := WSRes{}
-			defer res.Body.Close()
-			body, _ := ioutil.ReadAll(res.Body)
-			if err := json.Unmarshal(body, &[]interface{}{
-				&wsr.Search,
-				&wsr.Titles,
-				&wsr.S,
-				&wsr.Links}); err == nil {
-				formatOutput(wsr, i)
-			}
-		} else {
-			fmt.Println(errBadRequest)
+		response, err := http.Get(parseUrl(lang["lang"], url.QueryEscape(subj)))
+		if err != nil {
+			fmt.Println(errReq)
+			continue
 		}
+		defer response.Body.Close()
+		var result SearchResult
+		if err := json.NewDecoder(response.Body).Decode(&[]interface{}{
+			&result.Search,
+			&result.Titles,
+			&result.S,
+			&result.Links,
+		}); err != nil {
+			fmt.Println(errRead)
+			continue
+		}
+		formatOutput(result, i)
 	}
 }
 

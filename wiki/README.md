@@ -4,7 +4,6 @@
 
 - rofi
 - go (_for building helper_)
-- [arch-wiki-docs](https://archlinux.org/packages/community/any/arch-wiki-docs/) (_for arch wiki launcher_)
 
 > also an environment variable for the browser must be set, for example `BROWSER=firefox`
 
