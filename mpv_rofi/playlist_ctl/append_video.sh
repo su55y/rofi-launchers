@@ -2,17 +2,20 @@
 
 MPV_SOCKET_FILE="/tmp/mpv.sock"
 MPV_PLAYLIST_FILE="/tmp/mpv_current_playlist"
-RX_URL=".*youtube\.com\/watch\?v=([\w\d_\-]{11})(\&[\w]+\=[\w\d\-_]+)*|.*youtu\.be\/([\w\d_\-]{11})|.*twitch\.tv\/videos\/(\d{10})(\?.+)?$"
+RX_URL=".*youtube\.com\/watch\?v=([\w\d_\-]{11})|.*youtu\.be\/([\w\d_\-]{11})|.*twitch\.tv\/videos\/(\d{10})"
 
 notify(){
     [ -n "$1" ] && notify-send -i mpv -a mpv "$1"
 }
 
-append_play(){
-    printf '%s' "$(printf '{"command": ["loadfile", "%s", "append-play"]}\n' "$1" |\
-        nc -NU "$MPV_SOCKET_FILE" |\
-        jq .error)"
+INPUT_URL="$1"
+[ -z "$INPUT_URL" ] && INPUT_URL="$(xclip -o -selection clipboard)"
+echo "$INPUT_URL" | grep -sqP "$RX_URL" || {
+    notify "invalid url '$INPUT_URL'"
+    exit 1
 }
+URL="$(echo "$INPUT_URL" | grep -oP "$RX_URL")"
+
 
 update_playlist(){
     i=0
@@ -20,7 +23,7 @@ update_playlist(){
             nc -NU "$MPV_SOCKET_FILE" |\
             jq '.data[]? | .filename'); do
         
-        current_entry="$(sed -n "$((i+1))p" $MPV_PLAYLIST_FILE)"
+        current_entry="$(sed -n "$((i+1))p" $MPV_PLAYLIST_FILE 2>/dev/null)"
         current_entry_url="${current_entry##* }"
         current_entry_id="${current_entry%% *}"
         [ "$i" = "$current_entry_id" ] && [ "$url" = "$current_entry_url" ] && {
@@ -59,14 +62,14 @@ pidof mpv >/dev/null 2>&1 || {
     }
 }
 
-url="$(xclip -o -selection clipboard)"
-[ "$(printf '%s' "$url" |\
-    grep -oP "$RX_URL")" = "$url" ] && {
-        case $(append_play "$url") in
-            *success*)
-                notify "video added to playlist: $url"
-                update_playlist
-            ;;
-            *) notify "can't add video: $url" ;;
-        esac
+
+append_play(){
+    printf '%s' "$(printf '{"command": ["loadfile", "%s", "append-play"]}\n' "$1" |\
+        nc -NU "$MPV_SOCKET_FILE" |\
+        jq .error)"
 }
+
+case $(append_play "$URL") in
+    *success*) notify "video added to playlist: $URL"; update_playlist ;;
+    *) notify "can't add video: $URL" ;;
+esac
