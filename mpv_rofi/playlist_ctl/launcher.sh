@@ -23,5 +23,6 @@ EOF
 
 rofi -i -show "yt" \
     -modi "yt:$SCRIPTPATH/helper.sh" \
+    -no-custom \
     -no-config \
     -theme-str "$(theme)"
