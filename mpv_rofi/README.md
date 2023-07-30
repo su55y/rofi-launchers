@@ -10,10 +10,13 @@
 
 ### playlist-ctl
 
-##### dependencies:
+##### common dependencies:
+
+- [xclip](https://github.com/astrand/xclip) (_append script_)
+
+#### playlist-ctl-sh
 
 - [jq](https://github.com/stedolan/jq)
-- [xclip](https://github.com/astrand/xclip) (_append script_)
 
 ---
 
