@@ -1,0 +1,5 @@
+cache_dir: $XDG_CACHE_HOME/playlist_ctl
+log_file: $XDG_CACHE_HOME/playlist_ctl/playlist_ctl.log
+log_level: none
+socket_file: /tmp/mpv.sock
+storage_file: $XDG_CACHE_HOME/playlist_ctl/playlist_ctl.db
