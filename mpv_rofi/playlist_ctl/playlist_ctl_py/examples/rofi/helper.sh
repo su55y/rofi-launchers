@@ -9,7 +9,7 @@ MPV_SOCKET_FILE="/tmp/mpv.sock"
 play_index(){
     printf '%s' "$(printf '{"command": ["playlist-play-index", "%s"]}\n' "$1" |\
         nc -NU "$MPV_SOCKET_FILE" |\
-        jq .error)"
+        grep -oP 'error\"\:\"\K[^\"]+')"
 }
 
 case $ROFI_RETV in
