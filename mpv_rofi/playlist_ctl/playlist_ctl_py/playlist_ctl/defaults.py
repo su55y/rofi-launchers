@@ -11,7 +11,7 @@ def default_config_path() -> Path:
     if xdg_config_home := os.getenv("XDG_CONFIG_HOME"):
         config_home = Path(xdg_config_home)
     else:
-        config_home = Path.joinpath(Path.home(), ".config")
+        config_home = Path.home().joinpath(".config")
     return config_home.joinpath("playlist_ctl/config.yaml")
 
 
