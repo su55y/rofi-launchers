@@ -1,14 +1,18 @@
 #!/bin/sh
 
-SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1 ; pwd -P)"
+SCRIPTPATH="$(
+	cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
+	pwd -P
+)"
 
 [ -f "$SCRIPTPATH/helper.sh" ] || {
-    notify-send -i "rofi" -a "youtube search" "helper script not found"
-    exit 1
+	notify-send -i "rofi" -a "youtube search" "helper script not found"
+	exit 1
 }
 
 # theme string
-theme() { cat <<EOF
+theme() {
+	cat <<EOF
 configuration {
   font: "NotoSans Nerd Font 18";
 }
@@ -40,8 +44,7 @@ element.selected.urgent {
 EOF
 }
 
-rofi -i -show "yt_rofi" \
-    -modi "yt_rofi:$SCRIPTPATH/helper.sh" \
-    -no-config \
-    -kb-custom-1 "Ctrl+c" \
-    -theme-str "$(theme)"
+rofi -i -no-config -show "yt_rofi" -modi "yt_rofi:$SCRIPTPATH/helper.sh" \
+	-kb-move-front "Ctrl+i" -kb-row-select "Ctrl+9" \
+	-kb-custom-1 "Ctrl+c" -kb-custom-2 "Ctrl+a" -kb-custom-3 "Ctrl+space" \
+	-theme-str "$(theme)"
