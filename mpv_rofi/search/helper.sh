@@ -2,6 +2,9 @@
 
 # inspired by https://github.com/sayan01/scripts/blob/master/yt
 
+# optional for append
+APPEND_SCRIPT="${XDG_DATA_HOME:-$HOME/.local/share}/rofi/playlist_ctl_py/append_video.sh"
+
 SCRIPTPATH="$(
 	cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
 	pwd -P
@@ -21,13 +24,13 @@ err_msg() {
 
 play() {
 	[ "$(printf '%s' "$1" |
-		grep -oP "^[0-9a-zA-Z_\-]{11}$")" = "$1" ] || return 1
+		grep -oP "^[0-9a-zA-Z_\-]{11}$")" = "$1" ] || err_msg "invalid id '$1'"
 	setsid -f mpv "https://youtu.be/$1" >/dev/null 2>&1
 }
 
 print_from_cache() {
+	[ -f "$1" ] || err_msg "no recent results found in cache"
 	printf '\000data\037%s\n' "$1"
-	printf '\000message\037from file at %s\n' "$(date +%T)"
 	awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); print}' "$1"
 }
 
@@ -77,16 +80,13 @@ case $ROFI_RETV in
 10) clr ;;
 # kb-custom-2 - append selected to playlist and print last results
 11)
-	[ -n "$ROFI_INFO" ] || err_msg "empty query"
-	playlist-ctl -a "https://youtu.be/$ROFI_INFO"
-	[ -f "$ROFI_DATA" ] || err_msg "lasts results cache not found"
+	[ -f "$APPEND_SCRIPT" ] || err_msg "append script not found"
+	setsid -f "$APPEND_SCRIPT" "https://youtu.be/$ROFI_INFO" >/dev/null 2>&1
 	print_from_cache "$ROFI_DATA"
 	;;
 # kb-custom-3 - play selected and print last results
 12)
-	[ -n "$ROFI_INFO" ] || err_msg "empty query"
 	play "$ROFI_INFO"
-	[ -f "$ROFI_DATA" ] || err_msg "lasts results cache not found"
 	print_from_cache "$ROFI_DATA"
 	;;
 esac
