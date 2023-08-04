@@ -1,5 +1,6 @@
+# dir to store db and logs
 cache_dir: $XDG_CACHE_HOME/playlist_ctl
-log_file: $XDG_CACHE_HOME/playlist_ctl/playlist_ctl.log
+# available levels: debug, info, warning, error
 log_level: none
+# mpv socket filepath
 socket_file: /tmp/mpv.sock
-storage_file: $XDG_CACHE_HOME/playlist_ctl/playlist_ctl.db
