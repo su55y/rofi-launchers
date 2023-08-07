@@ -37,3 +37,13 @@ class TestAll(unittest.TestCase):
         self.assertIsNone(self.stor.add_title(url))
         count = len(self.stor.select_titles("%r" % url))
         self.assertEqual(count, 1)
+
+    def test3_delete_except(self):
+        self.assertIsNone(self.stor.add_title("https://youtu.be/3BFTio5296w"))
+        self.assertEqual(self.stor.select_count(), 2)
+        self.assertEqual(self.stor.delete_except(1), 1)
+        self.assertEqual(self.stor.select_count(), 1)
+
+    def test4_delete_all(self):
+        self.stor.delete_all()
+        self.assertEqual(self.stor.select_count(), 0)
