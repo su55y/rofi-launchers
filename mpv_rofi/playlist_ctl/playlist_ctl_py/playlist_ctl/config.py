@@ -18,6 +18,7 @@ log_levels_map = {
 @dataclass
 class Config:
     cache_dir: Path
+    keep_last: int
     log_file: Path
     log_level: int
     socket_file: Path
@@ -27,12 +28,14 @@ class Config:
         self,
         config_file: Optional[Path] = None,
         cache_dir: Optional[Path] = None,
+        keep_last: Optional[int] = None,
         log_file: Optional[Path] = None,
         log_level: Optional[int] = None,
         socket_file: Optional[Path] = None,
         storage_file: Optional[Path] = None,
     ) -> None:
         self.cache_dir = cache_dir or defaults.default_cachedir_path()
+        self.keep_last = keep_last if isinstance(keep_last, int) else 100
         self.log_file = log_file or self.cache_dir.joinpath("playlist_ctl.log")
         self.log_level = log_level or logging.NOTSET
         self.socket_file = socket_file or defaults.default_socket_path
@@ -44,6 +47,8 @@ class Config:
 
     def _override_defaults(self, file: Path) -> None:
         config = read_config(file)
+        if isinstance((keep_last := config.get("keep_last")), int):
+            self.keep_last = keep_last
         if isinstance((log_level := config.get("log_level")), str):
             self.log_level = log_levels_map.get(log_level.lower(), logging.NOTSET)
         if cache_dir := config.get("cache_dir"):
