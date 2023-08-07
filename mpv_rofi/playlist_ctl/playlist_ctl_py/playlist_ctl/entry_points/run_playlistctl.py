@@ -28,6 +28,11 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         help="config file path (default: %(default)s)",
     )
+    parser.add_argument(
+        "--clean-cache",
+        action="store_true",
+        help="removes all entries from database except last x, defined as `keep_last` in config (default: 100)",
+    )
     return parser.parse_args()
 
 
@@ -75,5 +80,7 @@ def main():
         if not (title := stor.select_title(args.append)):
             die("title not found for %r" % args.append)
         print(title)
+    elif args.clean_cache:
+        stor.delete_except(config.keep_last)
     else:
         RofiClient(stor, mpv).print_playlist()

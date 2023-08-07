@@ -77,6 +77,35 @@ class Storage:
             self.log.error("can't select titles: %s" % e)
             return {}
 
+    def select_count(self) -> int:
+        query = "SELECT COUNT(*) FROM titles"
+        try:
+            with self.get_cursor() as cur:
+                self.log.debug(query)
+                count, *_ = cur.execute(query).fetchone()
+                return count
+        except Exception as e:
+            self.log.error("can't select count: %s" % e)
+            return -1
+
+    def delete_except(self, count: int) -> int:
+        query = (
+            """DELETE FROM titles
+            WHERE url NOT IN (
+                SELECT url FROM titles
+                ORDER BY created DESC
+                LIMIT %d
+            )"""
+            % count
+        )
+        try:
+            with self.get_cursor() as cur:
+                self.log.debug(query)
+                return cur.execute(query).rowcount
+        except Exception as e:
+            self.log.error(e)
+            return -1
+
     def delete_all(self) -> int:
         query = "DELETE FROM titles"
         try:
