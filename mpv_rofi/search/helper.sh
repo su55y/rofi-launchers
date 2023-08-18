@@ -5,12 +5,8 @@
 # optional for append
 APPEND_SCRIPT="${XDG_DATA_HOME:-$HOME/.local/share}/rofi/playlist_ctl_py/append_video.sh"
 
-SCRIPTPATH="$(
-	cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
-	pwd -P
-)"
-CACHE_ROOT="${XDG_CACHE_HOME:-$HOME/.cache}"
-C_DIR="$CACHE_ROOT/yt_rofi"
+SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1; pwd -P)"
+C_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/yt_rofi"
 
 clr() { printf '\000urgent\037true\n \000nonselectable\037true\n'; }
 err_msg() {
