@@ -4,7 +4,6 @@ import (
 	"errors"
 	"flag"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -23,23 +22,25 @@ var (
 )
 
 func parseFlags() {
-	flag.StringVar(&outputDir, "o", "", "")
-	flag.StringVar(&outputDir, "output", "", "thumbnails cache dir")
-	flag.StringVar(&urlList, "l", "", "")
-	flag.StringVar(&urlList, "links", "", "url list separeted by space")
+	flag.StringVar(&urlList, "l", "", "url list separeted by space")
+	flag.StringVar(&outputDir, "o", "", "cache dir path")
 
 	flag.Parse()
 }
 
-func init() {
-	parseFlags()
+func parseUrls() {
 	urls = make(map[string]string)
 	for _, u := range strings.Split(urlList, " ") {
-		if r.MatchString(u) {
-			if s := r.FindStringSubmatch(u); len(s) == 2 {
-				urls[s[1]] = u
-			}
+		if !r.MatchString(u) {
+			continue
 		}
+
+		s := r.FindStringSubmatch(u)
+		if len(s) != 2 {
+			continue
+		}
+
+		urls[s[1]] = u
 	}
 }
 
@@ -48,34 +49,35 @@ func exists(path string) bool {
 	return !errors.Is(err, os.ErrNotExist) && err == nil
 }
 
-func download_file(url, path string, wg *sync.WaitGroup) {
+func download_file(url, filepath string, wg *sync.WaitGroup) {
 	defer wg.Done()
-
-	filename := filepath.Join(outputDir, path)
-	if exists(filename) {
-		return
-	}
 
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 	defer resp.Body.Close()
 
-	out, err := os.Create(filename)
+	out, err := os.Create(filepath)
 	if err != nil {
-		panic(err)
+		return
 	}
-	defer out.Close()
+	defer func() { _ = out.Close() }()
 
-	io.Copy(out, resp.Body)
+	_, _ = io.Copy(out, resp.Body)
 }
 
 func main() {
+	parseFlags()
+	parseUrls()
 	var wg sync.WaitGroup
-	for k, u := range urls {
+	for id, url := range urls {
+		filepath := filepath.Join(outputDir, id)
+		if exists(filepath) {
+			continue
+		}
 		wg.Add(1)
-		go download_file(u, k, &wg)
+		go download_file(url, filepath, &wg)
 	}
 	wg.Wait()
 }
