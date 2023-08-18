@@ -54,18 +54,21 @@ handle_query() {
 	for line in $(printf '%s' "$response" |
 		grep -oP "$vgrep" |
 		awk -F\" '{printf "%s %s %s\t",$9,$NF,$1}'); do
+
 		THUMB_URLS="$THUMB_URLS ${line%%\?*}"
 		TITLE_AND_ID="${line#* }"
-		# uncomment if you don't want to use the go downloader
+
+		# go downloader alternative
 		# [ ! -f "$C_DIR/${TITLE_AND_ID##* }" ] && curl -s "${line%%\?*}" -o "$C_DIR/${TITLE_AND_ID##* }"
+
 		printf '%s\000info\037%s\037icon\037%s\n' \
 			"${TITLE_AND_ID% *}" "${TITLE_AND_ID##* }" "$C_DIR/${TITLE_AND_ID##* }" |
 			tee -a "$results_cache"
 	done
 	printf '\000data\037%s\n' "$results_cache"
 
-	# download all previews in parallel
-	"$SCRIPTPATH/downloader" -o "$C_DIR" -l "$THUMB_URLS"
+	# download missing previews
+	"$SCRIPTPATH/downloader" -o="$C_DIR" -l="$THUMB_URLS"
 }
 
 # activate hotkeys
