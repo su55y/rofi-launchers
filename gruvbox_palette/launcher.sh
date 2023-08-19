@@ -1,13 +1,17 @@
 #!/bin/sh
 
-SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1 ; pwd -P)"
+SCRIPTPATH="$(
+	cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
+	pwd -P
+)"
 
 [ -f "$SCRIPTPATH/helper.sh" ] || {
-    notify-send -i "rofi" -a "gruvbox palette" "helper script not found"
-    exit 1
+	notify-send -i "rofi" -a "palette launcher" "helper script not found"
+	exit 1
 }
 
-theme() { cat <<EOF
+theme() {
+	cat <<EOF
 configuration {
   font: "NotoSans Nerd Font 18";
 }
@@ -32,7 +36,6 @@ entry {
 EOF
 }
 
-rofi -i -show palette\
-    -modi "palette:$SCRIPTPATH/helper.sh"\
-    -no-config\
-    -theme-str "$(theme)"
+rofi -i -no-config -theme-str "$(theme)" \
+	-show palette -modi "palette:$SCRIPTPATH/helper.sh" \
+	-kb-move-front "Ctrl+i" -kb-custom-1 "Ctrl+a"
