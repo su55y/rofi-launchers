@@ -8,12 +8,9 @@ APPEND_SCRIPT="${XDG_DATA_HOME:-$HOME/.local/share}/rofi/playlist_ctl_py/append_
 SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1; pwd -P)"
 C_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/yt_rofi"
 
-clr() { printf '\000urgent\037true\n \000nonselectable\037true\n'; }
-err_msg() {
-	printf '\000message\037error: %s\n' "$1"
-	clr
-	exit 1
-}
+clr() { printf '\000urgent\0370\n \000nonselectable\037true\n'; }
+err_msg() { printf '\000message\037error: %s\n' "$1"; clr; exit 1; }
+
 [ -d "$C_DIR" ] || {
 	mkdir -p "$C_DIR" || err_msg "can't mkdir -p $C_DIR"
 }
