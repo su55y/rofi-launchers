@@ -14,6 +14,19 @@ class Entry:
     app: str
 
 
+def build_info(e: Entry) -> str:
+    info = f"-i {e.icon!r} -a {e.app!r} -u {e.level!r}"
+    if e.title and e.text:
+        info = f"{info} {e.title!r} {e.text!r}"
+    elif not e.title and e.text:
+        info = f"{info} {e.text!r}"
+    elif not e.text and e.title:
+        info = f"{info} {e.title!r}"
+    else:
+        info = f"{info} {e.app!r}"
+    return info
+
+
 if __name__ == "__main__":
     if not exists(DUNSTLOG_PATH):
         print("\000message\037error: %r not found" % DUNSTLOG_PATH, end="\012")
@@ -42,10 +55,10 @@ if __name__ == "__main__":
         for i in range(0, len(lines), 6)
     ]
     urgents = []
-    for i, e in enumerate(entries):
+    for i, e in enumerate(entries[::-1]):
         print(
-            "<b>%s</b> <i>%s</i>\r%s\000icon\037%s"
-            % (e.app, e.created, e.text or e.title, e.icon),
+            "<b>%s</b> <i>%s</i>\r%s\000icon\037%s\037info\037%s"
+            % (e.app, e.created, e.text or e.title, e.icon, build_info(e)),
             end="\012",
         )
         if e.level.lower() == "critical":

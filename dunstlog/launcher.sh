@@ -40,6 +40,7 @@ EOF
 
 rofi -i -show "dunstlog" \
 	-modi "dunstlog:$SCRIPTPATH/helper.sh" \
+	-no-custom \
 	-no-config \
 	-theme-str "$(theme)" \
 	-sep='\x0a' -eh 2 -normal-window
