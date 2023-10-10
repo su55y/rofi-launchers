@@ -25,8 +25,7 @@ textbox-prompt-colon {
 EOF
 }
 
-rofi -i -show "wiki" \
-	-no-config \
-	-no-custom -theme "Arc-Dark" \
-	-modi "wiki:$SCRIPTPATH/helper.sh" \
-	-theme-str "$(theme)"
+rofi -i -show "vchooser" -no-config \
+	-modi "vchooser:$SCRIPTPATH/helper.sh" \
+	-theme-str "$(theme)" \
+	-sep='\x0a' -eh 2 -normal-window
