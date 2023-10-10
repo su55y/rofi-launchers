@@ -2,12 +2,17 @@
 
 VIDSDIR="${HOME}/Videos"
 # activate hotkeys
-printf "\000use-hot-keys\037true\n"
+printf "\000use-hot-keys\037true\012"
+# activate markup
+printf "\000markup-rows\037true\012"
 
 banner() {
 	find "$VIDSDIR" -type f -name "*.mp4" | while read -r file; do
 		title="${file##*\/}"
-		printf '%s\000info\037%s\037meta\037%s\n' "$title" "$file" "${title}$(dirname "$file" | tr '/' ',')"
+		base="$(dirname "$file")"
+		base="${base%%*\/}"
+		parent="${base##*\/}"
+		printf '<b>%s</b>\r<i>%s</i>\000info\037%s\037meta\037%s\012' "$title" "$parent" "$file" "${title}$(dirname "$file" | tr '/' ',')"
 	done
 }
 
