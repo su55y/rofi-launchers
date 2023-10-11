@@ -13,6 +13,10 @@
 
 - [xclip](https://github.com/astrand/xclip) (_append script_)
 
+#### playlist-ctl-py
+
+- [python>=3.8](https://www.python.org/)
+
 #### playlist-ctl-sh
 
 - [jq](https://github.com/stedolan/jq)
