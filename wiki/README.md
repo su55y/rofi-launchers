@@ -2,7 +2,6 @@
 
 ### dependencies
 
-- rofi
 - go (_for building helper_)
 
 > also an environment variable for the browser must be set, for example `BROWSER=firefox`

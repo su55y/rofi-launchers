@@ -2,7 +2,6 @@
 
 ##### dependencies
 
-- [rofi](https://github.com/davatorium/rofi)
 - [zathura](https://github.com/pwmt/zathura)
 
 ##### demo

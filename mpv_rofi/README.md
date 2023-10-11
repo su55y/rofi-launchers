@@ -3,7 +3,6 @@
 ##### common dependencies:
 
 - [mpv](https://github.com/mpv-player/mpv)
-- [rofi](https://github.com/davatorium/rofi)
 - [youtube-dl](https://github.com/ytdl-org/youtube-dl) (_or [yt-dlp](https://github.com/yt-dlp/yt-dlp), or any other script specified in_ `$XDG_CONFIG_HOME/mpv/mpv.conf` _as_ `script-opts=ytdl_hook-ytdl_path=scriptname`)
 
 ---
