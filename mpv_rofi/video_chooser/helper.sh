@@ -11,8 +11,7 @@ printf "\000use-hot-keys\037true\012"
 printf "\000markup-rows\037true\012"
 
 print_from_cache() {
-	[ -f "$TEMPFILE" ] &&
-		awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); gsub(/\\012/, "\012"); print}' "$TEMPFILE"
+	awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); gsub(/\\012/, "\012"); print}' "$TEMPFILE"
 }
 
 banner() {
@@ -36,6 +35,6 @@ case $ROFI_RETV in
 # kb-custom-1 - append to playlist
 10)
 	[ -f "$ROFI_INFO" ] && setsid -f "$APPEND_SCRIPT" "$ROFI_INFO" >/dev/null 2>&1
-	print_from_cache
+	[ -f "$TEMPFILE" ] && print_from_cache || banner
 	;;
 esac
