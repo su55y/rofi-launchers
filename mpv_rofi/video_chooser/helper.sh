@@ -18,6 +18,7 @@ banner() {
 	echo "" >"$TEMPFILE"
 	find "$VIDSDIR" -type f -name "*.mp4" | while read -r file; do
 		title="${file##*\/}"
+		title="${title%.*}"
 		base="$(dirname "$file")"
 		base="${base%%*\/}"
 		parent="${base##*\/}"
