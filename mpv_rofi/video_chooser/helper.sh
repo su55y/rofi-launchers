@@ -14,7 +14,7 @@ print_from_cache() {
 	awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); gsub(/\\012/, "\012"); print}' "$TEMPFILE"
 }
 
-banner() {
+printer() {
 	echo "" >"$TEMPFILE"
 	find "$VIDSDIR" -type f -name "*.mp4" | while read -r file; do
 		title="${file##*\/}"
@@ -28,14 +28,23 @@ banner() {
 	done
 }
 
+alt_printer() {
+	SCRIPTPATH="$(
+		cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
+		pwd -P
+	)"
+	echo "" >"$TEMPFILE"
+	"${SCRIPTPATH}/alt_printer" "$VIDSDIR" | tee -a "$TEMPFILE"
+}
+
 case $ROFI_RETV in
-# print banner on start and kb-custom-1 press
-0) banner ;;
+# print printer on start and kb-custom-1 press
+0) alt_printer ;;
 # select line
 1) [ -f "$ROFI_INFO" ] && setsid -f mpv "$ROFI_INFO" >/dev/null 2>&1 ;;
 # kb-custom-1 - append to playlist
 10)
 	[ -f "$ROFI_INFO" ] && setsid -f "$APPEND_SCRIPT" "$ROFI_INFO" >/dev/null 2>&1
-	[ -f "$TEMPFILE" ] && print_from_cache || banner
+	[ -f "$TEMPFILE" ] && print_from_cache || alt_printer
 	;;
 esac
