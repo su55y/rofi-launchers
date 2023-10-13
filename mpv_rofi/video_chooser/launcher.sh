@@ -22,6 +22,10 @@ textbox-prompt-colon {
   str: "";
   padding: 0 10px 0 5px;
 }
+listview {
+  fixed-height: true;
+  lines: 8;
+}
 EOF
 }
 
