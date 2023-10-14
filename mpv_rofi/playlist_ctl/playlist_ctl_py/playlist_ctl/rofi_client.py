@@ -1,3 +1,4 @@
+from pathlib import Path
 from threading import Thread
 
 from playlist_ctl.storage import Storage
@@ -21,7 +22,9 @@ class RofiClient:
             if (url := vid.get("filename")) is None:
                 title = "unknown %d" % i
             else:
-                if (title := titles.get(url)) is None:
+                if (filepath := Path(url)).exists():
+                    title = filepath.name
+                elif (title := titles.get(url)) is None:
                     title = url
                     Thread(target=self.stor.add_title, args=(url,)).start()
             print("%s\000info\037%d" % (title, i))
