@@ -73,11 +73,10 @@ func main() {
 	var wg sync.WaitGroup
 	for id, url := range urls {
 		filepath := filepath.Join(outputDir, id)
-		if exists(filepath) {
-			continue
+		if !exists(filepath) {
+      wg.Add(1)
+      go download_file(url, filepath, &wg)
 		}
-		wg.Add(1)
-		go download_file(url, filepath, &wg)
 	}
 	wg.Wait()
 }
