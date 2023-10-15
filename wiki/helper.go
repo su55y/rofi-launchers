@@ -76,7 +76,7 @@ func fetchAndPrint(client *http.Client, wg *sync.WaitGroup, lang string) {
 }
 
 func die(err error) {
-	fmt.Println(err)
+  fmt.Printf("\000message\037err: %s\n \000nonselectable\037true\n", err.Error())
 	os.Exit(1)
 }
 
