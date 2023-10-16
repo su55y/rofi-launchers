@@ -1,6 +1,20 @@
 #!/bin/sh
 
-err_msg() { [ -n "$1" ] && printf '\000message\037error: %s\n' "$1"; }
+HISTORY_FILE="/tmp/playlist_ctl_history"
+HISTORY_LIMIT=10
+
+err_msg() { [ -n "$1" ] && printf '\000message\037error: %s\n \000nonselectable\037true\n' "$1"; }
+
+print_history() {
+	if [ -f "$HISTORY_FILE" ]; then
+		# print from file
+		echo
+	else
+		echo "" >"$HISTORY_FILE"
+		playlist-ctl --history -l "$HISTORY_LIMIT" | tee -a "$HISTORY_FILE"
+	fi
+}
+
 pidof -q mpv || {
 	err_msg "mpv process not found"
 	exit 1
@@ -13,18 +27,31 @@ MPV_SOCKET_FILE="/tmp/mpv.sock"
 }
 
 play_index() {
-	printf '%s' "$(printf '{"command": ["playlist-play-index", "%s"]}\n' "$1" |
+	error="$(printf '%s' "$(printf '{"command": ["playlist-play-index", "%s"]}\n' "$1" |
 		nc -NU "$MPV_SOCKET_FILE" |
-		grep -oP 'error\"\:\"\K[^\"]+')"
+		grep -oP 'error\"\:\"\K[^\"]+')")"
+	case $error in
+	*success*) ;;
+	*) err_msg "$error" ;;
+	esac
 }
+
+printf '\000use-hot-keys\037true\n'
 
 case $ROFI_RETV in
 0) playlist-ctl ;;
 1)
-	error="$(play_index "$ROFI_INFO")"
-	case $error in
-	*success*) exit 0 ;;
-	*) err_msg "$error" ;;
+	case $ROFI_DATA in
+	# TODO: print from cache
+	history) playlist-ctl -a "$ROFI_INFO" ;;
+	*) play_index "$ROFI_INFO" ;;
 	esac
+
+	;;
+# kb-custom-1 (Ctrl+h) - prints history
+10)
+	printf '\000message\037HISTORY\n'
+	printf '\000data\037history\n'
+	playlist-ctl --history -l "$HISTORY_LIMIT"
 	;;
 esac
