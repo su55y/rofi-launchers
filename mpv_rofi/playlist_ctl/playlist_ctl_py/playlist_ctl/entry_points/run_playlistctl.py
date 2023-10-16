@@ -33,6 +33,18 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="removes all entries from database except last x, defined as `keep_last` in config (default: 100)",
     )
+    parser.add_argument(
+        "--history",
+        action="store_true",
+        help="prints last entries from history",
+    )
+    parser.add_argument(
+        "-l",
+        "--limit",
+        type=int,
+        default=100,
+        help="history limit (default: %(default)s)",
+    )
     return parser.parse_args()
 
 
@@ -82,5 +94,8 @@ def main():
         print(title)
     elif args.clean_cache:
         stor.delete_except(config.keep_last)
+
+    elif args.history:
+        RofiClient(stor, mpv).print_history(args.limit)
     else:
         RofiClient(stor, mpv).print_playlist()

@@ -88,6 +88,17 @@ class Storage:
             self.log.error("can't select count: %s" % e)
             return -1
 
+    def select_history(self, limit: int = -1) -> Dict[str, str]:
+        query = "SELECT url, title FROM titles ORDER BY created DESC LIMIT ?"
+        try:
+            with self.get_cursor() as cur:
+                self.log.debug("%s, %d" % (query, limit))
+                cur.execute(query, (limit,))
+                return {url: title for url, title in cur.fetchall()}
+        except Exception as e:
+            self.log.error("can't select history: %s" % e)
+            return {}
+
     def delete_except(self, count: int) -> int:
         query = (
             """DELETE FROM titles

@@ -10,6 +10,11 @@ class RofiClient:
         self.stor = stor
         self.client = client
 
+    def print_history(self, limit: int = -1) -> None:
+        history = self.stor.select_history(limit)
+        for url, title in history.items():
+            print("%s\000info\037%s" % (title, url))
+
     def print_playlist(self) -> None:
         playlist, err = self.client.mpv_playlist()
         if err:
