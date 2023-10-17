@@ -6,6 +6,8 @@ HISTORY_LIMIT=10
 err_msg() { [ -n "$1" ] && printf '\000message\037error: %s\n \000nonselectable\037true\n' "$1"; }
 
 print_history() {
+	printf '\000message\037HISTORY\n'
+	printf '\000data\037history\n'
 	if [ -f "$HISTORY_FILE" ]; then
 		# print from file
 		echo
@@ -13,6 +15,11 @@ print_history() {
 		echo "" >"$HISTORY_FILE"
 		playlist-ctl --history -l "$HISTORY_LIMIT" | tee -a "$HISTORY_FILE"
 	fi
+}
+
+[ "$ROFI_INFO" = "history" ] && {
+	print_history
+	exit 0
 }
 
 pidof -q mpv || {
@@ -42,16 +49,11 @@ case $ROFI_RETV in
 0) playlist-ctl ;;
 1)
 	case $ROFI_DATA in
-	# TODO: print from cache
-	history) playlist-ctl -a "$ROFI_INFO" ;;
+	history) print_history ;;
 	*) play_index "$ROFI_INFO" ;;
 	esac
 
 	;;
 # kb-custom-1 (Ctrl+h) - prints history
-10)
-	printf '\000message\037HISTORY\n'
-	printf '\000data\037history\n'
-	playlist-ctl --history -l "$HISTORY_LIMIT"
-	;;
+10) print_history ;;
 esac
