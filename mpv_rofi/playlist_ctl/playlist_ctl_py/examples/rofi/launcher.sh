@@ -32,4 +32,6 @@ rofi -i -show "playlist_ctl_py" \
 	-normal-window \
 	-theme-str "$(theme)" \
 	-kb-remove-char-back "BackSpace,Shift+BackSpace" \
-	-kb-custom-1 "Ctrl+h"
+	-kb-custom-1 "Ctrl+h" \
+	-kb-move-front "Ctrl+i" \
+	-kb-custom-2 "Ctrl+a"
