@@ -1,7 +1,7 @@
 #!/bin/sh
 
 HISTORY_FILE="/tmp/playlist_ctl_history"
-HISTORY_LIMIT=10
+HISTORY_LIMIT=100
 APPEND_SCRIPT="${XDG_DATA_HOME:-$HOME/.local/share}/rofi/playlist_ctl_py/append_video.sh"
 DOWNLOAD_DIR="$HOME/Videos/YouTube"
 
@@ -10,7 +10,7 @@ err_msg() { [ -n "$1" ] && printf '\000message\037error: %s\n \000nonselectable\
 print_history() {
 	printf '\000message\037HISTORY\n'
 	printf '\000data\037history\n'
-	if [ -f "$HISTORY_FILE" ]; then
+	if [ -f "$HISTORY_FILE" ] && [ -z "$1" ]; then
 		awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); print}' "$HISTORY_FILE"
 	else
 		echo "" >"$HISTORY_FILE"
@@ -72,5 +72,8 @@ case $ROFI_RETV in
 		download_vid "$ROFI_INFO" "$1"
 		print_history
 	}
+	;;
+13)
+	[ "$ROFI_DATA" = "history" ] && print_history refreshed
 	;;
 esac

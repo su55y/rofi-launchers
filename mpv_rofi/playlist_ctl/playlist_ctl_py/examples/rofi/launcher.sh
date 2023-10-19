@@ -36,4 +36,5 @@ rofi -i -show "playlist_ctl_py" \
 	-kb-move-front "Ctrl+i" \
 	-kb-custom-2 "Ctrl+a" \
 	-kb-remove-char-forward "Delete" \
-	-kb-custom-3 "Ctrl+d"
+	-kb-custom-3 "Ctrl+d" \
+	-kb-custom-4 "Ctrl+r"
