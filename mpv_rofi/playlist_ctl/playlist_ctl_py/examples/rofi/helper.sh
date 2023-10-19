@@ -3,6 +3,7 @@
 HISTORY_FILE="/tmp/playlist_ctl_history"
 HISTORY_LIMIT=10
 APPEND_SCRIPT="${XDG_DATA_HOME:-$HOME/.local/share}/rofi/playlist_ctl_py/append_video.sh"
+DOWNLOAD_DIR="$HOME/Videos/YouTube"
 
 err_msg() { [ -n "$1" ] && printf '\000message\037error: %s\n \000nonselectable\037true\n' "$1"; }
 
@@ -15,6 +16,12 @@ print_history() {
 		echo "" >"$HISTORY_FILE"
 		playlist-ctl --history -l "$HISTORY_LIMIT" | tee -a "$HISTORY_FILE"
 	fi
+}
+
+download_vid() {
+	notify-send -a "playlist-ctl" "⬇️Start downloading '$2'..."
+	qid="$(tsp yt-dlp "$1" -o "$DOWNLOAD_DIR/%(uploader)s/%(title)s.%(ext)s")"
+	tsp -D "$qid" notify-send -a "playlist-ctl" "✅Download done: '$2'"
 }
 
 pidof -q mpv || {
@@ -56,6 +63,13 @@ case $ROFI_RETV in
 11)
 	[ "$ROFI_DATA" = "history" ] && {
 		setsid -f "$APPEND_SCRIPT" "$ROFI_INFO" >/dev/null 2>&1
+		print_history
+	}
+	;;
+	# kb-custom-3 (Ctrl+d) - download from history
+12)
+	[ "$ROFI_DATA" = "history" ] && {
+		download_vid "$ROFI_INFO" "$1"
 		print_history
 	}
 	;;

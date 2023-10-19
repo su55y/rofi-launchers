@@ -34,4 +34,6 @@ rofi -i -show "playlist_ctl_py" \
 	-kb-remove-char-back "BackSpace,Shift+BackSpace" \
 	-kb-custom-1 "Ctrl+h" \
 	-kb-move-front "Ctrl+i" \
-	-kb-custom-2 "Ctrl+a"
+	-kb-custom-2 "Ctrl+a" \
+	-kb-remove-char-forward "Delete" \
+	-kb-custom-3 "Ctrl+d"
