@@ -21,7 +21,7 @@ print_history() {
 download_vid() {
 	notify-send -a "playlist-ctl" "⬇️Start downloading '$2'..."
 	qid="$(tsp yt-dlp "$1" -o "$DOWNLOAD_DIR/%(uploader)s/%(title)s.%(ext)s")"
-	tsp -D "$qid" notify-send -a "playlist-ctl" "✅Download done: '$2'"
+	tsp -D "$qid" notify-send -a "playlist-ctl" "✅Download done: '$2'" >/dev/null 2>&1
 }
 
 pidof -q mpv || {
