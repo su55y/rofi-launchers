@@ -18,12 +18,12 @@ print_history() {
 }
 
 pidof -q mpv || {
-	err_msg "mpv process not found"
+	[ "$ROFI_DATA" = "history" ] || err_msg "mpv process not found"
 }
 
 MPV_SOCKET_FILE="/tmp/mpv.sock"
 [ -S "$MPV_SOCKET_FILE" ] || {
-	err_msg "$MPV_SOCKET_FILE not found"
+	[ "$ROFI_DATA" = "history" ] || err_msg "$MPV_SOCKET_FILE not found"
 }
 
 play_index() {
