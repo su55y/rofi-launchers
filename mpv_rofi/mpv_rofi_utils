@@ -1,0 +1,20 @@
+#!/bin/sh
+
+APPEND_SCRIPT="${XDG_DATA_HOME:-$HOME/.local/share}/rofi/playlist_ctl_py/append_video.sh"
+MPV_SOCKET_FILE="/tmp/mpv.sock"
+DOWNLOAD_DIR="$HOME/Videos/YouTube"
+
+_err_msg() {
+	[ -n "$1" ] && printf '\000message\037error: %s\n \000nonselectable\037true\n' "$1"
+	exit 1
+}
+
+_download_vid() {
+	notify-send -i rofi -a mpv_rofi_utils "⬇️Start downloading '$2'..."
+	qid="$(tsp yt-dlp "$1" -o "$DOWNLOAD_DIR/%(uploader)s/%(title)s.%(ext)s")"
+	tsp -D "$qid" notify-send -i rofi -a mpv_rofi_utils "✅Download done: '$2'" >/dev/null 2>/dev/null
+}
+
+_play() { [ -n "$1" ] && setsid -f mpv "$1" >/dev/null 2>&1; }
+
+_append() { [ -n "$1" ] && setsid -f "$APPEND_SCRIPT" "$1" >/dev/null 2>&1; }
