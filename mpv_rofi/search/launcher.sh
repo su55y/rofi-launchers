@@ -9,6 +9,10 @@ SCRIPTPATH="$(
 	notify-send -i "rofi" -a "youtube search" "helper script not found"
 	exit 1
 }
+[ -f "$SCRIPTPATH/downloader" ] || {
+	notify-send -i "rofi" -a "youtube search" "downloader executable not found"
+	exit 1
+}
 
 # theme string
 theme() {
@@ -44,7 +48,7 @@ element.selected.urgent {
 EOF
 }
 
-rofi -i -no-config -show "yt_rofi" -modi "yt_rofi:$SCRIPTPATH/helper.sh" \
+SCRIPTPATH="$SCRIPTPATH" rofi -i -no-config -show "yt_rofi" -modi "yt_rofi:$SCRIPTPATH/helper.sh" \
 	-kb-move-front "Ctrl+i" -kb-row-select "Ctrl+9" \
 	-kb-custom-1 "Ctrl+c" -kb-custom-2 "Ctrl+a" -kb-custom-3 "Ctrl+space" \
 	-theme-str "$(theme)"

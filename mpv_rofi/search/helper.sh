@@ -2,27 +2,24 @@
 
 # inspired by https://github.com/sayan01/scripts/blob/master/yt
 
-# optional for append
-APPEND_SCRIPT="${XDG_DATA_HOME:-$HOME/.local/share}/rofi/playlist_ctl_py/append_video.sh"
+. "${SCRIPTPATH}/../mpv_rofi_utils"
 
-SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1; pwd -P)"
 C_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/yt_rofi"
 
-clr() { printf '\000urgent\0370\n \000nonselectable\037true\n'; }
-err_msg() { printf '\000message\037error: %s\n' "$1"; clr; exit 1; }
-
 [ -d "$C_DIR" ] || {
-	mkdir -p "$C_DIR" || err_msg "can't mkdir -p $C_DIR"
+	mkdir -p "$C_DIR" || _err_msg "can't mkdir -p $C_DIR"
 }
+# activate hotkeys
+printf "\000use-hot-keys\037true\n"
 
 play() {
 	[ "$(printf '%s' "$1" |
-		grep -oP "^[0-9a-zA-Z_\-]{11}$")" = "$1" ] || err_msg "invalid id '$1'"
-	setsid -f mpv "https://youtu.be/$1" >/dev/null 2>&1
+		grep -oP "^[0-9a-zA-Z_\-]{11}$")" = "$1" ] || _err_msg "invalid id '$1'"
+	_play "https://youtu.be/$1"
 }
 
 print_from_cache() {
-	[ -f "$1" ] || err_msg "no recent results found in cache"
+	[ -f "$1" ] || _err_msg "no recent results found in cache"
 	printf '\000data\037%s\n' "$1"
 	awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); print}' "$1"
 }
@@ -39,7 +36,7 @@ handle_query() {
 	response="$(curl -s "https://www.youtube.com/results?search_query=$query" |
 		sed 's|\\.||g')"
 
-	printf '%s' "$response" | grep -q "script" || err_msg "unable to grep results"
+	printf '%s' "$response" | grep -q "script" || _err_msg "unable to grep results"
 
 	vgrep='"videoRenderer":{"videoId":"\K.{11}".+?"text":".+?[^\\](?=")'
 	THUMB_URLS=
@@ -51,21 +48,14 @@ handle_query() {
 		THUMB_URLS="$THUMB_URLS ${line%%\?*}"
 		TITLE_AND_ID="${line#* }"
 
-		# go downloader alternative
-		# [ ! -f "$C_DIR/${TITLE_AND_ID##* }" ] && curl -s "${line%%\?*}" -o "$C_DIR/${TITLE_AND_ID##* }"
-
 		printf '%s\000info\037%s\037icon\037%s\n' \
 			"${TITLE_AND_ID% *}" "${TITLE_AND_ID##* }" "$C_DIR/${TITLE_AND_ID##* }" |
 			tee -a "$results_cache"
 	done
 	printf '\000data\037%s\n' "$results_cache"
 
-	# download missing previews
 	"$SCRIPTPATH/downloader" -o="$C_DIR" -l="$THUMB_URLS"
 }
-
-# activate hotkeys
-printf "\000use-hot-keys\037true\n"
 
 case $ROFI_RETV in
 # play selected and exit
@@ -73,11 +63,10 @@ case $ROFI_RETV in
 # handle search query
 2) handle_query "$@" ;;
 # kb-custom-1 - clear rows
-10) clr ;;
+10) printf '\000urgent\0370\n \000nonselectable\037true\n' ;;
 # kb-custom-2 - append selected to playlist and print last results
 11)
-	[ -f "$APPEND_SCRIPT" ] || err_msg "append script not found"
-	setsid -f "$APPEND_SCRIPT" "https://youtu.be/$ROFI_INFO" >/dev/null 2>&1
+	_append "https://youtu.be/$ROFI_INFO"
 	print_from_cache "$ROFI_DATA"
 	;;
 # kb-custom-3 - play selected and print last results
