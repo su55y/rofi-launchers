@@ -29,7 +29,7 @@ listview {
 EOF
 }
 
-rofi -i -show "vchooser" -no-config \
+SCRIPTPATH="$SCRIPTPATH" rofi -i -show "vchooser" -no-config \
 	-modi "vchooser:$SCRIPTPATH/helper.sh" \
 	-theme-str "$(theme)" \
 	-sep='\x0a' -eh 2 -normal-window \

@@ -1,9 +1,9 @@
 #!/bin/sh
 
+. "${SCRIPTPATH}/../mpv_rofi_utils"
+
 VIDSDIR="${HOME}/Videos"
 TEMPFILE="${TEMPDIR:-/tmp}/video_chooser.tmp"
-# optional for append
-APPEND_SCRIPT="${XDG_DATA_HOME:-$HOME/.local/share}/rofi/playlist_ctl_py/append_video.sh"
 
 # activate hotkeys
 printf "\000use-hot-keys\037true\012"
@@ -29,10 +29,6 @@ printer() {
 }
 
 alt_printer() {
-	SCRIPTPATH="$(
-		cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
-		pwd -P
-	)"
 	echo "" >"$TEMPFILE"
 	"${SCRIPTPATH}/alt_printer" "$VIDSDIR" | tee -a "$TEMPFILE"
 }
@@ -41,10 +37,10 @@ case $ROFI_RETV in
 # print printer on start and kb-custom-1 press
 0) alt_printer ;;
 # select line
-1) [ -f "$ROFI_INFO" ] && setsid -f mpv "$ROFI_INFO" >/dev/null 2>&1 ;;
+1) [ -f "$ROFI_INFO" ] && _play "$ROFI_INFO" ;;
 # kb-custom-1 - append to playlist
 10)
-	[ -f "$ROFI_INFO" ] && setsid -f "$APPEND_SCRIPT" "$ROFI_INFO" >/dev/null 2>&1
+	[ -f "$ROFI_INFO" ] && _append "$ROFI_INFO"
 	[ -f "$TEMPFILE" ] && print_from_cache || alt_printer
 	;;
 esac
