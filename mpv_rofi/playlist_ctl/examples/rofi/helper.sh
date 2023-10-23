@@ -1,17 +1,11 @@
 #!/bin/sh
 
+. "${SCRIPTPATH}/../../../mpv_rofi_utils"
+
 HISTORY_FILE="/tmp/playlist_ctl_history"
 HISTORY_LIMIT=100
-APPEND_SCRIPT="${XDG_DATA_HOME:-$HOME/.local/share}/rofi/playlist_ctl_py/append_video.sh"
-DOWNLOAD_DIR="$HOME/Videos/YouTube"
-MPV_SOCKET_FILE="/tmp/mpv.sock"
 
 printf '\000use-hot-keys\037true\n'
-
-err_msg() {
-	[ -n "$1" ] && printf '\000message\037error: %s\n \000nonselectable\037true\n' "$1"
-	exit 1
-}
 
 print_history() {
 	printf '\000message\037HISTORY\n'
@@ -24,17 +18,11 @@ print_history() {
 	fi
 }
 
-download_vid() {
-	notify-send -a "playlist-ctl" "⬇️Start downloading '$2'..."
-	qid="$(tsp yt-dlp "$1" -o "$DOWNLOAD_DIR/%(uploader)s/%(title)s.%(ext)s")"
-	tsp -D "$qid" notify-send -a "playlist-ctl" "✅Download done: '$2'" >/dev/null 2>&1
-}
-
 play_index() {
 	error="$(printf '%s' "$(printf '{"command": ["playlist-play-index", "%s"]}\n' "$1" |
 		nc -NU "$MPV_SOCKET_FILE" |
 		grep -oP 'error\"\:\"\K[^\"]+')")"
-	[ "$error" = "success" ] || err_msg "$error"
+	[ "$error" = "success" ] || _err_msg "$error"
 }
 
 # kb-custom-1 (Ctrl+h) - prints history
@@ -45,19 +33,19 @@ play_index() {
 
 if [ "$ROFI_DATA" = "history" ]; then
 	case $ROFI_RETV in
-	1) setsid -f mpv "$ROFI_INFO" >/dev/null 2>&1 ;;
+	1) _play "$ROFI_INFO" ;;
 	# kb-custom-2 (Ctrl+a) - append to playlist
-	11) setsid -f "$APPEND_SCRIPT" "$ROFI_INFO" >/dev/null 2>&1 ;;
+	11) _append "$ROFI_INFO" ;;
 	# kb-custom-3 (Ctrl+d) - download from history
-	12) download_vid "$ROFI_INFO" "$1" ;;
+	12) _download_vid "$ROFI_INFO" "$1" ;;
 	esac
 	# kb-custom-4 (Ctrl+r) - refresh history
 	case $ROFI_RETV in
 	1 | 11 | 12 | 13) print_history ;;
 	esac
 else
-	pidof -q mpv || err_msg "mpv process not found"
-	[ -S "$MPV_SOCKET_FILE" ] || err_msg "$MPV_SOCKET_FILE not found"
+	pidof -q mpv || _err_msg "mpv process not found"
+	[ -S "$MPV_SOCKET_FILE" ] || _err_msg "$MPV_SOCKET_FILE not found"
 	case $ROFI_RETV in
 	0) playlist-ctl ;;
 	1) play_index "$ROFI_INFO" ;;

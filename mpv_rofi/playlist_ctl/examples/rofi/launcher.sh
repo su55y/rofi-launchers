@@ -25,7 +25,7 @@ textbox-prompt-colon {
 EOF
 }
 
-rofi -i -show "playlist_ctl_py" \
+SCRIPTPATH="$SCRIPTPATH" rofi -i -show "playlist_ctl_py" \
 	-modi "playlist_ctl_py:$SCRIPTPATH/helper.sh" \
 	-no-config \
 	-no-custom \
