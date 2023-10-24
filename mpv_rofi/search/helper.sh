@@ -74,4 +74,9 @@ case $ROFI_RETV in
 	play "$ROFI_INFO"
 	print_from_cache "$ROFI_DATA"
 	;;
+# kb-custom-4 - downlaad video
+13)
+	_download_vid "https://youtu.be/$ROFI_INFO" "$1"
+	print_from_cache "$ROFI_DATA"
+	;;
 esac
