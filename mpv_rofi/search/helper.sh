@@ -26,14 +26,14 @@ print_from_cache() {
 
 handle_query() {
 	[ -n "$1" ] || exit 1
-	query="$(printf '%s' "$1" | sed 's/\s/+/g')"
+	query="$1"
 	results_cache="${C_DIR}/$(echo "$query" | base64)"
 	[ -f "$results_cache" ] && {
 		print_from_cache "$results_cache"
 		return
 	}
 
-	response="$(curl -s "https://www.youtube.com/results?search_query=$query" |
+	response="$(curl --get -s --data-urlencode "search_query=$query" https://www.youtube.com/results |
 		sed 's|\\.||g')"
 
 	printf '%s' "$response" | grep -q "script" || _err_msg "unable to grep results"
