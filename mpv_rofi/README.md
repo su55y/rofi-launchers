@@ -4,21 +4,13 @@
 
 - [mpv](https://github.com/mpv-player/mpv)
 - [youtube-dl](https://github.com/ytdl-org/youtube-dl) (_or [yt-dlp](https://github.com/yt-dlp/yt-dlp), or any other script specified in_ `$XDG_CONFIG_HOME/mpv/mpv.conf` _as_ `script-opts=ytdl_hook-ytdl_path=scriptname`)
+- [xclip](https://github.com/astrand/xclip) (_optional for append script_)
 
 ---
 
-### playlist-ctl
+### playlist-ctl, pytfeeder
 
-##### required dependencies:
-
-- [xclip](https://github.com/astrand/xclip) (_append script_)
-- [python>=3.8](https://www.python.org/)
-
----
-
-### pytfeeder
-
-##### required dependencies:
+##### required:
 
 - [python>=3.8](https://www.python.org/)
 
@@ -26,22 +18,16 @@
 
 ### search
 
-##### required dependencies:
+##### required:
 
 - [curl>=7.18](https://github.com/curl/curl)
 - [go](https://github.com/golang/go) (_thumbs downloader_)
-
-##### to build downloader:
-
-```shell
-go build downloader.go
-```
 
 ---
 
 ### video_chooser
 
-##### required dependencies:
+##### required:
 
 - [go](https://github.com/golang/go) (_printer_)
 
