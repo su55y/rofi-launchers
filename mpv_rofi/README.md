@@ -16,17 +16,36 @@
 
 ---
 
+### pytfeeder
+
+##### required dependencies:
+
+- [python>=3.8](https://www.python.org/)
+
+---
+
 ### search
 
-##### optional dependencies:
+##### required dependencies:
 
-- [go](https://github.com/golang/go)
+- [curl>=7.18](https://github.com/curl/curl)
+- [go](https://github.com/golang/go) (_thumbs downloader_)
 
 ##### to build downloader:
 
 ```shell
 go build downloader.go
 ```
+
+---
+
+### video_chooser
+
+##### required dependencies:
+
+- [go](https://github.com/golang/go) (_printer_)
+
+---
 
 ##### search demo:
 
