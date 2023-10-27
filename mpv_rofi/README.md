@@ -1,4 +1,4 @@
-## mpv rofi launchers
+## mpv launchers
 
 ##### common dependencies:
 
@@ -8,28 +8,11 @@
 
 ---
 
-### playlist-ctl, pytfeeder
-
-##### required:
-
-- [python>=3.8](https://www.python.org/)
-
----
-
-### search
-
-##### required:
-
-- [curl>=7.18](https://github.com/curl/curl)
-- [go](https://github.com/golang/go) (_thumbs downloader_)
-
----
-
-### video_chooser
-
-##### required:
-
-- [go](https://github.com/golang/go) (_printer_)
+| launcher                | required                                                                       |
+| ----------------------- | ------------------------------------------------------------------------------ |
+| playlist-ctl, pytfeeder | [python>=3.8](https://www.python.org/)                                         |
+| search                  | [curl>=7.18](https://github.com/curl/curl), [go](https://github.com/golang/go) |
+| video_chooser           | [go](https://github.com/golang/go)                                             |
 
 ---
 
