@@ -15,6 +15,7 @@ printf "\000use-hot-keys\037true\n"
 play() {
 	[ "$(printf '%s' "$1" |
 		grep -oP "^[0-9a-zA-Z_\-]{11}$")" = "$1" ] || _err_msg "invalid id '$1'"
+	notify-send -a "youtube search" "$2"
 	_play "https://youtu.be/$1"
 }
 
@@ -59,7 +60,7 @@ handle_query() {
 
 case $ROFI_RETV in
 # play selected and exit
-1) play "$ROFI_INFO" ;;
+1) play "$ROFI_INFO" "$1" ;;
 # handle search query
 2) handle_query "$@" ;;
 # kb-custom-1 - clear rows
@@ -71,7 +72,7 @@ case $ROFI_RETV in
 	;;
 # kb-custom-3 - play selected and print last results
 12)
-	play "$ROFI_INFO"
+	play "$ROFI_INFO" "$1"
 	print_from_cache "$ROFI_DATA"
 	;;
 # kb-custom-4 - downlaad video
