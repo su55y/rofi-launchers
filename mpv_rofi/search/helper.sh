@@ -64,7 +64,7 @@ case $ROFI_RETV in
 # handle search query
 2) handle_query "$@" ;;
 # kb-custom-1 - clear rows
-10) printf '\000urgent\0370\n \000nonselectable\037true\n' ;;
+10) printf '\000message\037\n\000urgent\0370\n \000nonselectable\037true\n' ;;
 # kb-custom-2 - append selected to playlist and print last results
 11)
 	_append "https://youtu.be/$ROFI_INFO"
