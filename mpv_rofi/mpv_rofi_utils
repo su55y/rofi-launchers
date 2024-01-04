@@ -11,7 +11,7 @@ _err_msg() {
 
 _download_vid() {
 	notify-send -i rofi -a mpv_rofi_utils "⬇️Start downloading '$2'..."
-	qid="$(tsp yt-dlp "$1" -o "$DOWNLOAD_DIR/%(uploader)s/%(title)s.%(ext)s")"
+	qid="$(tsp yt-dlp "$1" -R infinite -o "$DOWNLOAD_DIR/%(uploader)s/%(title)s.%(ext)s")"
 	tsp -D "$qid" notify-send -i rofi -a mpv_rofi_utils "✅Download done: '$2'" >/dev/null 2>/dev/null
 }
 
