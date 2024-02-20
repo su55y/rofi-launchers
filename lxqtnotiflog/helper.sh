@@ -13,5 +13,6 @@ print_log() {
 }
 
 case $ROFI_RETV in
+1) [ -n "$ROFI_INFO" ] && eval "notify-send $ROFI_INFO" ;;
 *) print_log ;;
 esac

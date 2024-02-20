@@ -17,6 +17,10 @@ class Entry:
     title: str = ""
 
 
+def build_info(e: Entry) -> str:
+    return f"-i {e.icon!r} -a {e.application!r} {e.title!r} {e.text}"
+
+
 if __name__ == "__main__":
     if not os.path.exists(UNATTENDED_LIST):
         print("\000message\037error: %r not found" % UNATTENDED_LIST, end="\012")
@@ -48,6 +52,7 @@ if __name__ == "__main__":
     rx_app = re.compile(r"^Application=.+")
     rx_body = re.compile(r"^Body=.+")
     rx_summary = re.compile(r"^Summary=.+")
+    rx_icon = re.compile(r"Icon=.+")
     for e in entries[::-1]:
         if rx_date.match(e.created):
             e.created = dt.datetime(*(int(v) for v in e.created[1:-1].split("-")[:7]))
@@ -61,8 +66,11 @@ if __name__ == "__main__":
             e.text = e.body[len("Body=") :]
         if e.summary != "Summary=" and rx_summary.match(e.summary):
             e.title = e.summary[len("Summary=") :]
+        if e.icon != "Icon=" and rx_icon.match(e.icon):
+            e.icon = e.icon[len("Icon=") :]
+
         print(
-            "<b>%s</b> <i>%s</i>\r%s\000icon\037%s"
-            % (e.application, e.created, e.text or e.title, e.icon),
+            "<b>%s</b> <i>%s</i>\r%s\000icon\037%s\037info\037%s"
+            % (e.application, e.created, e.text or e.title, e.icon, build_info(e)),
             end="\012",
         )
