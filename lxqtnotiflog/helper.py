@@ -1,7 +1,8 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 import datetime as dt
 import os.path
 import re
+import urllib.parse
 
 UNATTENDED_LIST = os.path.expanduser("~/.cache/lxqt-notificationd/unattended.list")
 
@@ -13,12 +14,33 @@ class Entry:
     body: str
     icon: str
     summary: str
-    text: str = ""
-    title: str = ""
+
+    def __post_init__(self):
+        for attr in fields(self):
+            v = self.__getattribute__(attr.name)
+            if attr.name == "created":
+                if re.match(r"\[\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-\d{3}\]", v):
+                    created = dt.datetime(*(int(ch) for ch in v[1:-1].split("-")[:7]))
+                    self.__setattr__(attr.name, created.strftime("%T %F"))
+                else:
+                    self.__setattr__(attr.name, "")
+                continue
+
+            tmp = f"{attr.name.capitalize()}="
+            if v != tmp and re.match(r"^%s.+" % tmp, v):
+                v = v[len(tmp) :]
+            else:
+                v = ""
+            self.__setattr__(attr.name, v)
 
 
 def build_info(e: Entry) -> str:
-    return f"-i {e.icon!r} -a {e.application!r} {e.title!r} {e.text}"
+    return f"-i {e.icon!r} -a {e.application!r} {e.summary!r} {e.body!r}"
+
+
+def log(msg: str):
+    with open("/tmp/tmp_py.log", "a") as f:
+        f.write(msg)
 
 
 if __name__ == "__main__":
@@ -48,29 +70,10 @@ if __name__ == "__main__":
         )
         for i in range(0, len(lines), 5)
     ]
-    rx_date = re.compile(r"\[\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-\d{3}\]")
-    rx_app = re.compile(r"^Application=.+")
-    rx_body = re.compile(r"^Body=.+")
-    rx_summary = re.compile(r"^Summary=.+")
-    rx_icon = re.compile(r"Icon=.+")
     for e in entries[::-1]:
-        if rx_date.match(e.created):
-            e.created = dt.datetime(*(int(v) for v in e.created[1:-1].split("-")[:7]))
-        else:
-            e.created = "-"
-        if e.application != "Application=" and rx_app.match(e.application):
-            e.application = e.application[len("Application=") :]
-        else:
-            e.application = "-"
-        if e.body != "Body=" and rx_body.match(e.body):
-            e.text = e.body[len("Body=") :]
-        if e.summary != "Summary=" and rx_summary.match(e.summary):
-            e.title = e.summary[len("Summary=") :]
-        if e.icon != "Icon=" and rx_icon.match(e.icon):
-            e.icon = e.icon[len("Icon=") :]
-
+        log(f"{e}\n")
         print(
             "<b>%s</b> <i>%s</i>\r%s\000icon\037%s\037info\037%s"
-            % (e.application, e.created, e.text or e.title, e.icon, build_info(e)),
+            % (e.application, e.created, e.body or e.summary, e.icon, build_info(e)),
             end="\012",
         )
