@@ -18,3 +18,36 @@ _download_vid() {
 _play() { [ -n "$1" ] && setsid -f mpv "$1" >/dev/null 2>&1; }
 
 _append() { [ -n "$1" ] && setsid -f "$APPEND_SCRIPT" "$1" >/dev/null 2>&1; }
+
+_search_theme() {
+	cat <<EOF
+configuration {
+  font: "NotoSans Nerd Font 18";
+}
+window {
+  height: 90%;
+}
+inputbar {
+  children: ["textbox-prompt-colon","entry","num-filtered-rows","textbox-num-sep","num-rows","case-indicator"];
+}
+textbox-prompt-colon {
+  str: "";
+  text-color: #f00;
+  padding: 0 10px 0 5px;
+}
+element {
+  children: [element-text,element-icon];
+  padding: -40px 0;
+}
+element-text {
+  vertical-align: 0.5;
+}
+element-icon {
+  size: 200px;
+}
+/* hide element after clear */
+element.selected.urgent {
+  background-color: #00000000;
+}
+EOF
+}

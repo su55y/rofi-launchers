@@ -2,6 +2,10 @@
 
 # inspired by https://github.com/sayan01/scripts/blob/master/yt
 
+SCRIPTPATH="$(
+	cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
+	pwd -P
+)"
 . "${SCRIPTPATH}/../mpv_rofi_utils"
 
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/mpv_rofi_yt_search"
@@ -64,14 +68,15 @@ print_history() {
 	find "$RESULTS_DIR" -type f -printf '%f\n' | base64 -d | xargs -I {} printf '%s\n' "{}"
 }
 
-if [ "$ROFI_DATA" = _history ]; then
-	handle_query "$@"
-	exit 0
-fi
-
 case $ROFI_RETV in
 # play selected and exit
-1) play "$ROFI_INFO" "$1" ;;
+1)
+	if [ "$ROFI_DATA" = _history ]; then
+		handle_query "$@"
+	else
+		play "$ROFI_INFO" "$1"
+	fi
+	;;
 # handle search query
 2) handle_query "$@" ;;
 # kb-custom-1 - clear rows
@@ -83,8 +88,16 @@ case $ROFI_RETV in
 	;;
 # kb-custom-3 - play selected and print last results
 12)
-	play "$ROFI_INFO" "$1"
-	print_from_cache "$ROFI_DATA"
+	if [ "$ROFI_DATA" = _history ]; then
+		notify-send "path: $SCRIPTPATH"
+		SCRIPTPATH="$SCRIPTPATH" setsid -f rofi -filter "$@" -i -no-config -show "yt_search" -modi "yt_search:$SCRIPTPATH/helper.sh" \
+			-kb-move-front "Ctrl+i" -kb-row-select "Ctrl+9" -kb-remove-char-forward "Delete" \
+			-kb-custom-1 "Ctrl+c" -kb-custom-2 "Ctrl+a" -kb-custom-3 "Ctrl+space" -kb-custom-4 "Ctrl+d" \
+			-kb-remove-char-back "BackSpace,Shift+BackSpace" -kb-custom-5 "Ctrl+h" -theme-str "$(_search_theme)" >/dev/null 2>&1
+	else
+		play "$ROFI_INFO" "$1"
+		print_from_cache "$ROFI_DATA"
+	fi
 	;;
 # kb-custom-4 - downlaad video
 13)
