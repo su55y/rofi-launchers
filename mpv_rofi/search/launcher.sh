@@ -51,4 +51,4 @@ EOF
 SCRIPTPATH="$SCRIPTPATH" rofi -i -no-config -show "yt_rofi" -modi "yt_rofi:$SCRIPTPATH/helper.sh" \
 	-kb-move-front "Ctrl+i" -kb-row-select "Ctrl+9" -kb-remove-char-forward "Delete" \
 	-kb-custom-1 "Ctrl+c" -kb-custom-2 "Ctrl+a" -kb-custom-3 "Ctrl+space" -kb-custom-4 "Ctrl+d" \
-	-theme-str "$(theme)"
+	-kb-remove-char-back "BackSpace,Shift+BackSpace" -kb-custom-5 "Ctrl+h" -theme-str "$(theme)"

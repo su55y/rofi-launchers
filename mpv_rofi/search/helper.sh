@@ -4,11 +4,12 @@
 
 . "${SCRIPTPATH}/../mpv_rofi_utils"
 
-C_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/yt_rofi"
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/mpv_rofi_yt_search"
+THUMBNAILS_DIR="${CACHE_DIR}/thumbnails"
+RESULTS_DIR="${CACHE_DIR}/results"
+mkdir -p "$THUMBNAILS_DIR" || _err_msg "can't mkdir -p $THUMBNAILS_DIR"
+mkdir -p "$RESULTS_DIR" || _err_msg "can't mkdir -p $RESULTS_DIR"
 
-[ -d "$C_DIR" ] || {
-	mkdir -p "$C_DIR" || _err_msg "can't mkdir -p $C_DIR"
-}
 # activate hotkeys
 printf "\000use-hot-keys\037true\n"
 
@@ -28,7 +29,7 @@ print_from_cache() {
 handle_query() {
 	[ -n "$1" ] || exit 1
 	query="$1"
-	results_cache="${C_DIR}/$(echo "$query" | base64)"
+	results_cache="${RESULTS_DIR}/$(echo "$query" | base64)"
 	[ -f "$results_cache" ] && {
 		print_from_cache "$results_cache"
 		return
@@ -50,13 +51,23 @@ handle_query() {
 		TITLE_AND_ID="${line#* }"
 
 		printf '%s\000info\037%s\037icon\037%s\n' \
-			"${TITLE_AND_ID% *}" "${TITLE_AND_ID##* }" "$C_DIR/${TITLE_AND_ID##* }" |
+			"${TITLE_AND_ID% *}" "${TITLE_AND_ID##* }" "$THUMBNAILS_DIR/${TITLE_AND_ID##* }" |
 			tee -a "$results_cache"
 	done
 	printf '\000data\037%s\n' "$results_cache"
 
-	"$SCRIPTPATH/downloader" -o="$C_DIR" -l="$THUMB_URLS"
+	"$SCRIPTPATH/downloader" -o="$THUMBNAILS_DIR" -l="$THUMB_URLS"
 }
+
+print_history() {
+	printf '\000message\037history\n\000data\037_history\n'
+	find "$RESULTS_DIR" -type f -printf '%f\n' | base64 -d | xargs -I {} printf '%s\n' "{}"
+}
+
+if [ "$ROFI_DATA" = _history ]; then
+	handle_query "$@"
+	exit 0
+fi
 
 case $ROFI_RETV in
 # play selected and exit
@@ -80,4 +91,6 @@ case $ROFI_RETV in
 	_download_vid "https://youtu.be/$ROFI_INFO" "$1"
 	print_from_cache "$ROFI_DATA"
 	;;
+# kb-custom-5 - print search history
+14) print_history ;;
 esac
