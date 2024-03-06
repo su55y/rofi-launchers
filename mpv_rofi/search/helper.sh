@@ -68,6 +68,10 @@ print_history() {
 	find "$RESULTS_DIR" -type f -printf '%f\n' | base64 -d | xargs -I {} printf '%s\n' "{}"
 }
 
+restart_with_filter() {
+	setsid -f "${SCRIPTPATH}/launcher.sh" "$1" >/dev/null 2>&1
+}
+
 case $ROFI_RETV in
 # play selected and exit
 1)
@@ -89,11 +93,7 @@ case $ROFI_RETV in
 # kb-custom-3 - play selected and print last results
 12)
 	if [ "$ROFI_DATA" = _history ]; then
-		notify-send "path: $SCRIPTPATH"
-		SCRIPTPATH="$SCRIPTPATH" setsid -f rofi -filter "$@" -i -no-config -show "yt_search" -modi "yt_search:$SCRIPTPATH/helper.sh" \
-			-kb-move-front "Ctrl+i" -kb-row-select "Ctrl+9" -kb-remove-char-forward "Delete" \
-			-kb-custom-1 "Ctrl+c" -kb-custom-2 "Ctrl+a" -kb-custom-3 "Ctrl+space" -kb-custom-4 "Ctrl+d" \
-			-kb-remove-char-back "BackSpace,Shift+BackSpace" -kb-custom-5 "Ctrl+h" -theme-str "$(_search_theme)" >/dev/null 2>&1
+		restart_with_filter "$@"
 	else
 		play "$ROFI_INFO" "$1"
 		print_from_cache "$ROFI_DATA"
