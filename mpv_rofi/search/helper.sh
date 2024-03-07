@@ -63,9 +63,20 @@ handle_query() {
 	"$SCRIPTPATH/downloader" -o="$THUMBNAILS_DIR" -l="$THUMB_URLS"
 }
 
+results_count() {
+	count=0
+	for entry in "$RESULTS_DIR"/*; do [ -f "$entry" ] && count=$((count + 1)); done
+	printf "%d" $count
+}
+
 print_history() {
-	printf '\000message\037history\n\000data\037_history\n'
-	find "$RESULTS_DIR" -type f -printf '%f\n' | base64 -d | xargs -I {} printf '%s\n' "{}"
+	case $(results_count) in
+	0) printf '\000message\037history is empty\n\000urgent\0370\n \000nonselectable\037true\n' ;;
+	*)
+		printf '\000message\037history\n\000data\037_history\n'
+		find "$RESULTS_DIR" -type f -printf '%f\n' | base64 -d | xargs -I {} printf '%s\n' "{}"
+		;;
+	esac
 }
 
 restart_with_filter() {
@@ -101,8 +112,10 @@ case $ROFI_RETV in
 	;;
 # kb-custom-4 - downlaad video
 13)
-	_download_vid "https://youtu.be/$ROFI_INFO" "$1"
-	print_from_cache "$ROFI_DATA"
+	if [ "$ROFI_DATA" != _history ]; then
+		_download_vid "https://youtu.be/$ROFI_INFO" "$1"
+		print_from_cache "$ROFI_DATA"
+	fi
 	;;
 # kb-custom-5 - print search history
 14) print_history ;;
