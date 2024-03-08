@@ -17,9 +17,13 @@ mkdir -p "$RESULTS_DIR" || _err_msg "can't mkdir -p $RESULTS_DIR"
 # activate hotkeys
 printf "\000use-hot-keys\037true\n"
 
+validate_id() {
+	printf '%s' "$1" | grep -soP "^[0-9a-zA-Z_\-]{11}$" >/dev/null 2>&1 ||
+		_err_msg "invalid id '$1'"
+}
+
 play() {
-	[ "$(printf '%s' "$1" |
-		grep -oP "^[0-9a-zA-Z_\-]{11}$")" = "$1" ] || _err_msg "invalid id '$1'"
+	validate_id "$1"
 	notify-send -a "youtube search" "$2"
 	_play "https://youtu.be/$1"
 }
@@ -112,6 +116,7 @@ case $ROFI_RETV in
 	;;
 # kb-custom-4 - downlaad video
 13)
+	validate_id "$ROFI_INFO"
 	if [ "$ROFI_DATA" != _history ]; then
 		_download_vid "https://youtu.be/$ROFI_INFO" "$1"
 		print_from_cache "$ROFI_DATA"
