@@ -1,5 +1,9 @@
 #!/bin/sh
 
+SCRIPTPATH="$(
+	cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
+	pwd -P
+)"
 . "${SCRIPTPATH}/../mpv_rofi_utils"
 
 VIDSDIR="${HOME}/Videos"
@@ -15,7 +19,20 @@ print_from_cache() {
 }
 
 printer() {
-	"${SCRIPTPATH}/printer" "$VIDSDIR" | tee "$TEMPFILE"
+	if [ -f "$TEMPFILE" ]; then
+		print_from_cache
+	else
+		"${SCRIPTPATH}/printer" "$VIDSDIR" | tee "$TEMPFILE"
+	fi
+}
+
+restart_with_filter() {
+	setsid -f "${SCRIPTPATH}/launcher.sh" "$1" >/dev/null 2>&1
+}
+
+parent_dir() {
+	parent="$(basename "$(dirname "$ROFI_INFO")")"
+	printf '%s' "${parent%% *}"
 }
 
 case $ROFI_RETV in
@@ -23,9 +40,18 @@ case $ROFI_RETV in
 0) printer ;;
 # select line
 1) [ -f "$ROFI_INFO" ] && _play "$ROFI_INFO" ;;
-# kb-custom-1 (Ctrl+a) - append to playlist
+# kb-custom-1 (Ctrl+a) - append to playlist and restart with filter
 10)
-	[ -f "$ROFI_INFO" ] && _append "$ROFI_INFO"
-	[ -f "$TEMPFILE" ] && print_from_cache || printer
+	if [ -f "$ROFI_INFO" ]; then
+		_append "$ROFI_INFO"
+		restart_with_filter "$(parent_dir)"
+	fi
+	;;
+# kb-custom-2 (Ctrl+space) - play and restart with filter
+11)
+	if [ -f "$ROFI_INFO" ]; then
+		_play "$ROFI_INFO"
+		restart_with_filter "$(parent_dir)"
+	fi
 	;;
 esac

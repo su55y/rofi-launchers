@@ -29,8 +29,12 @@ listview {
 EOF
 }
 
-SCRIPTPATH="$SCRIPTPATH" rofi -i -show "vchooser" -no-config \
-	-modi "vchooser:$SCRIPTPATH/helper.sh" \
-	-theme-str "$(theme)" \
-	-sep='\x0a' -eh 2 -normal-window \
-	-kb-move-front "Ctrl+i" -kb-custom-1 "Ctrl+a"
+ROFI_CMD="rofi -i -no-config -show vchooser -modi 'vchooser:$SCRIPTPATH/helper.sh' \
+	-theme-str '$(theme)' -sep='\x0a' -eh 2 -normal-window \
+  -kb-move-front 'Ctrl+i' -kb-row-select 'Ctrl+s' -kb-custom-1 'Ctrl+a' -kb-custom-2 'Ctrl+space'"
+
+if [ -n "$*" ]; then
+	ROFI_CMD="$ROFI_CMD -filter '$*'"
+fi
+
+eval "$ROFI_CMD"
