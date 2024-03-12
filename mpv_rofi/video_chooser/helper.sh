@@ -54,4 +54,9 @@ case $ROFI_RETV in
 		restart_with_filter "$(parent_dir)"
 	fi
 	;;
+# kb-custom-3 (Ctrl=r) - remove cache
+12)
+	rm -f "$TEMPFILE"
+	printer
+	;;
 esac
