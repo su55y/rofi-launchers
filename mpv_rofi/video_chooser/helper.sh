@@ -27,12 +27,8 @@ printer() {
 }
 
 restart_with_filter() {
-	setsid -f "${SCRIPTPATH}/launcher.sh" "$1" >/dev/null 2>&1
-}
-
-parent_dir() {
 	parent="$(basename "$(dirname "$ROFI_INFO")")"
-	printf '%s' "${parent%% *}"
+	setsid -f "${SCRIPTPATH}/launcher.sh" "${parent%% *}" >/dev/null 2>&1
 }
 
 case $ROFI_RETV in
@@ -43,20 +39,20 @@ case $ROFI_RETV in
 # kb-custom-1 (Ctrl+a) - append to playlist and restart with filter
 10)
 	if [ -f "$ROFI_INFO" ]; then
+		restart_with_filter
 		_append "$ROFI_INFO"
-		restart_with_filter "$(parent_dir)"
 	fi
 	;;
 # kb-custom-2 (Ctrl+space) - play and restart with filter
 11)
 	if [ -f "$ROFI_INFO" ]; then
 		_play "$ROFI_INFO"
-		restart_with_filter "$(parent_dir)"
+		restart_with_filter
 	fi
 	;;
-# kb-custom-3 (Ctrl=r) - remove cache
+# kb-custom-3 (Ctrl+r) - remove cache
 12)
-	rm -f "$TEMPFILE"
+	rm -f "$TEMPFILE" >/dev/null 2>&1
 	printer
 	;;
 esac

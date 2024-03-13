@@ -31,10 +31,11 @@ EOF
 
 ROFI_CMD="rofi -i -no-config -show vchooser -modi 'vchooser:$SCRIPTPATH/helper.sh' \
 	-theme-str '$(theme)' -sep='\x0a' -eh 2 -normal-window \
-  -kb-move-front 'Ctrl+i' -kb-row-select 'Ctrl+s' -kb-custom-1 'Ctrl+a' -kb-custom-2 'Ctrl+space' -kb-custom-3 'Ctrl+r'"
+  -kb-move-front 'Ctrl+i' -kb-row-select 'Ctrl+s' \
+  -kb-custom-1 'Ctrl+a' -kb-custom-2 'Ctrl+space' -kb-custom-3 'Ctrl+r'"
 
 if [ -n "$*" ]; then
 	ROFI_CMD="$ROFI_CMD -filter '$*'"
 fi
 
-eval "$ROFI_CMD"
+_=$(eval "$ROFI_CMD" >/dev/null 2>&1)
