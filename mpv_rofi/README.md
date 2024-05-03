@@ -8,11 +8,11 @@
 
 ---
 
-| launcher                | required                                                                       |
-| ----------------------- | ------------------------------------------------------------------------------ |
-| playlist-ctl, pytfeeder | [python>=3.8](https://www.python.org/)                                         |
-| search                  | [curl>=7.18](https://github.com/curl/curl), [go](https://github.com/golang/go) |
-| video_chooser           | [go](https://github.com/golang/go)                                             |
+| launcher      | required                                                                       |
+| ------------- | ------------------------------------------------------------------------------ |
+| playlist-ctl  | [python>=3.8](https://www.python.org/)                                         |
+| search        | [curl>=7.18](https://github.com/curl/curl), [go](https://github.com/golang/go) |
+| video_chooser | [go](https://github.com/golang/go)                                             |
 
 ---
 
