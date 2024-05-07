@@ -1,10 +1,16 @@
 #!/bin/sh
 
 clr() { printf '\000urgent\0370\n \000nonselectable\037true\n'; }
-err_msg() { printf '\000message\037error: %s\n' "$1"; clr; exit 1; }
+err_msg() {
+	printf '\000message\037error: %s\n' "$1"
+	clr
+	exit 1
+}
 
-
-SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1; pwd -P)"
+SCRIPTPATH="$(
+	cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
+	pwd -P
+)"
 [ -f "$SCRIPTPATH/helper" ] || err_msg "go helper not found"
 
 C_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_wiki"
@@ -56,7 +62,7 @@ case $ROFI_RETV in
 11) clr ;;
 # kb-custom-3 - open selected and print last results
 12)
-    setsid -f "$BROWSER" "$ROFI_INFO" >/dev/null 2>&1
+	setsid -f "$BROWSER" "$ROFI_INFO" >/dev/null 2>&1
 	print_from_cache "$ROFI_DATA"
 	;;
 esac
