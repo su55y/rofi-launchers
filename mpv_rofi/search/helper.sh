@@ -78,7 +78,7 @@ print_history() {
 	0) printf '\000message\037history is empty\n\000urgent\0370\n \000nonselectable\037true\n' ;;
 	*)
 		printf '\000message\037history\n\000data\037_history\n'
-		find "$RESULTS_DIR" -type f -printf '%f\n' | base64 -d | xargs -I {} printf '%s\n' "{}"
+		find "$RESULTS_DIR" -type f -printf '%T@ %f\n' | sort -k 1nr | sed 's/^[^ ]* //' | base64 -d | xargs -I {} printf '%s\n' "{}"
 		;;
 	esac
 }
