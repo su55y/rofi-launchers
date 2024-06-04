@@ -1,7 +1,6 @@
 #!/bin/sh
 
 WIKIDIR="/usr/share/doc/arch-wiki/html/en/"
-BROWSER="${BROWSER:-qutebrowser}"
 
 printf "\000use-hot-keys\037true\n"
 
