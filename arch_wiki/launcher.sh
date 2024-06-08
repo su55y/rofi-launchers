@@ -28,4 +28,5 @@ rofi -i -show "wiki" \
     -kb-custom-1 "Ctrl+c" \
     -kb-row-select "" \
     -kb-custom-2 "Ctrl+space" \
-    -theme-str "$(theme)"
+    -theme-str "$(theme)" \
+    -normal-window
