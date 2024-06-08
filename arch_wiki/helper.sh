@@ -37,14 +37,12 @@ case $ROFI_RETV in
         pdf_path="$CACHE_DIR/${clean_article}.pdf"
         if [ -f "$pdf_path" ]; then
           setsid -f zathura "$pdf_path" >/dev/null 2>&1 || err_msg "can't open in zathura"
-          printf '\000message\037open %s in zathura\n' "$1"
         else
           [ -f "$ROFI_INFO" ] || err_msg "ERROR: '$ROFI_INFO' not found"
           clean_article_path="/tmp/${clean_article}.html"
           rdrview -T title,body -H -u "$1" <"$ROFI_INFO" >"$clean_article_path" 2>/dev/null || err_msg "readability conversion error"
           pandoc "$clean_article_path" -t ms -o "$pdf_path" 2>/dev/null || err_msg "pandoc error"
           setsid -f zathura "$pdf_path" >/dev/null 2>&1 || err_msg "can't open in zathura"
-          printf '\000message\037open %s in zathura\n' "$1"
         fi
         print_list
       ;;
