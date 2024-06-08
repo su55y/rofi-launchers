@@ -27,6 +27,7 @@ case $ROFI_RETV in
             exit 1
         }
         setsid -f "$BROWSER" "$ROFI_INFO" >/dev/null 2>&1
+        print_list
     ;;
     10) printf '%s' "$ROFI_INFO" | xsel -i -b ;;
     11)
