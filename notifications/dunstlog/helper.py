@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import html
 from os.path import exists
 
 DUNSTLOG_PATH = "/tmp/dunstlog"
@@ -56,11 +57,14 @@ if __name__ == "__main__":
     ]
     urgents = []
     for i, e in enumerate(entries[::-1]):
-        print(
-            "<b>%s</b> <i>%s</i>\r%s\000icon\037%s\037info\037%s"
-            % (e.app, e.created, e.text or e.title, e.icon, build_info(e)),
-            end="\012",
+        line = "<b>%s</b> <i>%s</i>\r%s\000icon\037%s\037info\037%s\012" % (
+            html.escape(e.app),
+            e.created,
+            html.escape(e.text or e.title),
+            e.icon,
+            html.escape(build_info(e)),
         )
+        print(line)
         if e.level.lower() == "critical":
             urgents.append(i)
     if urgents:
