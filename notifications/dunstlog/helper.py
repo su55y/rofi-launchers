@@ -14,6 +14,11 @@ class Entry:
     title: str
     app: str
 
+    def __post_init__(self) -> None:
+        self.app = html.escape(self.app)
+        self.text = html.escape(self.text)
+        self.title = html.escape(self.title)
+
 
 def build_info(e: Entry) -> str:
     info = f"-i {e.icon!r} -a {e.app!r} -u {e.level!r}"
@@ -58,11 +63,11 @@ if __name__ == "__main__":
     urgents = []
     for i, e in enumerate(entries[::-1]):
         line = "<b>%s</b> <i>%s</i>\r%s\000icon\037%s\037info\037%s\012" % (
-            html.escape(e.app),
+            e.app,
             e.created,
-            html.escape(e.text or e.title),
+            e.text or e.title,
             e.icon,
-            html.escape(build_info(e)),
+            build_info(e),
         )
         print(line)
         if e.level.lower() == "critical":
