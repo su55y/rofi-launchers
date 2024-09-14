@@ -1,8 +1,8 @@
 from dataclasses import dataclass, fields
 import datetime as dt
+import html
 import os.path
 import re
-import html
 
 UNATTENDED_LIST = os.path.expanduser("~/.cache/lxqt-notificationd/unattended.list")
 FMT = "<b>{app}</b> <i>{created}</i>\r{text}\000icon\037{icon}\037info\037{info}"
