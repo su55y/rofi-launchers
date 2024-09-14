@@ -34,6 +34,9 @@ class Entry:
                 v = ""
             self.__setattr__(attr.name, v)
 
+        self.body = html.escape(self.body)
+        self.summary = html.escape(self.summary)
+
 
 def build_info(e: Entry) -> str:
     return f"-i {e.icon!r} -a {e.application!r} {e.summary!r} {e.body!r}"
@@ -59,9 +62,9 @@ if __name__ == "__main__":
         Entry(
             created=lines[i].strip(),
             application=lines[i + 1].strip(),
-            body=html.escape(lines[i + 2].strip()),
+            body=lines[i + 2].strip(),
             icon=lines[i + 3].strip(),
-            summary=html.escape(lines[i + 4].strip()),
+            summary=lines[i + 4].strip(),
         )
         for i in range(0, len(lines), 5)
     ]
