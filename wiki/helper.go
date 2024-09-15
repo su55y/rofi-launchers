@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"html"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -52,7 +53,7 @@ func fetchArticles(c *http.Client, u string) ([]Article, error) {
 
 	articles := make([]Article, len(titles))
 	for i := 0; i < len(titles); i++ {
-		articles[i] = Article{Title: titles[i], Url: urls[i]}
+		articles[i] = Article{Title: html.EscapeString(titles[i]), Url: urls[i]}
 	}
 
 	return articles, nil
@@ -76,7 +77,7 @@ func fetchAndPrint(client *http.Client, wg *sync.WaitGroup, lang string) {
 }
 
 func die(err error) {
-  fmt.Printf("\000message\037err: %s\n \000nonselectable\037true\n", err.Error())
+	fmt.Printf("\000message\037err: %s\n \000nonselectable\037true\n", err.Error())
 	os.Exit(1)
 }
 
