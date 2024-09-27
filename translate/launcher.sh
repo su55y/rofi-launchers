@@ -6,9 +6,20 @@
 [ -n "$TRANS_CMD" ] || TRANS_CMD="trans -no-ansi en:uk '%s'"
 [ -n "$ROFI_RESULT_CMD" ] || ROFI_RESULT_CMD="rofi -e '%s'"
 
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_translate"
+[ -d "$CACHE_DIR" ] || {
+	mkdir -p "$CACHE_DIR" || printf "\000message\037error: can't mkdir -p %s\n \000nonselectable\037true\n" "$CACHE_DIR"
+}
+
 translate_() {
-	TRANS_CMD_="$(printf "$TRANS_CMD" "$1")"
-	result="$(eval "$TRANS_CMD_")"
+	results_cache_path="${CACHE_DIR}/$(echo "$1" | base64)"
+	if [ -f "$results_cache_path" ]; then
+		result="$(cat "$results_cache_path")"
+	else
+		TRANS_CMD_="$(printf "$TRANS_CMD" "$1")"
+		result="$(eval "$TRANS_CMD_")"
+		echo "$result" >"$results_cache_path"
+	fi
 
 	ROFI_RESULT_CMD_="$(printf "$ROFI_RESULT_CMD" "$result")"
 	eval "$ROFI_RESULT_CMD_"
