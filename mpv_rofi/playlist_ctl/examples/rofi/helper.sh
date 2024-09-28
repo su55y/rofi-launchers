@@ -8,12 +8,13 @@ HISTORY_LIMIT=100
 printf '\000use-hot-keys\037true\n'
 
 print_history() {
-	printf '\000message\037HISTORY\n'
 	printf '\000data\037history\n'
 	if [ -f "$HISTORY_FILE" ] && [ "$ROFI_RETV" -ne 13 ]; then
+		printf '\000message\037HISTORY [C]\n'
 		awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); print}' "$HISTORY_FILE"
 	else
 		echo "" >"$HISTORY_FILE"
+		printf '\000message\037HISTORY\n'
 		playlist-ctl --history -l "$HISTORY_LIMIT" | tee -a "$HISTORY_FILE"
 	fi
 }
