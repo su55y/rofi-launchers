@@ -15,6 +15,7 @@ printf "\000use-hot-keys\037true\012"
 printf "\000markup-rows\037true\012"
 
 print_from_cache() {
+	printf '\000message\037[Cache]\n'
 	awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); gsub(/\\012/, "\012"); print}' "$TEMPFILE"
 }
 
