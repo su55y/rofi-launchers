@@ -23,6 +23,7 @@ printf "\000markup-rows\037true\n"
 
 banner() {
 	printf "search\000icon\037en_wiki\037info\037https://en.wikipedia.org/wiki/Special:Search\nua search\000icon\037uk_wiki\037info\037https://uk.wikipedia.org/wiki/Special:Search\n"
+	exit 0
 }
 
 print_from_cache() {
@@ -65,5 +66,14 @@ case $ROFI_RETV in
 12)
 	setsid -f "$BROWSER" "$ROFI_INFO" >/dev/null 2>&1
 	print_from_cache "$ROFI_DATA"
+	;;
+# kb-custom-4 - remove cached result
+13)
+	[ -n "$ROFI_DATA" ] || banner
+	[ -f "$ROFI_DATA" ] || banner
+	subj="$(basename "$ROFI_DATA" | base64 -d)"
+	[ -n "$subj" ] || banner
+	rm -f "$ROFI_DATA" || banner
+	handle_query "$subj"
 	;;
 esac
