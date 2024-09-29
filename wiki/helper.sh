@@ -61,7 +61,10 @@ case $ROFI_RETV in
 # execute custom input
 2) handle_query "$@" ;;
 # kb-custom-2 - clear list rows
-11) clr ;;
+11)
+	printf '\000message\037\n'
+	clr
+	;;
 # kb-custom-3 - open selected and print last results
 12)
 	setsid -f "$BROWSER" "$ROFI_INFO" >/dev/null 2>&1
