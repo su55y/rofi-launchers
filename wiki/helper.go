@@ -21,9 +21,10 @@ const (
 )
 
 var (
-	limit int
-	langs = [2]string{"uk", "en"}
-	query string
+	limit   int
+	langs   = [2]string{"uk", "en"}
+	query   string
+	timeout int
 )
 
 type Article struct {
@@ -84,12 +85,13 @@ func die(err error) {
 func main() {
 	flag.StringVar(&query, "q", "", "search query (required)")
 	flag.IntVar(&limit, "l", 10, "set results count limit for each request")
+	flag.IntVar(&timeout, "t", 10, "set http client timeout")
 	flag.Parse()
 	if len(query) == 0 {
 		die(fmt.Errorf("query is empty"))
 	}
 
-	client := &http.Client{Timeout: time.Second * 5}
+	client := &http.Client{Timeout: time.Duration(timeout) * time.Second}
 	wg := sync.WaitGroup{}
 	for _, lang := range langs {
 		wg.Add(1)
