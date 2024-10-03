@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -17,10 +18,12 @@ const (
 	apiUrl         = "https://%s.wikipedia.org/w/api.php?action=opensearch&namespace=0&format=json&formatversion=2&limit=%d&search=%s"
 	entryFmt       = "<span weight='bold'>%d</span>) %s\000icon\037%s_wiki\037info\037%s\n"
 	errMessageRofi = "\000message\037error: %s\n"
+	logFilePath    = "/tmp/rofi_wiki_helper.log"
 	searchFmt      = "<span weight='bold'>-</span>) search\000icon\037%s_wiki\037info\037https://%s.wikipedia.org/wiki/Special:Search\n"
 )
 
 var (
+	isDebug bool
 	limit   int
 	langs   = [2]string{"uk", "en"}
 	query   string
@@ -33,6 +36,7 @@ type Article struct {
 
 func fetchArticles(c *http.Client, u string) ([]Article, error) {
 	resp, err := c.Get(u)
+	log.Printf("GET %s %s\n", resp.Status, u)
 	if err != nil {
 		return nil, fmt.Errorf("can't fetch articles: %v", err)
 	}
@@ -82,11 +86,34 @@ func die(err error) {
 	os.Exit(1)
 }
 
+func initLogger() {
+	var logFile *os.File
+	var err error
+
+	if isDebug {
+		logFile, err = os.OpenFile(logFilePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+	} else {
+		logFile, err = os.Open(os.DevNull)
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.SetOutput(logFile)
+	log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmicroseconds)
+}
+
 func main() {
 	flag.StringVar(&query, "q", "", "search query (required)")
 	flag.IntVar(&limit, "l", 10, "set results count limit for each request")
 	flag.IntVar(&timeout, "t", 10, "set http client timeout")
+	flag.BoolVar(&isDebug, "d", false, "enable debug logging to "+logFilePath)
 	flag.Parse()
+
+	initLogger()
+
+	log.Printf("Search query: %#+v\n", query)
+
 	if len(query) == 0 {
 		die(fmt.Errorf("query is empty"))
 	}
