@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path"
 	"sync"
 	"time"
 )
@@ -18,16 +19,17 @@ const (
 	apiUrl         = "https://%s.wikipedia.org/w/api.php?action=opensearch&namespace=0&format=json&formatversion=2&limit=%d&search=%s"
 	entryFmt       = "<span weight='bold'>%d</span>) %s\000icon\037%s_wiki\037info\037%s\n"
 	errMessageRofi = "\000message\037error: %s\n"
-	logFilePath    = "/tmp/rofi_wiki_helper.log"
 	searchFmt      = "<span weight='bold'>-</span>) search\000icon\037%s_wiki\037info\037https://%s.wikipedia.org/wiki/Special:Search\n"
 )
 
 var (
-	isDebug bool
-	limit   int
-	langs   = [2]string{"uk", "en"}
-	query   string
-	timeout int
+	isDebug            bool
+	limit              int
+	langs              = [2]string{"uk", "en"}
+	query              string
+	timeout            int
+	logFilePath        string
+	defaultLogFilePath string = path.Join(os.TempDir(), "rofi_wiki_helper.log")
 )
 
 type Article struct {
@@ -107,7 +109,8 @@ func main() {
 	flag.StringVar(&query, "q", "", "search query (required)")
 	flag.IntVar(&limit, "l", 10, "set results count limit for each request")
 	flag.IntVar(&timeout, "t", 10, "set http client timeout")
-	flag.BoolVar(&isDebug, "d", false, "enable debug logging to "+logFilePath)
+	flag.BoolVar(&isDebug, "d", false, "enable debug logging")
+	flag.StringVar(&logFilePath, "D", defaultLogFilePath, "log file path")
 	flag.Parse()
 
 	initLogger()
