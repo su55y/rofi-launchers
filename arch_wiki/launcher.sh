@@ -19,13 +19,13 @@ inputbar {
   children: ["textbox-prompt-colon","entry","num-filtered-rows","textbox-num-sep","num-rows","case-indicator"];
 }
 textbox-prompt-colon {
-  str: "";
+  str: "";
 }
 EOF
 }
 
-rofi -i -show "wiki" \
-  -modi "wiki:$SCRIPTPATH/helper.sh" \
+rofi -i -show "arch_wiki" \
+  -modi "arch_wiki:$SCRIPTPATH/helper.sh" \
   -no-config \
   -no-custom \
   -sort true \
