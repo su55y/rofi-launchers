@@ -3,7 +3,7 @@
 # SC2059: Don't use variables in the printf format string. Use printf "..%s.." "$foo".
 
 [ -n "$ROFI_PROMPT_CMD" ] || ROFI_PROMPT_CMD="rofi -dmenu -p trans -theme-str 'listview {lines: 0;}'"
-[ -n "$TRANS_CMD" ] || TRANS_CMD="trans -no-ansi en:uk '%s'"
+[ -n "$ROFI_TRANSLATE_CMD" ] || ROFI_TRANSLATE_CMD="trans -no-ansi en:uk '%s'"
 [ -n "$ROFI_RESULT_CMD" ] || ROFI_RESULT_CMD="rofi -e '%s'"
 
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_translate"
@@ -16,8 +16,8 @@ translate_() {
 	if [ -f "$results_cache_path" ]; then
 		result="$(cat "$results_cache_path")"
 	else
-		TRANS_CMD_="$(printf "$TRANS_CMD" "$1")"
-		result="$(eval "$TRANS_CMD_")"
+		trans_cmd="$(printf "$ROFI_TRANSLATE_CMD" "$1")"
+		result="$(eval "$trans_cmd")"
 		echo "$result" >"$results_cache_path"
 	fi
 
