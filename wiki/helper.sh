@@ -57,6 +57,9 @@ case $ROFI_RETV in
 		banner
 		;;
 	esac
+	if [ -f "$ROFI_DATA" ]; then
+		print_from_cache "$ROFI_DATA"
+	fi
 	;;
 # execute custom input
 2) handle_query "$@" ;;
