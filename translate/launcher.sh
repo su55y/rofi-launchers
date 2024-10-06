@@ -13,7 +13,7 @@ CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_translate"
 
 translate_() {
 	results_cache_path="${CACHE_DIR}/$(echo "$1" | base64)"
-	if [ -f "$results_cache_path" ]; then
+	if [ -f "$results_cache_path" ] && [ "$(tr -d '\n' <"$results_cache_path")" != "" ]; then
 		result="$(cat "$results_cache_path")"
 	else
 		trans_cmd="$(printf "$ROFI_TRANSLATE_CMD" "$1")"
