@@ -38,10 +38,10 @@ type Article struct {
 
 func fetchArticles(c *http.Client, u string) ([]Article, error) {
 	resp, err := c.Get(u)
-	log.Printf("GET %s %s\n", resp.Status, u)
 	if err != nil {
 		return nil, fmt.Errorf("can't fetch articles: %v", err)
 	}
+	log.Printf("GET %s %s\n", resp.Status, u)
 	defer func() { _ = resp.Body.Close() }()
 
 	body, err := ioutil.ReadAll(resp.Body)
