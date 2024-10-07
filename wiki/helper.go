@@ -71,10 +71,12 @@ func fetchAndPrint(client *http.Client, wg *sync.WaitGroup, lang string) {
 	articles, err := fetchArticles(client, fmt.Sprintf(apiUrl, lang, limit, url.QueryEscape(query)))
 	if err != nil {
 		fmt.Printf(errMessageRofi, err.Error()[:79])
+		log.Printf(errMessageRofi, err.Error())
 		fmt.Printf(searchFmt, lang, lang)
 		return
 	}
 	if len(articles) == 0 {
+		log.Printf("%s: 0 articles\n", lang)
 		fmt.Printf(searchFmt, lang, lang)
 		return
 	}
@@ -85,6 +87,7 @@ func fetchAndPrint(client *http.Client, wg *sync.WaitGroup, lang string) {
 
 func die(err error) {
 	fmt.Printf("\000message\037err: %s\n \000nonselectable\037true\n", err.Error())
+	log.Printf("!! die(%s)\n", err.Error())
 	os.Exit(1)
 }
 
