@@ -16,6 +16,12 @@
 
 ---
 
-##### search demo:
+##### search
+
+###### credits:
+
+[sayan01/scripts/yt](https://github.com/sayan01/scripts/blob/master/yt)
+
+###### demo:
 
 [demo.webm](https://user-images.githubusercontent.com/78869105/189316747-bdfcdbb5-9174-4684-8aa7-2e7d41105709.webm)
