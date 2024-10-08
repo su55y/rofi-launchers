@@ -36,6 +36,10 @@ type Article struct {
 	Title, Url string
 }
 
+func formatUrl(lang string) string {
+	return fmt.Sprintf(apiUrl, lang, limit, url.QueryEscape(query))
+}
+
 func fetchArticles(c *http.Client, u string) ([]Article, error) {
 	resp, err := c.Get(u)
 	if err != nil {
@@ -68,7 +72,7 @@ func fetchArticles(c *http.Client, u string) ([]Article, error) {
 
 func fetchAndPrint(client *http.Client, wg *sync.WaitGroup, lang string) {
 	defer wg.Done()
-	articles, err := fetchArticles(client, fmt.Sprintf(apiUrl, lang, limit, url.QueryEscape(query)))
+	articles, err := fetchArticles(client, formatUrl(lang))
 	if err != nil {
 		fmt.Printf(errMessageRofi, err.Error()[:79])
 		log.Printf(errMessageRofi, err.Error())
@@ -118,7 +122,7 @@ func main() {
 
 	initLogger()
 
-	log.Printf("Search query: %#+v\n", query)
+	log.Printf("search query: %#+v\n", query)
 
 	if len(query) == 0 {
 		die(fmt.Errorf("query is empty"))
