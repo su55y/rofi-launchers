@@ -55,8 +55,6 @@ rofi -i -show "wiki" \
 	-no-config \
 	-kb-custom-1 "Ctrl+c" \
 	-kb-custom-2 "Ctrl+s" \
-	-kb-row-select "Ctrl+9" \
-	-kb-custom-3 "Ctrl+space" \
-	-kb-custom-4 "Ctrl+r" \
+	-kb-custom-3 "Ctrl+r" \
 	-theme-str "$(theme)" \
 	-normal-window

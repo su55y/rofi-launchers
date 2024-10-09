@@ -68,13 +68,8 @@ case $ROFI_RETV in
 	printf '\000message\037\n'
 	clr
 	;;
-# kb-custom-3 - open selected and print last results
+# kb-custom-3 - remove cached result
 12)
-	setsid -f "$BROWSER" "$ROFI_INFO" >/dev/null 2>&1
-	print_from_cache "$ROFI_DATA"
-	;;
-# kb-custom-4 - remove cached result
-13)
 	[ -n "$ROFI_DATA" ] || banner
 	[ -f "$ROFI_DATA" ] || banner
 	subj="$(basename "$ROFI_DATA" | base64 -d)"
