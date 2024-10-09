@@ -30,6 +30,7 @@ play() {
 
 print_from_cache() {
 	[ -f "$1" ] || _err_msg "no recent results found in cache"
+  printf '\000message\037[Cache]\n'
 	printf '\000data\037%s\n' "$1"
 	awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); print}' "$1"
 }
