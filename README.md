@@ -17,7 +17,7 @@
 ## Zathura Launchers
 
 - [Book Chooser](https://github.com/su55y/rofi-launchers/tree/master/zathura_launchers/book_chooser) - Choose book to open
-- [Man Viewer](https://github.com/su55y/rofi-launchers/tree/master/zathura_launcher/man_viewer) - Choose man page to open
+- [Man Viewer](https://github.com/su55y/rofi-launchers/tree/master/zathura_launchers/man_viewer) - Choose man page to open
 
 ## Other
 
