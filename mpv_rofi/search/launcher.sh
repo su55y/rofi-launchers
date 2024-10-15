@@ -1,23 +1,23 @@
 #!/bin/sh
 
 SCRIPTPATH="$(
-	cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
-	pwd -P
+    cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
+    pwd -P
 )"
 
 [ -f "$SCRIPTPATH/helper.sh" ] || {
-	notify-send -i "rofi" -a "youtube search" "helper script not found"
-	exit 1
+    notify-send -i "rofi" -a "youtube search" "helper script not found"
+    exit 1
 }
 [ -f "$SCRIPTPATH/downloader" ] || {
-	notify-send -i "rofi" -a "youtube search" "downloader executable not found"
-	exit 1
+    notify-send -i "rofi" -a "youtube search" "downloader executable not found"
+    exit 1
 }
 
 . "${SCRIPTPATH}/../mpv_rofi_utils"
 
 _search_theme() {
-	cat <<EOF
+    cat <<EOF
 configuration {
   font: "NotoSans Nerd Font 18";
 }
@@ -54,7 +54,7 @@ ROFI_CMD="rofi -i -no-config -show 'yt_search' -modi 'yt_search:$SCRIPTPATH/help
   -kb-custom-1 'Ctrl+c' -kb-custom-2 'Ctrl+a' -kb-custom-3 'Ctrl+space' -kb-custom-4 'Ctrl+d' -kb-custom-5 'Ctrl+h'"
 
 if [ -n "$*" ]; then
-	ROFI_CMD="$ROFI_CMD -filter '$*'"
+    ROFI_CMD="$ROFI_CMD -filter '$*'"
 fi
 
 eval "$ROFI_CMD"
