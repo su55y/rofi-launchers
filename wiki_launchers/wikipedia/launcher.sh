@@ -1,17 +1,17 @@
 #!/bin/sh
 
 SCRIPTPATH="$(
-	cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
-	pwd -P
+    cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
+    pwd -P
 )"
 
 [ -f "$SCRIPTPATH/helper.sh" ] || {
-	notify-send -i "rofi" -a "wiki search" "wiki helper script not found"
-	exit 1
+    notify-send -i "rofi" -a "wiki search" "wiki helper script not found"
+    exit 1
 }
 
 theme() {
-	cat <<EOF
+    cat <<EOF
 configuration {
   font: "NotoSans Nerd Font 18";
 }
@@ -51,10 +51,10 @@ EOF
 }
 
 rofi -i -show "wiki" \
-	-modi "wiki:$SCRIPTPATH/helper.sh" \
-	-no-config \
-	-kb-custom-1 "Ctrl+c" \
-	-kb-custom-2 "Ctrl+s" \
-	-kb-custom-3 "Ctrl+r" \
-	-theme-str "$(theme)" \
-	-normal-window
+    -modi "wiki:$SCRIPTPATH/helper.sh" \
+    -no-config \
+    -kb-custom-1 "Ctrl+c" \
+    -kb-custom-2 "Ctrl+s" \
+    -kb-custom-3 "Ctrl+r" \
+    -theme-str "$(theme)" \
+    -normal-window

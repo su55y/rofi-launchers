@@ -1,6 +1,7 @@
 #!/bin/sh
 
-theme() { cat <<EOF
+theme() {
+    cat <<EOF
 window {
   width: 20em;
   height: 100%;
@@ -20,12 +21,11 @@ EOF
 }
 
 showall() {
-    choice=$(man -k . |\
-        awk '! /[_:]/{print $1}' | sort |\
-        rofi -i -dmenu -no-custom -no-config -sort\
-            -theme-str "$(theme)" "$@") || exit 1
+    choice=$(man -k . |
+        awk '! /[_:]/{print $1}' | sort |
+        rofi -i -dmenu -no-custom -no-config -sort -theme-str "$(theme)" "$@") || exit 1
 
-    [ -n "$choice" ] &&\
+    [ -n "$choice" ] &&
         exec man -Tpdf "$choice" | zathura -
 }
 showall "$@"

@@ -3,10 +3,10 @@
 BOOKS_DIR="${HOME}/books"
 
 banner() {
-	find "$BOOKS_DIR" -type f -name "*.pdf" | sort | while read -r file; do
-		title="${file##*\/}"
-		printf '%s\000info\037%s\n' "$title" "$file"
-	done
+    find "$BOOKS_DIR" -type f -name "*.pdf" | sort | while read -r file; do
+        title="${file##*\/}"
+        printf '%s\000info\037%s\n' "$title" "$file"
+    done
 }
 
 case $ROFI_RETV in

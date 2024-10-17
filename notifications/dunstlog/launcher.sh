@@ -1,17 +1,17 @@
 #!/bin/sh
 
 SCRIPTPATH="$(
-	cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
-	pwd -P
+    cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
+    pwd -P
 )"
 
 [ -f "$SCRIPTPATH/helper.sh" ] || {
-	notify-send -i "rofi" -a "dunstlog launcher" "helper script not found"
-	exit 1
+    notify-send -i "rofi" -a "dunstlog launcher" "helper script not found"
+    exit 1
 }
 
 theme() {
-	cat <<EOF
+    cat <<EOF
 configuration {
   font: "NotoSans Nerd Font 14";
 }
@@ -39,8 +39,8 @@ EOF
 }
 
 rofi -i -show "dunstlog" \
-	-modi "dunstlog:$SCRIPTPATH/helper.sh" \
-	-no-custom \
-	-no-config \
-	-theme-str "$(theme)" \
-	-sep='\x0a' -eh 2 -normal-window
+    -modi "dunstlog:$SCRIPTPATH/helper.sh" \
+    -no-custom \
+    -no-config \
+    -theme-str "$(theme)" \
+    -sep='\x0a' -eh 2 -normal-window

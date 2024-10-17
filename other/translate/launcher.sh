@@ -8,26 +8,26 @@
 
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_translate"
 [ -d "$CACHE_DIR" ] || {
-	mkdir -p "$CACHE_DIR" || printf "\000message\037error: can't mkdir -p %s\n \000nonselectable\037true\n" "$CACHE_DIR"
+    mkdir -p "$CACHE_DIR" || printf "\000message\037error: can't mkdir -p %s\n \000nonselectable\037true\n" "$CACHE_DIR"
 }
 
 translate_() {
-	results_cache_path="${CACHE_DIR}/$(echo "$1" | base64)"
-	if [ -f "$results_cache_path" ] && [ "$(tr -d '\n' <"$results_cache_path")" != "" ]; then
-		result="$(cat "$results_cache_path")"
-	else
-		trans_cmd="$(printf "$ROFI_TRANSLATE_CMD" "$1")"
-		result="$(eval "$trans_cmd")"
-		echo "$result" >"$results_cache_path"
-	fi
+    results_cache_path="${CACHE_DIR}/$(echo "$1" | base64)"
+    if [ -f "$results_cache_path" ] && [ "$(tr -d '\n' <"$results_cache_path")" != "" ]; then
+        result="$(cat "$results_cache_path")"
+    else
+        trans_cmd="$(printf "$ROFI_TRANSLATE_CMD" "$1")"
+        result="$(eval "$trans_cmd")"
+        echo "$result" >"$results_cache_path"
+    fi
 
-	ROFI_RESULT_CMD_="$(printf "$ROFI_RESULT_CMD" "$result")"
-	eval "$ROFI_RESULT_CMD_"
+    ROFI_RESULT_CMD_="$(printf "$ROFI_RESULT_CMD" "$result")"
+    eval "$ROFI_RESULT_CMD_"
 }
 
 while true; do
-	inp="$(eval "$ROFI_PROMPT_CMD" 2>/dev/null)"
-	[ -z "$inp" ] && exit 0
+    inp="$(eval "$ROFI_PROMPT_CMD" 2>/dev/null)"
+    [ -z "$inp" ] && exit 0
 
-	translate_ "$inp"
+    translate_ "$inp"
 done
