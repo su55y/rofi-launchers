@@ -2,9 +2,12 @@
 # shellcheck disable=SC2059
 # SC2059: Don't use variables in the printf format string. Use printf "..%s.." "$foo".
 
-[ -n "$ROFI_PROMPT_CMD" ] || ROFI_PROMPT_CMD="rofi -dmenu -p trans -theme-str 'listview {lines: 0;}'"
+ROFI_PROMPT_="trans"
 [ -n "$ROFI_TRANSLATE_CMD" ] || ROFI_TRANSLATE_CMD="trans -no-ansi en:uk '%s'"
+TRANS_LANG_="$(echo "$ROFI_TRANSLATE_CMD" | grep -oP '([a-z]{2}\:[a-z]{2})')"
+[ -n "$TRANS_LANG_" ] && ROFI_PROMPT_="($TRANS_LANG_)"
 [ -n "$ROFI_RESULT_CMD" ] || ROFI_RESULT_CMD="rofi -e '%s'"
+[ -n "$ROFI_PROMPT_CMD" ] || ROFI_PROMPT_CMD="rofi -dmenu -p '$ROFI_PROMPT_' -theme-str 'listview {lines: 0;}'"
 
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_translate"
 [ -d "$CACHE_DIR" ] || {
