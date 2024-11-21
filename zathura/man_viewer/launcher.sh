@@ -1,31 +1,29 @@
 #!/bin/sh
 
+SCRIPTPATH="$(
+    cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
+    pwd -P
+)"
+
+[ -f "$SCRIPTPATH/helper.sh" ] || {
+    notify-send -i "rofi" -a "man viewer" "helper script not found"
+    exit 1
+}
+
 theme() {
     cat <<EOF
 window {
-  width: 20em;
-  height: 100%;
-  location: west;
-  anchor: west;
+  font: "BlexMono Nerd Font 20";
 }
 inputbar {
-  children: ["textbox-prompt-colon","entry","num-filtered-rows","textbox-num-sep","num-rows","case-indicator"];
+  children: ["textbox-prompt-colon","entry","case-indicator"];
 }
 textbox-prompt-colon {
-  str: "Man:";
-}
-entry {
-  placeholder: "";
+  str: "";
+  padding: 0 10px 0 5px;
 }
 EOF
 }
 
-showall() {
-    choice=$(man -k . |
-        awk '! /[_:]/{print $1}' | sort |
-        rofi -i -dmenu -no-custom -no-config -sort -theme-str "$(theme)" "$@") || exit 1
-
-    [ -n "$choice" ] &&
-        exec man -Tpdf "$choice" | zathura -
-}
-showall "$@"
+rofi -i -show "man_viewer" -modi "man_viewer:${SCRIPTPATH}/helper.sh" \
+    -no-config -no-custom -sort -theme-str "$(theme)"
