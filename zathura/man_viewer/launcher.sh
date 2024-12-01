@@ -25,5 +25,5 @@ textbox-prompt-colon {
 EOF
 }
 
-rofi -i -show "man_viewer" -modi "man_viewer:${SCRIPTPATH}/helper.sh" \
-    -no-config -no-custom -sort -theme-str "$(theme)"
+rofi -no-config -no-custom -i -show "man_viewer" -modi "man_viewer:${SCRIPTPATH}/helper.sh" \
+    -sort -kb-row-select 'Ctrl+9' -kb-custom-1 'Ctrl+space' -theme-str "$(theme)"
