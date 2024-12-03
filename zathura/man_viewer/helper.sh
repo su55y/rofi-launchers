@@ -5,6 +5,11 @@ banner() {
         awk '! /[_:]/{print $1}' | sort
 }
 
+ROFI_MAN_VIEWER_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_man_viewer"
+if [ ! -d "$ROFI_MAN_VIEWER_CACHE" ]; then
+    mkdir -p "$ROFI_MAN_VIEWER_CACHE" || exit 1
+fi
+
 printf "\000use-hot-keys\037true\n"
 
 case $ROFI_RETV in
@@ -13,11 +18,11 @@ case $ROFI_RETV in
 # select line
 1)
     [ -n "$1" ] || exit 0
-    if [ -f "/tmp/$1.pdf" ]; then
-        setsid -f zathura "/tmp/$1.pdf" >/dev/null 2>&1
-    else
-        man -Tpdf "$1" >"/tmp/$1.pdf" && setsid -f zathura "/tmp/$1.pdf" >/dev/null 2>&1
+    filepath="$ROFI_MAN_VIEWER_CACHE/$1.pdf"
+    if [ ! -f "$filepath" ]; then
+        man -Tpdf "$1" >"$filepath" 2>/dev/null || exit 1
     fi
+    setsid -f zathura "$filepath" >/dev/null 2>&1
     ;;
 # ctrl+space - open selected in terminal
 10)
