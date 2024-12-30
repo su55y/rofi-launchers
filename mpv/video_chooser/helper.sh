@@ -6,6 +6,8 @@ SCRIPTPATH="$(
 )"
 . "${SCRIPTPATH}/../mpv_rofi_utils"
 
+[ -f "${SCRIPTPATH}/printer" ] || _err_msg "$SCRIPTPATH/printer not found"
+
 VIDSDIR="${HOME}/Videos"
 TEMPFILE="${TEMPDIR:-/tmp}/video_chooser.tmp"
 
