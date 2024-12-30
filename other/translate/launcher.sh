@@ -7,7 +7,7 @@ ROFI_PROMPT_="trans"
 TRANS_LANG_="$(echo "$ROFI_TRANSLATE_CMD" | grep -oP '([a-z]{2}\:[a-z]{2})')"
 [ -n "$TRANS_LANG_" ] && ROFI_PROMPT_="($TRANS_LANG_)"
 [ -n "$ROFI_RESULT_CMD" ] || ROFI_RESULT_CMD="rofi -e '%s'"
-[ -n "$ROFI_PROMPT_CMD" ] || ROFI_PROMPT_CMD="rofi -dmenu -p '$ROFI_PROMPT_' -theme-str 'listview {lines: 0;}'"
+[ -n "$ROFI_PROMPT_CMD" ] || ROFI_PROMPT_CMD="rofi -dmenu -p '$ROFI_PROMPT_' -theme-str 'listview {lines: 0;}' -kb-remove-char-back 'BackSpace,Shift+BackSpace' -kb-custom-1 'Ctrl+h'"
 
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_translate"
 [ -d "$CACHE_DIR" ] || {
@@ -30,7 +30,11 @@ translate_() {
 
 while true; do
     inp="$(eval "$ROFI_PROMPT_CMD" 2>/dev/null)"
-    [ -z "$inp" ] && exit 0
-
-    translate_ "$inp"
+    if [ $? -eq 10 ]; then
+        translate_ "$(find "$CACHE_DIR" -type f -printf '%f\n' | base64 -d | rofi -dmenu)"
+    elif [ -n "$inp" ]; then
+        translate_ "$inp"
+    else
+        exit 0
+    fi
 done
