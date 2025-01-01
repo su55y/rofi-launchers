@@ -31,7 +31,7 @@ translate_() {
 while true; do
     inp="$(eval "$ROFI_PROMPT_CMD" 2>/dev/null)"
     if [ $? -eq 10 ]; then
-        translate_ "$(find "$CACHE_DIR" -type f -printf '%f\n' | base64 -d | rofi -dmenu)"
+        translate_ "$(find "$CACHE_DIR" -type f -printf '%f\n' | base64 -d | grep -Eo '^.+$' | rofi -dmenu)"
     elif [ -n "$inp" ]; then
         translate_ "$inp"
     else
