@@ -50,7 +50,7 @@ EOF
 }
 
 ROFI_CMD="rofi -i -no-config -show 'yt_search' -modi 'yt_search:$SCRIPTPATH/helper.sh' -theme-str '$(_search_theme)'\
-  -kb-move-front 'Ctrl+i' -kb-row-select 'Ctrl+9' -kb-remove-char-forward 'Delete' -kb-remove-char-back 'BackSpace,Shift+BackSpace'\
+  -kb-secondary-copy 'Ctrl+y' -kb-move-front 'Ctrl+i' -kb-row-select 'Ctrl+9' -kb-remove-char-forward 'Delete' -kb-remove-char-back 'BackSpace,Shift+BackSpace'\
   -kb-custom-1 'Ctrl+c' -kb-custom-2 'Ctrl+a' -kb-custom-3 'Ctrl+space' -kb-custom-4 'Ctrl+d' -kb-custom-5 'Ctrl+h'"
 
 if [ -n "$*" ]; then
