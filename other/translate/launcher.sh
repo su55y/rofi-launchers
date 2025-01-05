@@ -6,7 +6,7 @@ ROFI_PROMPT_="trans"
 [ -n "$ROFI_TRANSLATE_CMD" ] || ROFI_TRANSLATE_CMD="trans -no-ansi en:uk '%s'"
 TRANS_LANG_="$(echo "$ROFI_TRANSLATE_CMD" | grep -oP '([a-z]{2}\:[a-z]{2})')"
 [ -n "$TRANS_LANG_" ] && ROFI_PROMPT_="($TRANS_LANG_)"
-[ -n "$ROFI_RESULT_CMD" ] || ROFI_RESULT_CMD="rofi -e '%s'"
+[ -n "$ROFI_RESULT_CMD" ] || ROFI_RESULT_CMD="rofi -e '%s' -normal-window"
 [ -n "$ROFI_PROMPT_CMD" ] || ROFI_PROMPT_CMD="rofi -dmenu -p '$ROFI_PROMPT_' -theme-str 'listview {lines: 0;}' -kb-remove-char-back 'BackSpace,Shift+BackSpace' -kb-custom-1 'Ctrl+h'"
 
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_translate"
@@ -31,7 +31,9 @@ translate_() {
 while true; do
     inp="$(eval "$ROFI_PROMPT_CMD" 2>/dev/null)"
     if [ $? -eq 10 ]; then
-        translate_ "$(find "$CACHE_DIR" -type f -printf '%f\n' | base64 -d | grep -Eo '^.+$' | rofi -dmenu)"
+        word="$(find "$CACHE_DIR" -type f -printf '%f\n' | base64 -d | grep -Eo '^.+$' | rofi -dmenu)"
+        [ -z "$word" ] && exit 0
+        translate_ "$word"
     elif [ -n "$inp" ]; then
         translate_ "$inp"
     else
