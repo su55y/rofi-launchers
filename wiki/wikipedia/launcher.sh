@@ -53,6 +53,7 @@ EOF
 rofi -i -show "wiki" \
     -modi "wiki:$SCRIPTPATH/helper.sh" \
     -no-config \
+    -kb-secondary-copy "Ctrl+y" \
     -kb-custom-1 "Ctrl+c" \
     -kb-custom-2 "Ctrl+s" \
     -kb-custom-3 "Ctrl+r" \
