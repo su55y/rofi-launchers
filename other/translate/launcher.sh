@@ -31,7 +31,15 @@ translate_() {
 while true; do
     inp="$(eval "$ROFI_PROMPT_CMD" 2>/dev/null)"
     if [ $? -eq 10 ]; then
-        word="$(find "$CACHE_DIR" -type f -printf '%f\n' | base64 -d | grep -Eo '^.+$' | rofi -dmenu)"
+        word="$(
+            find "$CACHE_DIR" -type f -printf '%T@ %f\0' |
+                sort -zk 1nr |
+                sed -z 's/^[^ ]* //' |
+                tr '\0' '\n' |
+                base64 -d |
+                grep -Eo '^.+$' |
+                rofi -dmenu
+        )"
         [ -z "$word" ] && exit 0
         translate_ "$word"
     elif [ -n "$inp" ]; then
