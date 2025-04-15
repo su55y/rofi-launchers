@@ -1,0 +1,91 @@
+from dataclasses import dataclass
+import datetime as dt
+import json
+import html
+import subprocess as sp
+import sys
+from typing import Self
+
+# FIXME: timestamp
+# DATETIME_FMT = "%d %m %Y %T"
+DATETIME_FMT = "%I:%M %p"
+DUNST_HISTORY_CMD = "dunstctl history"
+LINE_FMT = "<b>{title}</b> <i>{timestamp}</i>\r{body}"
+
+
+class InvalidJSON(Exception):
+    pass
+
+
+@dataclass
+class Entry:
+    body: str = ""
+    summary: str = ""
+    icon_path: str = ""
+    urgency: str = ""
+    timestamp: str = ""
+    appname: str = ""
+
+    def from_obj(self, obj: dict[str, dict]) -> Self:
+        for k in vars(self):
+            match obj[k]:
+                case {"type": _, "data": data}:
+                    if k == "timestamp":
+                        data = dt.datetime.fromtimestamp(data).strftime(DATETIME_FMT)
+                    setattr(self, k, html.escape(data.strip()))
+                case _:
+                    raise InvalidJSON()
+        return self
+
+
+def parse_history(raw: str) -> list[Entry]:
+    d = json.loads(raw)
+    data_list = d.get("data")
+    assert isinstance(data_list, list) and len(data_list) == 1
+    data_list = data_list[0]
+    if not isinstance(data_list, list):
+        raise InvalidJSON("Unexpected output format")
+    return [Entry().from_obj(obj) for obj in data_list]
+
+
+def build_info(e: Entry) -> str:
+    info = f"-i {e.icon_path!r} -a {e.appname!r} -u {e.urgency!r}"
+    if e.summary and e.body:
+        info = f"{info} {e.summary!r} {e.body!r}"
+    elif not e.summary and e.body:
+        info = f"{info} {e.body!r}"
+    elif not e.body and e.summary:
+        info = f"{info} {e.summary!r}"
+    else:
+        info = f"{info} {e.appname!r}"
+    return info
+
+
+def main():
+    code, out = sp.getstatusoutput(DUNST_HISTORY_CMD)
+    if code != 0:
+        print(f"Error: {out}")
+        print(f"{DUNST_HISTORY_CMD!r} returns status {code}: {out}")
+        sys.exit(1)
+
+    try:
+        history = parse_history(out)
+    except (Exception, InvalidJSON) as e:
+        print(f"Invalid json: {e!r}")
+        sys.exit(1)
+
+    fmt = LINE_FMT + "\000icon\037{icon}\037info\037{info}\037urgent\037{urgent}"
+    for e in history:
+        line = fmt.format(
+            title=e.appname,
+            timestamp=e.timestamp,
+            body=e.body or e.summary,
+            icon=e.icon_path,
+            info=build_info(e),
+            urgent="true" if e.urgency == "critical" else "false",
+        )
+        print(line, end="\012")
+
+
+if __name__ == "__main__":
+    main()
