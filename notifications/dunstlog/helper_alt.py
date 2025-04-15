@@ -41,10 +41,11 @@ class Entry:
 def parse_history(raw: str) -> list[Entry]:
     d = json.loads(raw)
     data_list = d.get("data")
-    assert isinstance(data_list, list) and len(data_list) == 1
+    if not isinstance(data_list, list) or len(data_list) != 1:
+        raise InvalidJSON(f"Unexpected output format: type={type(data_list).__name__}")
     data_list = data_list[0]
     if not isinstance(data_list, list):
-        raise InvalidJSON("Unexpected output format")
+        raise InvalidJSON(f"Unexpected output format: type={type(data_list).__name__}")
     return [Entry().from_obj(obj) for obj in data_list]
 
 
@@ -61,17 +62,20 @@ def build_info(e: Entry) -> str:
     return info
 
 
+def print_error(msg: str, end: str = "\012") -> None:
+    print(f"\000message\037{msg}{end} \000urgent\037true", end=end)
+
+
 def main():
     code, out = sp.getstatusoutput(DUNST_HISTORY_CMD)
     if code != 0:
-        print(f"Error: {out}")
-        print(f"{DUNST_HISTORY_CMD!r} returns status {code}: {out}")
+        print_error(f"{DUNST_HISTORY_CMD!r} returns status {code}: {out}")
         sys.exit(1)
 
     try:
         history = parse_history(out)
     except (Exception, InvalidJSON) as e:
-        print(f"Invalid json: {e!r}")
+        print_error(f"Error: ({type(e).__name__}) {e}")
         sys.exit(1)
 
     fmt = LINE_FMT + "\000icon\037{icon}\037info\037{info}\037urgent\037{urgent}"
