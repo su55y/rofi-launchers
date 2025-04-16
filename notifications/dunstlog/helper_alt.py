@@ -1,13 +1,12 @@
 from dataclasses import dataclass
-import datetime as dt
+from datetime import datetime, timedelta
 import json
 import html
 import subprocess as sp
 import sys
+import time
 from typing import Self
 
-# FIXME: timestamp
-# DATETIME_FMT = "%d %m %Y %T"
 DATETIME_FMT = "%I:%M %p"
 DUNST_HISTORY_CMD = "dunstctl history"
 LINE_FMT = "<b>{title}</b> <i>{timestamp}</i>\r{body}"
@@ -15,6 +14,14 @@ LINE_FMT = "<b>{title}</b> <i>{timestamp}</i>\r{body}"
 
 class InvalidJSON(Exception):
     pass
+
+
+boot_timedelta = timedelta(seconds=time.clock_gettime(time.CLOCK_BOOTTIME))
+
+
+def calc_timestamp(microseconds: float) -> datetime:
+    global boot_timedelta
+    return datetime.now() - (boot_timedelta - timedelta(microseconds=microseconds))
 
 
 @dataclass
@@ -31,7 +38,7 @@ class Entry:
             match obj[k]:
                 case {"type": _, "data": data}:
                     if k == "timestamp":
-                        data = dt.datetime.fromtimestamp(data).strftime(DATETIME_FMT)
+                        data = calc_timestamp(data).strftime(DATETIME_FMT)
                     setattr(self, k, html.escape(data.strip()))
                 case _:
                     raise InvalidJSON()
