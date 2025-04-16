@@ -2,20 +2,25 @@
 
 . "${SCRIPTPATH}/../../../mpv_rofi_utils"
 
-HISTORY_FILE="/tmp/playlist_ctl_history"
+HISTORY_CACHE_FILE=/tmp/playlist_ctl_history
 HISTORY_LIMIT=100
 
 printf '\000use-hot-keys\037true\n'
 
+print_refreshed_history() {
+    printf '\000message\037HISTORY\n'
+    playlist-ctl --history -l "$HISTORY_LIMIT" | tee -a "$HISTORY_CACHE_FILE"
+}
+
 print_history() {
     printf '\000data\037history\n'
-    if [ -f "$HISTORY_FILE" ] && [ "$ROFI_RETV" -ne 13 ]; then
+    if ! grep -q '[^[:space:]]' "$HISTORY_CACHE_FILE" 2>/dev/null; then
+        print_refreshed_history
+    elif [ -f "$HISTORY_CACHE_FILE" ] && [ "$ROFI_RETV" -ne 13 ]; then
         printf '\000message\037HISTORY [C]\n'
-        awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); print}' "$HISTORY_FILE"
+        awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); print}' "$HISTORY_CACHE_FILE"
     else
-        echo "" >"$HISTORY_FILE"
-        printf '\000message\037HISTORY\n'
-        playlist-ctl --history -l "$HISTORY_LIMIT" | tee -a "$HISTORY_FILE"
+        print_refreshed_history
     fi
 }
 
