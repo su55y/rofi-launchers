@@ -2,6 +2,7 @@ import argparse
 import logging
 from pathlib import Path
 from typing import Union
+import sys
 
 from playlist_ctl.config import Config
 from playlist_ctl.defaults import default_config_path
@@ -63,7 +64,7 @@ def init_logger(level: int, file: Path) -> None:
 
 def die(err: Union[Exception, str]) -> None:
     print(err)
-    exit(1)
+    sys.exit(1)
 
 
 def main():
@@ -86,7 +87,7 @@ def main():
             die(err)
         if (file := Path(args.append)).exists():
             print(file.name.rstrip(file.suffix))
-            exit(0)
+            sys.exit(0)
         if err := stor.add_title(args.append):
             die(err)
         if not (title := stor.select_title(args.append)):

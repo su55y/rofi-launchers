@@ -1,5 +1,6 @@
 from pathlib import Path
 from threading import Thread
+import sys
 
 from playlist_ctl.storage import Storage
 from playlist_ctl.mpv_client import MpvClient
@@ -18,8 +19,8 @@ class RofiClient:
     def print_playlist(self) -> None:
         playlist, err = self.client.mpv_playlist()
         if err:
-            print("\000message\037%s" % err)
-            exit(1)
+            print("\000message\037%s\n \000nonselectable\037true" % err)
+            sys.exit(1)
         urls = ", ".join("%r" % u for v in playlist if (u := v.get("filename")))
         titles = self.stor.select_titles(urls)
         current = None
