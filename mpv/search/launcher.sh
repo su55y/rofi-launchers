@@ -59,10 +59,6 @@ element.selected.urgent {
 EOF
 }
 
-ROFI_CMD="rofi -i -no-config -show yt_search -modi 'yt_search:$SCRIPTPATH/helper.sh' -theme-str '$(_search_theme)'"
-
-if [ -n "$*" ]; then
-    ROFI_CMD="$ROFI_CMD -filter '$*'"
-fi
-
-eval "$ROFI_CMD"
+rofi -i -no-config \
+    -show yt_search -modi "yt_search:$SCRIPTPATH/helper.sh" \
+    -theme-str "$(_search_theme)" -normal-window

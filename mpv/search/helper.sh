@@ -16,6 +16,13 @@ mkdir -p "$RESULTS_DIR" || _err_msg "can't mkdir -p $RESULTS_DIR"
 
 # activate hotkeys
 printf "\000use-hot-keys\037true\n"
+case $ROFI_RETV in
+0 | 10 | 14) ;;
+*)
+    printf '\000keep-selection\037true\n'
+    printf '\000keep-filter\037true\n'
+    ;;
+esac
 
 validate_id() {
     printf '%s' "$1" | grep -soP "^[0-9a-zA-Z_\-]{11}$" >/dev/null 2>&1 ||
@@ -25,7 +32,7 @@ validate_id() {
 play() {
     validate_id "$1"
     notify-send -i rofi -a "youtube search" "$2"
-    _play "https://youtu.be/$1"
+    # _play "https://youtu.be/$1"
 }
 
 print_from_cache() {
@@ -68,24 +75,16 @@ handle_query() {
     "$SCRIPTPATH/downloader" -o="$THUMBNAILS_DIR" -l="$THUMB_URLS"
 }
 
-results_count() {
-    count=0
-    for entry in "$RESULTS_DIR"/*; do [ -f "$entry" ] && count=$((count + 1)); done
-    printf "%d" $count
-}
-
 print_history() {
-    case $(results_count) in
+    results_count=0
+    for entry in "$RESULTS_DIR"/*; do [ -f "$entry" ] && results_count=$((results_count + 1)); done
+    case $results_count in
     0) printf '\000message\037history is empty\n\000urgent\0370\n \000nonselectable\037true\n' ;;
     *)
         printf '\000message\037history\n\000data\037_history\n'
         find "$RESULTS_DIR" -type f -printf '%T@ %f\n' | sort -k 1nr | sed 's/^[^ ]* //' | base64 -d | xargs -I {} printf '%s\n' "{}"
         ;;
     esac
-}
-
-restart_with_filter() {
-    setsid -f "${SCRIPTPATH}/launcher.sh" "$1" >/dev/null 2>&1
 }
 
 case $ROFI_RETV in
@@ -108,12 +107,8 @@ case $ROFI_RETV in
     ;;
 # kb-custom-3 - play selected and print last results
 12)
-    if [ "$ROFI_DATA" = _history ]; then
-        restart_with_filter "$@"
-    else
-        play "$ROFI_INFO" "$1"
-        print_from_cache "$ROFI_DATA"
-    fi
+    play "$ROFI_INFO" "$1"
+    print_from_cache "$ROFI_DATA"
     ;;
 # kb-custom-4 - downlaad video
 13)
