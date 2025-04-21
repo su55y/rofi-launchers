@@ -18,18 +18,20 @@ C_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_wiki"
     mkdir -p "$C_DIR" || err_msg "can't mkdir -p $C_DIR"
 }
 
-printf "\000use-hot-keys\037true\n"
-printf "\000markup-rows\037true\n"
+printf '\000use-hot-keys\037true\n'
+printf '\000markup-rows\037true\n'
+printf '\000keep-selection\037true\n'
 
 banner() {
-    printf "search\000icon\037en_wiki\037info\037https://en.wikipedia.org/wiki/Special:Search\nua search\000icon\037uk_wiki\037info\037https://uk.wikipedia.org/wiki/Special:Search\n"
+    printf 'search\000icon\037en_wiki\037info\037https://en.wikipedia.org/wiki/Special:Search\nua search\000icon\037uk_wiki\037info\037https://uk.wikipedia.org/wiki/Special:Search\n'
     exit 0
 }
 
 print_from_cache() {
-    [ -f "$1" ] || err_msg "no recent results found in cache"
+    [ -f "$1" ] || err_msg 'no recent results found in cache'
     printf '\000message\037[Cache]\n'
     printf '\000data\037%s\n' "$1"
+    printf '\000keep-filter\037true\n'
     awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); print}' "$1"
 }
 

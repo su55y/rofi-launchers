@@ -14,6 +14,10 @@ theme() {
     cat <<EOF
 configuration {
   font: "NotoSans Nerd Font 18";
+  kb-secondary-copy: "Ctrl+y";
+  kb-custom-1: "Ctrl+c";
+  kb-custom-2: "Ctrl+s";
+  kb-custom-3: "Ctrl+r";
 }
 inputbar {
   children: ["textbox-prompt-colon","entry","num-filtered-rows","textbox-num-sep","num-rows","case-indicator"];
@@ -50,12 +54,7 @@ element.alternate.selected.urgent {
 EOF
 }
 
-rofi -i -show "wiki" \
-    -modi "wiki:$SCRIPTPATH/helper.sh" \
-    -no-config \
-    -kb-secondary-copy "Ctrl+y" \
-    -kb-custom-1 "Ctrl+c" \
-    -kb-custom-2 "Ctrl+s" \
-    -kb-custom-3 "Ctrl+r" \
+rofi -i -no-config \
+    -show "wiki" -modi "wiki:$SCRIPTPATH/helper.sh" \
     -theme-str "$(theme)" \
     -normal-window
