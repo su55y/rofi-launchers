@@ -32,7 +32,7 @@ validate_id() {
 play() {
     validate_id "$1"
     notify-send -i rofi -a "youtube search" "$2"
-    # _play "https://youtu.be/$1"
+    _play "https://youtu.be/$1"
 }
 
 print_from_cache() {

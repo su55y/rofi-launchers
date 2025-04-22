@@ -8,54 +8,37 @@ SCRIPTPATH="$(
 
 [ -f "${SCRIPTPATH}/printer" ] || _err_msg "$SCRIPTPATH/printer not found"
 
-VIDSDIR="${HOME}/Videos"
-TEMPFILE="${TEMPDIR:-/tmp}/video_chooser.tmp"
+[ -n "$VIDEO_CHOOSER_ROOTDIR" ] || VIDEO_CHOOSER_ROOTDIR="${HOME}/Videos"
+[ -n "$VIDEO_CHOOSER_CACHEFILE" ] || VIDEO_CHOOSER_CACHEFILE="${TEMPDIR:-/tmp}/video_chooser.tmp"
 
-# activate hotkeys
 printf "\000use-hot-keys\037true\012"
-# activate markup
 printf "\000markup-rows\037true\012"
-
-print_from_cache() {
-    printf '\000message\037[Cache]\n'
-    awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); gsub(/\\012/, "\012"); print}' "$TEMPFILE"
-}
-
-printer() {
-    if [ -f "$TEMPFILE" ]; then
-        print_from_cache
-    else
-        "${SCRIPTPATH}/printer" "$VIDSDIR" | tee "$TEMPFILE"
-    fi
-}
-
-restart_with_filter() {
-    parent="$(basename "$(dirname "$ROFI_INFO")")"
-    setsid -f "${SCRIPTPATH}/launcher.sh" "${parent%% *}" >/dev/null 2>&1
-}
+printf "\000keep-selection\037true\012"
+printf "\000keep-filter\037true\012"
 
 case $ROFI_RETV in
-# print found files at start
-0) printer ;;
 # select line
-1) [ -f "$ROFI_INFO" ] && _play "$ROFI_INFO" ;;
-# kb-custom-1 (Ctrl+a) - append to playlist and restart with filter
-10)
-    if [ -f "$ROFI_INFO" ]; then
-        restart_with_filter
-        _append "$ROFI_INFO"
-    fi
+1)
+    [ -f "$ROFI_INFO" ] && _play "$ROFI_INFO"
+    exit 0
     ;;
-# kb-custom-2 (Ctrl+space) - play and restart with filter
-11)
-    if [ -f "$ROFI_INFO" ]; then
-        _play "$ROFI_INFO"
-        restart_with_filter
-    fi
-    ;;
+# kb-custom-1 (Ctrl+a) - append to playlist
+10) [ -f "$ROFI_INFO" ] && _append "$ROFI_INFO" ;;
+# kb-custom-2 (Ctrl+space) - play
+11) [ -f "$ROFI_INFO" ] && _play "$ROFI_INFO" ;;
 # kb-custom-3 (Ctrl+r) - remove cache
-12)
-    rm -f "$TEMPFILE" >/dev/null 2>&1
-    printer
-    ;;
+12) rm -f "$VIDEO_CHOOSER_CACHEFILE" >/dev/null 2>&1 ;;
 esac
+
+if [ -f "$VIDEO_CHOOSER_CACHEFILE" ]; then
+    printf '\000message\037[Cache]\012'
+    awk '{
+        gsub(/\\000/, "\0");
+        gsub(/\\037/, "\037");
+        gsub(/\\012/, "\012");
+        print
+    }' "$VIDEO_CHOOSER_CACHEFILE"
+else
+    printf '\000message\037\012'
+    "${SCRIPTPATH}/printer" "$VIDEO_CHOOSER_ROOTDIR" | tee "$VIDEO_CHOOSER_CACHEFILE"
+fi
