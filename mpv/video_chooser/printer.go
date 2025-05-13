@@ -11,7 +11,7 @@ import (
 
 func exitWithError(f string, args ...interface{}) {
 	fmt.Printf(
-		"\000message\037err: %s\012 \000nonselectable\037true\012",
+		"\000message\037err: %s\n \000nonselectable\037true\n",
 		fmt.Sprintf(f, args...),
 	)
 	os.Exit(1)
@@ -42,7 +42,7 @@ func main() {
 			parentDir := filepath.Base(filepath.Dir(path))
 			relativePath := strings.TrimSuffix(strings.TrimPrefix(filepath.Dir(path), rootDir), parentDir)
 			meta := strings.Join(strings.Split(parentDir, "/"), ",")
-			fmt.Printf("<b>%s</b>\r%s <i>%s</i>\000info\037%s\037meta\037%s\012", title, parentDir, relativePath, path, meta)
+			fmt.Printf("<b>%s</b>\r%s <i>%s</i>\000info\037%s\037meta\037%s\n", title, parentDir, relativePath, path, meta)
 		}
 		return nil
 	}); err != nil {
