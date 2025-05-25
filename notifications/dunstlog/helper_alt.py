@@ -73,7 +73,7 @@ def print_error(msg: str, end: str = "\012") -> None:
     print(f"\000message\037{msg}{end} \000urgent\037true", end=end)
 
 
-def main():
+if __name__ == "__main__":
     code, out = sp.getstatusoutput(DUNST_HISTORY_CMD)
     if code != 0:
         print_error(f"{DUNST_HISTORY_CMD!r} returns status {code}: {out}")
@@ -87,16 +87,14 @@ def main():
 
     fmt = LINE_FMT + "\000icon\037{icon}\037info\037{info}\037urgent\037{urgent}"
     for e in history:
-        line = fmt.format(
-            title=e.appname,
-            timestamp=e.timestamp,
-            body=e.body or e.summary,
-            icon=e.icon_path,
-            info=build_info(e),
-            urgent="true" if e.urgency == "critical" else "false",
+        print(
+            fmt.format(
+                title=e.appname,
+                timestamp=e.timestamp,
+                body=e.body or e.summary,
+                icon=e.icon_path,
+                info=build_info(e),
+                urgent="true" if e.urgency.lower() == "critical" else "false",
+            ),
+            end="\012",
         )
-        print(line, end="\012")
-
-
-if __name__ == "__main__":
-    main()

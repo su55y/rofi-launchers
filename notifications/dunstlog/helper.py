@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 import html
 from os.path import exists
+import sys
 
 DUNSTLOG_PATH = "/tmp/dunstlog"
+LINE_FMT = "<b>{title}</b> <i>{timestamp}</i>\r{body}"
 
 
 @dataclass(slots=True)
@@ -35,19 +37,18 @@ def build_info(e: Entry) -> str:
 
 if __name__ == "__main__":
     if not exists(DUNSTLOG_PATH):
-        print("\000message\037error: %r not found" % DUNSTLOG_PATH, end="\012")
-        exit(1)
+        print(f"\000message\037error: {DUNSTLOG_PATH!r} not found", end="\012")
+        sys.exit(1)
     lines = []
     with open(DUNSTLOG_PATH) as f:
         lines = [l.strip() for l in f.readlines()]
 
     if len(lines) % 6 != 0:
         print(
-            "\000message\037error: unexpected dunstlog format (%d % 6 != 0)"
-            % len(lines),
+            f"\000message\037error: unexpected dunstlog format ({len(lines)} % 6 != 0)",
             end="\012",
         )
-        exit(1)
+        sys.exit(1)
 
     entries = [
         Entry(
@@ -60,17 +61,17 @@ if __name__ == "__main__":
         )
         for i in range(0, len(lines), 6)
     ]
-    urgents = []
+
+    fmt = LINE_FMT + "\000icon\037{icon}\037info\037{info}\037urgent\037{urgent}"
     for i, e in enumerate(entries[::-1]):
-        line = "<b>%s</b> <i>%s</i>\r%s\000icon\037%s\037info\037%s\012" % (
-            e.app,
-            e.created,
-            e.text or e.title,
-            e.icon,
-            build_info(e),
+        print(
+            fmt.format(
+                title=e.app,
+                timestamp=e.created,
+                body=e.text or e.title,
+                icon=e.icon,
+                info=build_info(e),
+                urgent="true" if e.level.lower() == "critical" else "false",
+            ),
+            end="\012",
         )
-        print(line)
-        if e.level.lower() == "critical":
-            urgents.append(i)
-    if urgents:
-        print("\000urgent\037%s\012" % ",".join(str(i) for i in urgents))
