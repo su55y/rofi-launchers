@@ -3,13 +3,13 @@
 . "${SCRIPTPATH}/../../../mpv_rofi_utils"
 
 HISTORY_CACHE_FILE=/tmp/playlist_ctl_history
-HISTORY_LIMIT=100
+HISTORY_LIMIT="${HISTORY_LIMIT:-100}"
 
 printf '\000use-hot-keys\037true\n'
 
 print_refreshed_history() {
     printf '\000message\037HISTORY\n'
-    playlist-ctl --history -l "$HISTORY_LIMIT" | tee -a "$HISTORY_CACHE_FILE"
+    playlist-ctl --history -l "$HISTORY_LIMIT" | tee "$HISTORY_CACHE_FILE"
 }
 
 print_history() {
