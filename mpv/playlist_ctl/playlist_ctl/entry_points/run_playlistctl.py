@@ -4,8 +4,7 @@ from pathlib import Path
 from typing import Union
 import sys
 
-from playlist_ctl.config import Config
-from playlist_ctl.defaults import default_config_path
+from playlist_ctl.config import Config, default_config_path
 from playlist_ctl.mpv_client import MpvClient
 from playlist_ctl.rofi_client import RofiClient
 from playlist_ctl.storage import Storage
@@ -19,7 +18,7 @@ def parse_args() -> argparse.Namespace:
         "--append",
         metavar="URL",
         type=validate_url,
-        help="'append-play' and update titles cache, prints added title to stdout",
+        help="'append-play' and update titles db, prints added title to stdout",
     )
     parser.add_argument(
         "-c",
@@ -70,10 +69,10 @@ def die(err: Union[Exception, str]) -> None:
 def main():
     args = parse_args()
     config = Config(config_file=args.config)
-    if config.cache_dir.exists() and not config.cache_dir.is_dir():
-        die("%s is invalid cache directory" % config.cache_dir)
-    if not config.cache_dir.exists():
-        config.cache_dir.mkdir(parents=True)
+    if config.data_dir.exists() and not config.data_dir.is_dir():
+        die("%s is invalid data directory" % config.data_dir)
+    if not config.data_dir.exists():
+        config.data_dir.mkdir()
     if config.log_level > 0:
         init_logger(config.log_level, config.log_file)
 
@@ -95,7 +94,6 @@ def main():
         print(title)
     elif args.clean_cache:
         stor.delete_except(config.keep_last)
-
     elif args.history:
         RofiClient(stor, mpv).print_history(args.limit)
     else:
