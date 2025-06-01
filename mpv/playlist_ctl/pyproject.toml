@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "playlist_ctl"
+dynamic = ["version"]
+dependencies = ["PyYAML", "requests"]
+requires-python = ">= 3.10"
+# license = "GPL-3.0-or-later"
+# license-files = ["LICEN[CS]E*"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["playlist_ctl*"]
+
+[tool.setuptools.dynamic]
+version = {attr = "playlist_ctl.__version__"}
+
+[project.scripts]
+playlist-ctl = "playlist_ctl.entry_points.run_playlistctl:main"
