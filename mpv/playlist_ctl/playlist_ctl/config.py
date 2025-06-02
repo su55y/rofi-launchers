@@ -2,8 +2,13 @@ from dataclasses import dataclass
 import logging
 import os
 from pathlib import Path
-import tomllib
+import sys
 from typing import Optional, Union
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 
 DEFAULT_SOCKET_PATH = Path("/tmp/mpv.sock")

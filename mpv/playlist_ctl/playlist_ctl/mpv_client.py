@@ -32,7 +32,6 @@ class MpvClient:
             sock.sendall(cmd.encode())
             data, err = self._read_data(self._read_resp(sock))
             if err:
-                self.log.error(err)
                 return [], err
             if not isinstance(data, List):
                 err = Exception("unexpected data type: %s (%r)" % (type(data), data))
@@ -47,9 +46,7 @@ class MpvClient:
             self.log.debug(cmd)
             sock.sendall(cmd.encode())
             _, err = self._read_data(self._read_resp(sock))
-            if err:
-                self.log.error(err)
-                return err
+            return err
 
     def _read_data(
         self, resp: Optional[Dict] = None
@@ -57,9 +54,11 @@ class MpvClient:
         if not resp:
             return None, Exception("can't read response")
         if (err := resp.get("error")) != "success":
-            return None, Exception("mpv error: %s" % err)
+            self.log.error(e := Exception("mpv error: %r" % err))
+            return None, e
         if (data := resp.get("data")) is None:
-            return None, Exception("data not found in resp: %r" % resp)
+            self.log.error(e := Exception("missing `data` in resp: %r" % resp))
+            return None, e
         return data, None
 
     def _read_resp(self, sock: socket.socket) -> Optional[Dict]:
@@ -67,13 +66,13 @@ class MpvClient:
         try:
             while chunk := sock.recv(1024):
                 data += chunk
-                if chunk[-1] == 10 or len(chunk) < 1024:
+                if not chunk or chunk[-1] == ord("\n") or len(chunk) < 1024:
                     break
 
             self.log.debug("received response: %r" % data)
-            for raw_part in data.split(b"\n"):
+            for raw_part in data.splitlines():
                 part = json.loads(raw_part)
-                if "event" in part.keys():
+                if "event" in part:
                     continue
                 return part
         except Exception as e:
