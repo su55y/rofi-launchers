@@ -1,11 +1,11 @@
 # dir to store db and logs
-data_dir: $XDG_DATA_HOME/playlist_ctl
+data_dir = '$XDG_DATA_HOME/playlist_ctl' # or ~/.local/share/playlist_ctl
 
 # count of last entries to keep on --cache-clean
-keep_last: 100
+keep_last = 100
 
 # available levels: debug, info, warning, error
-log_level: none
+log_level = 'none'
 
 # mpv socket filepath
-socket_file: /tmp/mpv.sock
+socket_file = '/tmp/mpv.sock'
