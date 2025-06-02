@@ -2,9 +2,8 @@ from dataclasses import dataclass
 import logging
 import os
 from pathlib import Path
-from typing import Optional
-
-from playlist_ctl.utils import read_config, expand_path
+import tomllib
+from typing import Optional, Union
 
 
 DEFAULT_SOCKET_PATH = Path("/tmp/mpv.sock")
@@ -15,7 +14,7 @@ def default_config_path() -> Path:
         config_home = Path(xdg_config_home)
     else:
         config_home = Path.home().joinpath(".config")
-    return config_home.joinpath("playlist_ctl/config.yaml")
+    return config_home.joinpath("playlist_ctl", "config.toml")
 
 
 def default_datadir_path() -> Path:
@@ -24,6 +23,10 @@ def default_datadir_path() -> Path:
     else:
         data_home = Path.home().joinpath(".local", "share")
     return data_home.joinpath("playlist_ctl")
+
+
+def expand_path(path: Union[Path, str]) -> Path:
+    return Path(os.path.expandvars(path)).expanduser()
 
 
 log_levels_map = {
@@ -63,7 +66,9 @@ class Config:
             self._override_defaults(config_file)
 
     def _override_defaults(self, file: Path) -> None:
-        config = read_config(file)
+        with open(file, "rb") as f:
+            config = tomllib.load(f)
+
         if isinstance((keep_last := config.get("keep_last")), int):
             self.keep_last = keep_last
         if isinstance((log_level := config.get("log_level")), str):
