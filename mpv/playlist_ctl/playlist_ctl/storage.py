@@ -58,7 +58,7 @@ class Storage:
         WHERE url in ({','.join('?' * len(urls))})"""
         with self.get_cursor() as cur:
             self.log.debug(f"{query}, {urls = !r}")
-            return {u: t for u, t in cur.execute(query, (urls,)).fetchall()}
+            return {u: t for u, t in cur.execute(query, urls).fetchall()}
 
     def select_count(self) -> int:
         query = "SELECT COUNT(*) FROM titles"
