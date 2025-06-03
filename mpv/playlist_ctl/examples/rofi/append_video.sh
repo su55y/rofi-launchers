@@ -26,15 +26,19 @@ else
     URL="$input"
 fi
 
-pidof mpv >/dev/null 2>&1 || {
+echo '{"command":["get_property","pause"]}' | nc -NU "$MPV_SOCKET_FILE" >/dev/null 2>&1 || {
     touch "$MPV_START_LOCK"
     [ -S "$MPV_SOCKET_FILE" ] && rm "$MPV_SOCKET_FILE"
     setsid -f mpv --idle --no-terminal --input-ipc-server="$MPV_SOCKET_FILE"
 
     # 5 sec timeout
     for _ in $(seq 50); do
-        [ -S "$MPV_SOCKET_FILE" ] && pidof mpv >/dev/null 2>&1 && break
-        sleep 0.1
+        if [ ! -S "$MPV_SOCKET_FILE" ]; then
+            sleep 0.1
+        else
+            echo '{"command":["get_property","pause"]}' |
+                nc -NU "$MPV_SOCKET_FILE" >/dev/null 2>&1 && break
+        fi
     done
 }
 
