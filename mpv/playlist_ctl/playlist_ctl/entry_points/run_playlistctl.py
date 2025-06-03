@@ -1,4 +1,5 @@
 import argparse
+import datetime as dt
 import logging
 from pathlib import Path
 from typing import Union
@@ -8,7 +9,7 @@ from playlist_ctl.config import Config, default_config_path
 from playlist_ctl.mpv_client import MpvClient
 from playlist_ctl.rofi_client import RofiClient
 from playlist_ctl.storage import Storage
-from playlist_ctl.utils import validate_url
+from playlist_ctl.utils import validate_url, fetch_title
 
 
 def parse_args() -> argparse.Namespace:
@@ -48,8 +49,12 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def init_logger(level: int, file: Path) -> None:
+def init_logger(level: int, file: Path) -> logging.Logger:
     log = logging.getLogger()
+    if level == logging.NOTSET:
+        h = logging.NullHandler()
+        log.addHandler(h)
+        return log
     log.setLevel(level)
     fh = logging.FileHandler(file)
     fh.setFormatter(
@@ -59,6 +64,7 @@ def init_logger(level: int, file: Path) -> None:
         )
     )
     log.addHandler(fh)
+    return log
 
 
 def die(err: Union[Exception, str]) -> None:
@@ -73,8 +79,7 @@ def main():
         die("%s is invalid data directory" % config.data_dir)
     if not config.data_dir.exists():
         config.data_dir.mkdir()
-    if config.log_level > 0:
-        init_logger(config.log_level, config.log_file)
+    log = init_logger(config.log_level, config.log_file)
 
     stor = Storage(config.storage_file)
     if err := stor.init_db():
@@ -85,12 +90,17 @@ def main():
         if err := mpv.append(args.append):
             die(err)
         if (file := Path(args.append)).exists():
-            print(file.name.rstrip(file.suffix))
-            sys.exit(0)
-        if err := stor.add_title(args.append):
-            die(err)
-        if not (title := stor.select_title(args.append)):
-            die("title not found for %r" % args.append)
+            title = file.name.rstrip(file.suffix)
+        elif (title := stor.select_title(args.append)) is None:
+            title = fetch_title(log, args.append)
+            if title is None:
+                die("can't fetch title for %r" % args.append)
+            elif err := stor.insert_title(
+                url=args.append,
+                title=title,
+                created=dt.datetime.now(dt.timezone.utc),
+            ):
+                die(err)
         print(title)
     elif args.clean_cache:
         stor.delete_except(config.keep_last)

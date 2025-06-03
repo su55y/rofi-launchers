@@ -1,5 +1,4 @@
 from pathlib import Path
-from threading import Thread
 import sys
 
 from playlist_ctl.storage import Storage
@@ -21,20 +20,17 @@ class RofiClient:
         if err:
             print("\000message\037%s\n \000nonselectable\037true" % err)
             sys.exit(1)
-        urls = ", ".join("%r" % u for v in playlist if (u := v.get("filename")))
+        urls = [u for item in playlist if (u := item.get("filename"))]
+        if len(urls) == 0:
+            print("\000message\037playlist is empty\n \000nonselectable\037true")
+            sys.exit(1)
         titles = self.stor.select_titles(urls)
-        current = None
         for i, vid in enumerate(playlist):
-            if (url := vid.get("filename")) is None:
-                title = "unknown %d" % i
-            else:
-                if (filepath := Path(url)).exists():
+            title = "unknown %d" % i
+            if url := vid.get("filename"):
+                if (filepath := Path(url)).exists() and filepath.is_file():
                     title = filepath.name
-                elif (title := titles.get(url)) is None:
-                    title = url
-                    Thread(target=self.stor.add_title, args=(url,)).start()
-            print("%s\000info\037%d" % (title, i))
-            if vid.get("current"):
-                current = i
-        if isinstance(current, int):
-            print("\000active\037%d" % current)
+                else:
+                    title = titles.get(url, url)
+            active = "true" if vid.get("current") else "false"
+            print("%s\000info\037%d\037active\037%s" % (title, i, active))
