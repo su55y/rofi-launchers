@@ -14,6 +14,8 @@ print_refreshed_history() {
 
 print_history() {
     printf '\000data\037history\n'
+    printf '\000keep-filter\037true\n'
+    printf '\000keep-selection\037true\n'
     if ! grep -q '[^[:space:]]' "$HISTORY_CACHE_FILE" 2>/dev/null; then
         print_refreshed_history
     elif [ -f "$HISTORY_CACHE_FILE" ] && [ "$ROFI_RETV" -ne 13 ]; then
@@ -44,10 +46,12 @@ if [ "$ROFI_DATA" = "history" ]; then
     11) _append "$ROFI_INFO" ;;
     # kb-custom-3 (Ctrl+d) - download from history
     12) _download_vid "$ROFI_INFO" "$1" ;;
+    # kb-custom-5 (Ctrl+o) - open in browser
+    14) setsid -f "$BROWSER" "$ROFI_INFO" >/dev/null 2>&1 ;;
     esac
     # kb-custom-4 (Ctrl+r) - refresh history
     case $ROFI_RETV in
-    1 | 11 | 12 | 13) print_history ;;
+    1 | 11 | 12 | 13 | 14) print_history ;;
     esac
 else
     pidof -q mpv || _err_msg "mpv process not found"
