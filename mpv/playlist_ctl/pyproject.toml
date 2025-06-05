@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "playlist_ctl"
 dynamic = ["version"]
-dependencies = ["requests", "tomli ; python_version < '3.11'"]
+dependencies = ["tomli ; python_version < '3.11'"]
 requires-python = ">= 3.8"
 # license = "GPL-3.0-or-later"
 # license-files = ["LICEN[CS]E*"]

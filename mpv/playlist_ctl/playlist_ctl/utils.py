@@ -1,22 +1,22 @@
 from argparse import ArgumentTypeError
+import json
 import logging
 from pathlib import Path
 from re import match
 from typing import Optional
-
-import requests
+import urllib.request
 
 
 def fetch_title(logger: logging.Logger, vid_url: str) -> Optional[str]:
     try:
         url = "https://youtube.com/oembed?url=%s&format=json" % vid_url
-        resp = requests.get(url)
-        logger.debug("%d %s %s" % (resp.status_code, resp.reason, resp.url))
-        if resp.status_code != 200:
-            raise Exception("%d %s" % (resp.status_code, resp.reason))
-        return resp.json().get("title")
+        with urllib.request.urlopen(url, timeout=10) as resp:
+            logger.debug(f"{resp.status} {resp.reason} {url}")
+            if resp.status != 200:
+                raise Exception("%d %s" % (resp.status, resp.reason))
+            return json.loads(resp.read().decode("utf-8")).get("title")
     except Exception as e:
-        logger.error("can't fetch title for %r: %s" % (vid_url, e))
+        logger.error("can't fetch title for %r: %r" % (vid_url, e))
 
 
 def validate_url(v: str):
