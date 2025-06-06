@@ -22,9 +22,12 @@ def fetch_title(logger: logging.Logger, vid_url: str) -> Optional[str]:
 def validate_url(v: str):
     if Path(v).exists():
         return v
-    if match(
-        r"^(?:https:\/\/)?((?:www\.)?youtube\.com\/watch\?v=[\w\d_\-]{11}|youtu\.be\/[\w\d_\-]{11})",
-        v,
-    ):
-        return v
-    raise ArgumentTypeError("invalid url %r" % v)
+    l = r"^((?:https\:\/\/)?(?:www\.)?youtube\.com\/watch\?v=[-_0-9a-zA-Z]{11})(?:&.+)?$"
+    s = r"^((?:https\:\/\/)?youtu\.be\/[-_0-9a-zA-Z]{11})(?:\?.+)?$"
+    if (m := match(l, v)) and len(m.groups()) == 1:
+        (url,) = m.groups()
+    elif (m := match(s, v)) and len(m.groups()) == 1:
+        (url,) = m.groups()
+    else:
+        raise ArgumentTypeError("invalid url %r" % v)
+    return url
