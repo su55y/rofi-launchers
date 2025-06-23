@@ -25,7 +25,7 @@ case $ROFI_RETV in
 esac
 
 validate_id() {
-    printf '%s' "$1" | grep -soP "^[0-9a-zA-Z_\-]{11}$" >/dev/null 2>&1 ||
+    printf '%s' "$1" | grep -soP '^[-_0-9a-zA-Z]{11}$' >/dev/null 2>&1 ||
         _err_msg "invalid id '$1'"
 }
 
@@ -120,4 +120,10 @@ case $ROFI_RETV in
     ;;
 # kb-custom-5 - print search history
 14) print_history ;;
+# kb-custom-6 - open in BROWSER
+15)
+    validate_id "$ROFI_INFO"
+    setsid -f "$BROWSER" "https://youtu.be/$ROFI_INFO" >/dev/null 2>&1
+    [ "$ROFI_DATA" != _history ] && print_from_cache "$ROFI_DATA"
+    ;;
 esac

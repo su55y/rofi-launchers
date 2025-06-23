@@ -30,6 +30,7 @@ configuration {
   kb-custom-3: "Ctrl+space";
   kb-custom-4: "Ctrl+d";
   kb-custom-5: "Ctrl+h";
+  kb-custom-6: "Ctrl+o";
 }
 window {
   height: 90%;
