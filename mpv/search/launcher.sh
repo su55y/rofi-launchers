@@ -6,11 +6,11 @@ SCRIPTPATH="$(
 )"
 
 [ -f "$SCRIPTPATH/helper.sh" ] || {
-    notify-send -i "rofi" -a "youtube search" "helper script not found"
+    notify-send -i rofi -a 'youtube search' 'helper script not found'
     exit 1
 }
 [ -f "$SCRIPTPATH/downloader" ] || {
-    notify-send -i "rofi" -a "youtube search" "downloader executable not found"
+    notify-send -i rofi -a 'youtube search' 'downloader executable not found'
     exit 1
 }
 

@@ -14,8 +14,7 @@ RESULTS_DIR="${CACHE_DIR}/results"
 mkdir -p "$THUMBNAILS_DIR" || _err_msg "can't mkdir -p $THUMBNAILS_DIR"
 mkdir -p "$RESULTS_DIR" || _err_msg "can't mkdir -p $RESULTS_DIR"
 
-# activate hotkeys
-printf "\000use-hot-keys\037true\n"
+printf '\000use-hot-keys\037true\n'
 case $ROFI_RETV in
 0 | 10 | 14) ;;
 *)
@@ -31,12 +30,12 @@ validate_id() {
 
 play() {
     validate_id "$1"
-    notify-send -i rofi -a "youtube search" "$2"
+    notify-send -i rofi -a 'youtube search' "$2"
     _play "https://youtu.be/$1"
 }
 
 print_from_cache() {
-    [ -f "$1" ] || _err_msg "no recent results found in cache"
+    [ -f "$1" ] || _err_msg 'no recent results found in cache'
     printf '\000message\037[Cache]\n'
     printf '\000data\037%s\n' "$1"
     awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); print}' "$1"
@@ -54,7 +53,7 @@ handle_query() {
     response="$(curl --get -s --data-urlencode "search_query=$query" https://www.youtube.com/results |
         sed 's|\\.||g')"
 
-    printf '%s' "$response" | grep -q "script" || _err_msg "unable to grep results"
+    printf '%s' "$response" | grep -q script || _err_msg 'unable to grep results'
 
     vgrep='"videoRenderer":{"videoId":"\K.{11}".+?"text":".+?[^\\](?=")'
     THUMB_URLS=
