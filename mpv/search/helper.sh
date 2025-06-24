@@ -44,11 +44,19 @@ print_from_cache() {
 handle_query() {
     [ -n "$1" ] || exit 1
     query="$1"
-    results_cache="${RESULTS_DIR}/$(echo "$query" | base64)"
-    [ -f "$results_cache" ] && {
-        print_from_cache "$results_cache"
-        return
-    }
+    results_cache="$RESULTS_DIR/$(echo "$query" | base64)"
+    if [ -f "$results_cache" ]; then
+        case $2 in
+        R)
+            rm -f "$results_cache" >/dev/null 2>&1 &&
+                printf '\000message\037\n'
+            ;;
+        *)
+            print_from_cache "$results_cache"
+            return
+            ;;
+        esac
+    fi
 
     response="$(curl --get -s --data-urlencode "search_query=$query" https://www.youtube.com/results |
         sed 's|\\.||g')"
@@ -124,5 +132,10 @@ case $ROFI_RETV in
     validate_id "$ROFI_INFO"
     setsid -f "$BROWSER" "https://youtu.be/$ROFI_INFO" >/dev/null 2>&1
     [ "$ROFI_DATA" != _history ] && print_from_cache "$ROFI_DATA"
+    ;;
+# kb-custom-7 - refresh cached result
+16)
+    [ "$ROFI_DATA" != _history ] &&
+        handle_query "$(basename "$ROFI_DATA" | base64 -d)" R
     ;;
 esac

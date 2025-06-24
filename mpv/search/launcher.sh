@@ -31,6 +31,7 @@ configuration {
   kb-custom-4: "Ctrl+d";
   kb-custom-5: "Ctrl+h";
   kb-custom-6: "Ctrl+o";
+  kb-custom-7: "Ctrl+r";
 }
 window {
   height: 90%;
