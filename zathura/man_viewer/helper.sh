@@ -1,11 +1,9 @@
 #!/bin/sh
 
-banner() {
-    man -k . |
-        awk '! /[_:]/{print $1}' | sort
-}
+if [ -z "$ROFI_MAN_VIEWER_CACHE" ]; then
+    ROFI_MAN_VIEWER_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_man_viewer"
+fi
 
-ROFI_MAN_VIEWER_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_man_viewer"
 if [ ! -d "$ROFI_MAN_VIEWER_CACHE" ]; then
     mkdir -p "$ROFI_MAN_VIEWER_CACHE" || exit 1
 fi
@@ -13,8 +11,8 @@ fi
 printf "\000use-hot-keys\037true\n"
 
 case $ROFI_RETV in
-# print banner on start
-0) banner ;;
+# print manpages on start
+0) man -k . | awk '! /[_:]/{print $1}' | sort ;;
 # select line
 1)
     [ -n "$1" ] || exit 0
@@ -27,6 +25,6 @@ case $ROFI_RETV in
 # ctrl+space - open selected in terminal
 10)
     [ -n "$1" ] || exit 0
-    setsid -f "$TERMINAL" -e bash -c "MANPAGER='nvim +Man!' man $1" >/dev/null 2>&1
+    setsid -f "$TERMINAL" -e sh -c "man --pager='nvim +Man!' $1" >/dev/null 2>&1
     ;;
 esac

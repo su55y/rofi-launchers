@@ -6,12 +6,16 @@ SCRIPTPATH="$(
 )"
 
 [ -f "$SCRIPTPATH/helper.sh" ] || {
-    notify-send -i "rofi" -a "man viewer" "helper script not found"
+    notify-send -i rofi -a 'man viewer' 'helper script not found'
     exit 1
 }
 
 theme() {
     cat <<EOF
+configuration {
+  kb-row-select: "Ctrl+9";
+  kb-custom-1: "Ctrl+space";
+}
 window {
   font: "BlexMono Nerd Font 20";
 }
@@ -25,5 +29,7 @@ textbox-prompt-colon {
 EOF
 }
 
-rofi -no-config -no-custom -i -show "man_viewer" -modi "man_viewer:${SCRIPTPATH}/helper.sh" \
-    -sort -kb-row-select 'Ctrl+9' -kb-custom-1 'Ctrl+space' -theme-str "$(theme)"
+rofi -no-config -no-custom -i -sort \
+    -show man_viewer \
+    -modi "man_viewer:${SCRIPTPATH}/helper.sh" \
+    -theme-str "$(theme)"
