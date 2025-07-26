@@ -6,7 +6,7 @@ SCRIPTPATH="$(
 )"
 
 [ -f "$SCRIPTPATH/helper.sh" ] || {
-    notify-send -i "rofi" -a "arch wiki" "helper script not found"
+    notify-send -i rofi -a 'arch wiki' 'helper script not found'
     exit 1
 }
 
@@ -24,14 +24,14 @@ textbox-prompt-colon {
 EOF
 }
 
-rofi -i -show "arch_wiki" \
+rofi -i -show arch_wiki \
     -modi "arch_wiki:$SCRIPTPATH/helper.sh" \
     -no-config \
     -no-custom \
     -sort true \
-    -kb-secondary-copy "Ctrl+y" \
-    -kb-custom-1 "Ctrl+c" \
-    -kb-row-select "" \
-    -kb-custom-2 "Ctrl+space" \
+    -kb-secondary-copy 'Ctrl+y' \
+    -kb-custom-1 'Ctrl+c' \
+    -kb-row-select '' \
+    -kb-custom-2 'Ctrl+space' \
     -theme-str "$(theme)" \
     -normal-window
