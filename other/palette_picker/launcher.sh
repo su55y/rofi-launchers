@@ -5,8 +5,15 @@ SCRIPTPATH="$(
     pwd -P
 )"
 
+: "${PALETTE_PATH:=$SCRIPTPATH/palette}"
+
+[ -f "$PALETTE_PATH" ] || {
+    notify-send -i rofi -a palette "$PALETTE_PATH not found"
+    exit 1
+}
+
 [ -f "$SCRIPTPATH/helper.sh" ] || {
-    notify-send -i "rofi" -a "palette launcher" "helper script not found"
+    notify-send -i rofi -a palette 'helper script not found'
     exit 1
 }
 
@@ -36,6 +43,6 @@ entry {
 EOF
 }
 
-rofi -i -no-config -theme-str "$(theme)" \
+PALETTE_PATH="$PALETTE_PATH" rofi -i -no-config -theme-str "$(theme)" \
     -show palette -modi "palette:$SCRIPTPATH/helper.sh" \
-    -kb-move-front "Ctrl+i" -kb-custom-1 "Ctrl+a"
+    -kb-secondary-copy 'Ctrl+y' -kb-custom-1 "Ctrl+c"

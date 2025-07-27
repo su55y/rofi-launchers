@@ -1,23 +1,14 @@
 #!/bin/sh
 
-SCRIPTPATH="$(
-    cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
-    pwd -P
-)"
+printf '\000markup-rows\037true\n'
+printf '\000use-hot-keys\037true\n'
+printf '\000keep-selection\037true\n'
 
-# activate markup
-printf "\000markup-rows\037true\n"
-# activate hotkeys
-printf "\000use-hot-keys\037true\n"
-
-# print the palette
 palette() {
-    [ -f "$SCRIPTPATH/palette" ] && {
-        while IFS= read -r line; do
-            printf "<span background='%s'>\t</span> <span color='%s'>%s</span>\000info\037%s\n" \
-                "${line#* }" "${line#* }" "${line% *}" "${line#* }"
-        done <"$SCRIPTPATH/palette"
-    }
+    while IFS= read -r line; do
+        printf "<span background='%s'>\t</span> <span color='%s'>%s</span>\000info\037%s\n" \
+            "${line#* }" "${line#* }" "${line% *}" "${line#* }"
+    done <"$PALETTE_PATH"
 }
 
 copy() {
@@ -28,11 +19,10 @@ copy() {
 }
 
 case $ROFI_RETV in
-# copy and exit
 1) copy "$ROFI_INFO" ;;
-# copy and print palette
 10)
     copy "$ROFI_INFO"
+    printf '\000message\037%s\n' "$ROFI_INFO"
     palette
     ;;
 *) palette ;;
