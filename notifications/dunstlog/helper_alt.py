@@ -69,8 +69,8 @@ def build_info(e: Entry) -> str:
     return info
 
 
-def print_error(msg: str, end: str = "\012") -> None:
-    print(f"\000message\037{msg}{end} \000urgent\037true", end=end)
+def print_error(msg: str) -> None:
+    print(f"\000message\037{msg}\n \000urgent\037true")
 
 
 if __name__ == "__main__":
@@ -96,5 +96,4 @@ if __name__ == "__main__":
                 info=build_info(e),
                 urgent="true" if e.urgency.lower() == "critical" else "false",
             ),
-            end="\012",
         )

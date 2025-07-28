@@ -37,7 +37,7 @@ def build_info(e: Entry) -> str:
 
 if __name__ == "__main__":
     if not exists(DUNSTLOG_PATH):
-        print(f"\000message\037error: {DUNSTLOG_PATH!r} not found", end="\012")
+        print(f"\000message\037error: {DUNSTLOG_PATH!r} not found")
         sys.exit(1)
     lines = []
     with open(DUNSTLOG_PATH) as f:
@@ -45,8 +45,7 @@ if __name__ == "__main__":
 
     if len(lines) % 6 != 0:
         print(
-            f"\000message\037error: unexpected dunstlog format ({len(lines)} % 6 != 0)",
-            end="\012",
+            f"\000message\037error: unexpected dunstlog format ({len(lines)} % 6 != 0)"
         )
         sys.exit(1)
 
@@ -73,5 +72,4 @@ if __name__ == "__main__":
                 info=build_info(e),
                 urgent="true" if e.level.lower() == "critical" else "false",
             ),
-            end="\012",
         )
