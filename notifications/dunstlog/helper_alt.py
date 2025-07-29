@@ -91,7 +91,7 @@ if __name__ == "__main__":
             fmt.format(
                 title=e.appname,
                 timestamp=e.timestamp,
-                body=e.body or e.summary,
+                body=(e.body or e.summary).replace("\n", " "),
                 icon=e.icon_path,
                 info=build_info(e),
                 urgent="true" if e.urgency.lower() == "critical" else "false",
