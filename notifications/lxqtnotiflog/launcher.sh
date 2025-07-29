@@ -6,7 +6,12 @@ SCRIPTPATH="$(
 )"
 
 [ -f "$SCRIPTPATH/helper.sh" ] || {
-    notify-send -i "rofi" -a "lxqtnotiflog launcher" "helper script not found"
+    notify-send -i rofi -a lxqtnotiflog 'helper script not found'
+    exit 1
+}
+
+[ -f "$SCRIPTPATH/helper.py" ] || {
+    notify-send -i rofi -a lxqtnotiflog 'helper.py script not found'
     exit 1
 }
 
@@ -38,9 +43,6 @@ listview {
 EOF
 }
 
-rofi -i -show "lxqtnotiflog" \
-    -modi "lxqtnotiflog:$SCRIPTPATH/helper.sh" \
-    -no-custom \
-    -no-config \
-    -theme-str "$(theme)" \
-    -sep='\x0a' -eh 2 -normal-window
+HELPER_PY="${SCRIPTPATH}/helper.py" rofi -i -no-custom -no-config \
+    -show lxqtnotiflog -modi "lxqtnotiflog:$SCRIPTPATH/helper.sh" \
+    -theme-str "$(theme)" -eh 2 -normal-window

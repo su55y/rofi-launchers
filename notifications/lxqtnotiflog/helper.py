@@ -21,7 +21,7 @@ class Entry:
             v = self.__getattribute__(attr.name)
             if attr.name == "created":
                 if re.match(r"\[\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-\d{3}\]", v):
-                    created = dt.datetime(*(int(ch) for ch in v[1:-1].split("-")[:7]))
+                    created = dt.datetime(*(int(ch) for ch in v[1:-1].split("-")[:7]))  # type: ignore
                     self.__setattr__(attr.name, created.strftime("%T %F"))
                 else:
                     self.__setattr__(attr.name, "")
@@ -44,7 +44,7 @@ def build_info(e: Entry) -> str:
 
 if __name__ == "__main__":
     if not os.path.exists(UNATTENDED_LIST):
-        print("\000message\037error: %r not found" % UNATTENDED_LIST, end="\012")
+        print("\000message\037error: %r not found" % UNATTENDED_LIST)
         exit(1)
     rx_lines = re.compile(r"^(\[|App|Summ|Icon|Body).+")
     lines = []
@@ -52,10 +52,7 @@ if __name__ == "__main__":
         lines = list(filter(lambda l: rx_lines.match(l), f.readlines()))
 
     if len(lines) % 5 != 0:
-        print(
-            f"\000message\037error: unexpected file format ({len(lines)} % 5 != 0)",
-            end="\012",
-        )
+        print(f"\000message\037error: unexpected file format ({len(lines)} % 5 != 0)")
         exit(1)
 
     entries = [
@@ -76,6 +73,5 @@ if __name__ == "__main__":
                 text=e.body or e.summary,
                 icon=e.icon,
                 info=build_info(e),
-            ),
-            end="\012",
+            )
         )

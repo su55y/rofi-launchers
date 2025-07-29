@@ -1,18 +1,8 @@
 #!/bin/sh
 
-SCRIPTPATH="$(
-    cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
-    pwd -P
-)"
-[ -f "$SCRIPTPATH/helper.py" ] || printf "\000message\037py helper not found\012"
-
-printf "\000markup-rows\037true\012"
-
-print_log() {
-    python "${SCRIPTPATH}/helper.py"
-}
+printf '\000markup-rows\037true\n'
 
 case $ROFI_RETV in
 1) [ -n "$ROFI_INFO" ] && eval "notify-send $ROFI_INFO" ;;
-*) print_log ;;
+*) python "${HELPER_PY}" ;;
 esac
