@@ -1,14 +1,11 @@
 #!/bin/sh
 
-if [ -z "$ROFI_MAN_VIEWER_CACHE" ]; then
-    ROFI_MAN_VIEWER_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_man_viewer"
-fi
-
+ROFI_MAN_VIEWER_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_man_viewer"
 if [ ! -d "$ROFI_MAN_VIEWER_CACHE" ]; then
     mkdir -p "$ROFI_MAN_VIEWER_CACHE" || exit 1
 fi
 
-printf "\000use-hot-keys\037true\n"
+printf '\000use-hot-keys\037true\n'
 
 case $ROFI_RETV in
 # print manpages on start
