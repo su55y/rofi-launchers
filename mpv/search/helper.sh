@@ -83,9 +83,7 @@ handle_query() {
 }
 
 print_history() {
-    results_count=0
-    for entry in "$RESULTS_DIR"/*; do [ -f "$entry" ] && results_count=$((results_count + 1)); done
-    case $results_count in
+    case $(find "$RESULTS_DIR" -maxdepth 1 -type f | wc -l) in
     0) printf '\000message\037history is empty\n\000urgent\0370\n \000nonselectable\037true\n' ;;
     *)
         printf '\000message\037history\n\000data\037_history\n'
