@@ -18,6 +18,8 @@ configuration {
   kb-custom-1: "Ctrl+c";
   kb-custom-2: "Ctrl+s";
   kb-custom-3: "Ctrl+r";
+  kb-remove-char-back: "BackSpace,Shift+BackSpace";
+  kb-custom-4: "Ctrl+h";
 }
 inputbar {
   children: ["textbox-prompt-colon","entry","num-filtered-rows","textbox-num-sep","num-rows","case-indicator"];

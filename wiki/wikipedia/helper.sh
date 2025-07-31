@@ -21,6 +21,9 @@ C_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_wiki"
 printf '\000use-hot-keys\037true\n'
 printf '\000markup-rows\037true\n'
 printf '\000keep-selection\037true\n'
+if [ "$ROFI_DATA" = _history ]; then 
+    printf '\000new-selection\0370\n'
+fi
 
 banner() {
     printf 'search\000icon\037en_wiki\037info\037https://en.wikipedia.org/wiki/Special:Search\nua search\000icon\037uk_wiki\037info\037https://uk.wikipedia.org/wiki/Special:Search\n'
@@ -47,11 +50,26 @@ handle_query() {
     "$SCRIPTPATH/helper" -q="$1" | tee -a "$results_cache"
 }
 
+print_history() {
+    case $(find "$C_DIR" -maxdepth 1 -type f | wc -l) in
+    0) printf '\000message\037history is empty\n\000urgent\0370\n \000nonselectable\037true\n' ;;
+    *)
+        printf '\000new-selection\0370\n'
+        printf '\000message\037history\n\000data\037_history\n'
+        find "$C_DIR" -type f -printf '%T@ %f\n' | sort -k 1nr | sed 's/^[^ ]* //' | base64 -d | xargs -I {} printf '%s\n' "{}"
+        ;;
+    esac
+}
+
 case $ROFI_RETV in
 # print banner on start and kb-custom-1
 0 | 10) banner ;;
 # select line
 1)
+    if [ "$ROFI_DATA" = _history ]; then
+        handle_query "$@"
+        exit 0
+    fi
     case $ROFI_INFO in
     https://*.wikipedia.org/*) setsid -f "$BROWSER" "$ROFI_INFO" >/dev/null 2>&1 ;;
     *)
@@ -78,5 +96,9 @@ case $ROFI_RETV in
     [ -n "$subj" ] || banner
     rm -f "$ROFI_DATA" || banner
     handle_query "$subj"
+    ;;
+# kb-custom-4 - history
+13)
+    print_history
     ;;
 esac
