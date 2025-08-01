@@ -1,5 +1,8 @@
 #!/bin/sh
 
+: "${VIDEO_CHOOSER_ROOTDIR:=$HOME/Videos}"
+: "${VIDEO_CHOOSER_CACHEFILE:=${TEMPDIR:-/tmp}/video_chooser.tmp}"
+
 SCRIPTPATH="$(
     cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
     pwd -P
@@ -8,13 +11,10 @@ SCRIPTPATH="$(
 
 [ -f "${SCRIPTPATH}/printer" ] || _err_msg "$SCRIPTPATH/printer not found"
 
-[ -n "$VIDEO_CHOOSER_ROOTDIR" ] || VIDEO_CHOOSER_ROOTDIR="${HOME}/Videos"
-[ -n "$VIDEO_CHOOSER_CACHEFILE" ] || VIDEO_CHOOSER_CACHEFILE="${TEMPDIR:-/tmp}/video_chooser.tmp"
-
-printf "\000use-hot-keys\037true\n"
-printf "\000markup-rows\037true\n"
-printf "\000keep-selection\037true\n"
-printf "\000keep-filter\037true\n"
+printf '\000use-hot-keys\037true\n'
+printf '\000markup-rows\037true\n'
+printf '\000keep-selection\037true\n'
+printf '\000keep-filter\037true\n'
 
 case $ROFI_RETV in
 # select line
@@ -24,7 +24,7 @@ case $ROFI_RETV in
     ;;
 # kb-custom-1 (Ctrl+a) - append to playlist
 10) [ -f "$ROFI_INFO" ] && _append "$ROFI_INFO" ;;
-# kb-custom-2 (Ctrl+space) - play
+# kb-custom-2 (Ctrl+space) - play without exit
 11) [ -f "$ROFI_INFO" ] && _play "$ROFI_INFO" ;;
 # kb-custom-3 (Ctrl+r) - remove cache
 12) rm -f "$VIDEO_CHOOSER_CACHEFILE" >/dev/null 2>&1 ;;
