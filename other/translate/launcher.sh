@@ -3,10 +3,10 @@
 # SC2059: Don't use variables in the printf format string. Use printf "..%s.." "$foo".
 
 ROFI_PROMPT_=trans
-: "${ROFI_TRANSLATE_CMD:=trans -no-ansi en:uk '%s'}"
+: "${ROFI_TRANSLATE_CMD:=trans -j -no-ansi en:uk}" # -j are required
 TRANS_LANG_="$(echo "$ROFI_TRANSLATE_CMD" | grep -oP '([a-z]{2}\:[a-z]{2})')"
 [ -n "$TRANS_LANG_" ] && ROFI_PROMPT_="($TRANS_LANG_)"
-: "${ROFI_RESULT_CMD:=rofi -e '%s' -normal-window}"
+: "${ROFI_RESULT_CMD:=rofi -normal-window -theme-str 'error-message {padding: 25px;\}'}"
 : "${ROFI_PROMPT_CMD:="rofi -dmenu -p '$ROFI_PROMPT_' -theme-str 'listview {lines: 0;}' -kb-remove-char-back 'BackSpace,Shift+BackSpace' -kb-custom-1 'Ctrl+h'"}"
 
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_translate"
@@ -19,17 +19,15 @@ translate_() {
     if [ -f "$results_cache_path" ] && [ "$(tr -d '\n' <"$results_cache_path")" != "" ]; then
         result="$(cat "$results_cache_path")"
     else
-        trans_cmd="$(printf "$ROFI_TRANSLATE_CMD" "$1")"
-        result="$(eval "$trans_cmd")"
+        result="$(sh -c "$ROFI_TRANSLATE_CMD -- $1")"
         echo "$result" >"$results_cache_path"
     fi
 
-    ROFI_RESULT_CMD_="$(printf "$ROFI_RESULT_CMD" "$result")"
-    eval "$ROFI_RESULT_CMD_"
+    sh -c "$ROFI_RESULT_CMD -e '$result'"
 }
 
 while true; do
-    inp="$(eval "$ROFI_PROMPT_CMD" 2>/dev/null)"
+    inp="$(sh -c "$ROFI_PROMPT_CMD" 2>/dev/null)"
     if [ $? -eq 10 ]; then
         word="$(
             find "$CACHE_DIR" -type f -printf '%T@ %f\0' |
