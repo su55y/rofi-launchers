@@ -3,7 +3,7 @@ import datetime as dt
 import logging
 from pathlib import Path
 import sqlite3
-from typing import Dict, List, Optional
+from typing import Any, Dict, Generator, List, Optional
 
 
 class Storage:
@@ -13,13 +13,17 @@ class Storage:
         sqlite3.register_adapter(dt.datetime, lambda v: v.isoformat())
 
     @contextmanager
-    def get_cursor(self):
+    def get_cursor(self, reraise: bool = False) -> Generator[sqlite3.Cursor, Any, None]:
         conn = sqlite3.connect(self.file)
+        if self.log.level == logging.DEBUG:
+            conn.set_trace_callback(self.log.debug)
         try:
             cursor = conn.cursor()
             yield cursor
         except Exception as e:
             self.log.critical(e)
+            if reraise:
+                raise e
         else:
             conn.commit()
         finally:
@@ -31,24 +35,38 @@ class Storage:
             url TEXT PRIMARY KEY NOT NULL,
             title TEXT NOT NULL,
             created DATETIME NOT NULL)"""
-        with self.get_cursor() as cur:
-            cur.execute(titles_schema)
+        try:
+            with self.get_cursor() as cur:
+                cur.execute(titles_schema)
+        except Exception as e:
+            return e
 
     def insert_title(
         self, url: str, title: str, created: dt.datetime
     ) -> Optional[Exception]:
         query = "INSERT OR IGNORE INTO titles (url, title, created) VALUES (?, ?, ?)"
+        try:
+            with self.get_cursor() as cur:
+                cur.execute(query, (url, title, created))
+        except Exception as e:
+            return e
+
+    def fetch_one(self, query: str, params: tuple[Any, ...] = tuple()) -> Any:
         with self.get_cursor() as cur:
-            self.log.debug(f"{query}, ({url = !r}, {title = !r}, {created = })")
-            cur.execute(query, (url, title, created))
+            return cur.execute(query, params).fetchone()
 
     def select_title(self, url: str) -> Optional[str]:
         query = "SELECT title FROM titles WHERE url = ? LIMIT 1"
+        return self.fetch_one(query, (url,))
+
+    def select_count(self) -> int:
+        query = "SELECT COUNT(*) FROM titles"
+        count = self.fetch_one(query)
+        return count[0] if count else 0
+
+    def fetch_all(self, query: str, params: tuple[Any, ...] = tuple()) -> list[Any]:
         with self.get_cursor() as cur:
-            self.log.debug(f"{query}, {url = !r}")
-            cur.execute(query, (url,))
-            title, *_ = row if (row := cur.fetchone()) else (None,)
-            return title
+            return cur.execute(query, params).fetchall()
 
     def select_titles(self, urls: List[str]) -> Dict[str, str]:
         if len(urls) == 0:
@@ -56,23 +74,15 @@ class Storage:
         query = f"""
         SELECT url, title FROM titles
         WHERE url in ({','.join('?' * len(urls))})"""
-        with self.get_cursor() as cur:
-            self.log.debug(f"{query}, {urls = !r}")
-            return {u: t for u, t in cur.execute(query, urls).fetchall()}
-
-    def select_count(self) -> int:
-        query = "SELECT COUNT(*) FROM titles"
-        with self.get_cursor() as cur:
-            self.log.debug(query)
-            count, *_ = cur.execute(query).fetchone()
-            return count
+        return {u: t for u, t in self.fetch_all(query, tuple(urls))}
 
     def select_history(self, limit: int = -1) -> Dict[str, str]:
         query = "SELECT url, title FROM titles ORDER BY created DESC LIMIT ?"
+        return {url: title for url, title in self.fetch_all(query, (limit,))}
+
+    def get_rowcount(self, query: str, params: tuple[Any, ...] = tuple()) -> int:
         with self.get_cursor() as cur:
-            self.log.debug(f"{query}, {limit = }")
-            cur.execute(query, (limit,))
-            return {url: title for url, title in cur.fetchall()}
+            return cur.execute(query, params).rowcount
 
     def delete_except(self, count: int) -> int:
         query = """
@@ -82,12 +92,8 @@ class Storage:
             ORDER BY created DESC
             LIMIT ?
         )"""
-        with self.get_cursor() as cur:
-            self.log.debug(query)
-            return cur.execute(query, (count,)).rowcount
+        return self.get_rowcount(query, (count,))
 
     def delete_all(self) -> int:
         query = "DELETE FROM titles"
-        with self.get_cursor() as cur:
-            self.log.debug(query)
-            return cur.execute(query).rowcount
+        return self.get_rowcount(query)
