@@ -3,7 +3,6 @@ import logging
 import os
 from pathlib import Path
 import sys
-from typing import Optional, Union
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -30,7 +29,7 @@ def default_datadir_path() -> Path:
     return data_home.joinpath("playlist_ctl")
 
 
-def expand_path(path: Union[Path, str]) -> Path:
+def expand_path(path: Path | str) -> Path:
     return Path(os.path.expandvars(path)).expanduser()
 
 
@@ -53,13 +52,13 @@ class Config:
 
     def __init__(
         self,
-        config_file: Optional[Path] = None,
-        data_dir: Optional[Path] = None,
-        keep_last: Optional[int] = None,
-        log_file: Optional[Path] = None,
-        log_level: Optional[int] = None,
-        socket_file: Optional[Path] = None,
-        storage_file: Optional[Path] = None,
+        config_file: Path | None = None,
+        data_dir: Path | None = None,
+        keep_last: int | None = None,
+        log_file: Path | None = None,
+        log_level: int | None = None,
+        socket_file: Path | None = None,
+        storage_file: Path | None = None,
     ) -> None:
         self.data_dir = data_dir or default_datadir_path()
         self.keep_last = keep_last if isinstance(keep_last, int) else 100

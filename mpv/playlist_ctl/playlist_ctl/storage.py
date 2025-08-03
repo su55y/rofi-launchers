@@ -3,7 +3,7 @@ import datetime as dt
 import logging
 from pathlib import Path
 import sqlite3
-from typing import Any, Dict, Generator, List, Optional
+from typing import Any, Generator
 
 
 class Storage:
@@ -29,7 +29,7 @@ class Storage:
         finally:
             conn.close()
 
-    def init_db(self) -> Optional[Exception]:
+    def init_db(self) -> Exception | None:
         titles_schema = """
         CREATE TABLE IF NOT EXISTS titles (
             url TEXT PRIMARY KEY NOT NULL,
@@ -43,7 +43,7 @@ class Storage:
 
     def insert_title(
         self, url: str, title: str, created: dt.datetime
-    ) -> Optional[Exception]:
+    ) -> Exception | None:
         query = "INSERT OR IGNORE INTO titles (url, title, created) VALUES (?, ?, ?)"
         try:
             with self.get_cursor() as cur:
@@ -55,7 +55,7 @@ class Storage:
         with self.get_cursor() as cur:
             return cur.execute(query, params).fetchone()
 
-    def select_title(self, url: str) -> Optional[str]:
+    def select_title(self, url: str) -> str | None:
         query = "SELECT title FROM titles WHERE url = ? LIMIT 1"
         return self.fetch_one(query, (url,))
 
@@ -68,7 +68,7 @@ class Storage:
         with self.get_cursor() as cur:
             return cur.execute(query, params).fetchall()
 
-    def select_titles(self, urls: List[str]) -> Dict[str, str]:
+    def select_titles(self, urls: list[str]) -> dict[str, str]:
         if len(urls) == 0:
             return {}
         query = f"""
@@ -76,7 +76,7 @@ class Storage:
         WHERE url in ({','.join('?' * len(urls))})"""
         return {u: t for u, t in self.fetch_all(query, tuple(urls))}
 
-    def select_history(self, limit: int = -1) -> Dict[str, str]:
+    def select_history(self, limit: int = -1) -> dict[str, str]:
         query = "SELECT url, title FROM titles ORDER BY created DESC LIMIT ?"
         return {url: title for url, title in self.fetch_all(query, (limit,))}
 

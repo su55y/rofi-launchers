@@ -2,7 +2,6 @@ import argparse
 import datetime as dt
 import logging
 from pathlib import Path
-from typing import Union
 import sys
 
 from playlist_ctl.config import Config, default_config_path
@@ -67,7 +66,7 @@ def init_logger(level: int, file: Path) -> logging.Logger:
     return log
 
 
-def die(err: Union[Exception, str]) -> None:
+def die(err: Exception | str) -> None:
     print(err)
     sys.exit(1)
 

@@ -3,11 +3,10 @@ import json
 import logging
 from pathlib import Path
 from re import match
-from typing import Optional
 import urllib.request
 
 
-def fetch_title(logger: logging.Logger, vid_url: str) -> Optional[str]:
+def fetch_title(logger: logging.Logger, vid_url: str) -> str | None:
     try:
         url = "https://youtube.com/oembed?url=%s&format=json" % vid_url
         with urllib.request.urlopen(url, timeout=10) as resp:
