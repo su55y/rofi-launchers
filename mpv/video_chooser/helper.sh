@@ -28,6 +28,8 @@ case $ROFI_RETV in
 11) [ -f "$ROFI_INFO" ] && _play "$ROFI_INFO" ;;
 # kb-custom-3 (Ctrl+r) - remove cache
 12) rm -f "$VIDEO_CHOOSER_CACHEFILE" >/dev/null 2>&1 ;;
+# kb-custom-4 (Ctrl+o) - open parent directory in terminal
+13) setsid -f "$TERMINAL" -e  sh -c "cd \"$(dirname "$ROFI_INFO")\" && exec \$SHELL" >/dev/null 2>&1 ;;
 esac
 
 if [ -f "$VIDEO_CHOOSER_CACHEFILE" ]; then

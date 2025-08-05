@@ -18,6 +18,7 @@ configuration {
   kb-custom-1: "Ctrl+a";
   kb-custom-2: "Ctrl+space";
   kb-custom-3: "Ctrl+r";
+  kb-custom-4: "Ctrl+o";
 }
 window {
   font: "BlexMono Nerd Font 20";
