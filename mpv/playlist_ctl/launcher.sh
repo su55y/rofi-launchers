@@ -5,7 +5,7 @@ SCRIPTPATH="$(
     pwd -P
 )"
 
-ROFI_MPV_UTILS="${SCRIPTPATH}/../../../mpv_rofi_utils"
+ROFI_MPV_UTILS="${SCRIPTPATH}/../mpv_rofi_utils"
 if [ ! -f "$ROFI_MPV_UTILS" ]; then
     notify-send -i rofi -a playlist-ctl "mpv_rofi_utils file not found in $ROFI_MPV_UTILS"
     exit 1
@@ -39,6 +39,6 @@ textbox-prompt-colon {
 EOF
 }
 
-ROFI_MPV_UTILS="$ROFI_MPV_UTILS" rofi -i \
+ROFI_MPV_UTILS="$ROFI_MPV_UTILS" rofi -i -no-config -no-custom \
     -show playlist_ctl_py -modi "playlist_ctl_py:$SCRIPTPATH/helper.sh" \
-    -no-config -no-custom -theme-str "$(theme)" -normal-window
+    -theme-str "$(theme)" -normal-window

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# shellcheck source=../../../mpv_rofi_utils
+# shellcheck source=../mpv_rofi_utils
 . "${ROFI_MPV_UTILS}"
 
 : "${PL_HISTORY_CACHE_FILE:=/tmp/playlist_ctl_history}"
