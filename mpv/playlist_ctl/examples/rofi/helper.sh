@@ -1,26 +1,27 @@
 #!/bin/sh
 
-. "${SCRIPTPATH}/../../../mpv_rofi_utils"
+# shellcheck source=../../../mpv_rofi_utils
+. "${ROFI_MPV_UTILS}"
 
-HISTORY_CACHE_FILE=/tmp/playlist_ctl_history
-HISTORY_LIMIT="${HISTORY_LIMIT:-100}"
+: "${PL_HISTORY_CACHE_FILE:=/tmp/playlist_ctl_history}"
+: "${PL_HISTORY_LIMIT:=100}"
 
 printf '\000use-hot-keys\037true\n'
 
 print_refreshed_history() {
     printf '\000message\037HISTORY\n'
-    playlist-ctl --history -l "$HISTORY_LIMIT" | tee "$HISTORY_CACHE_FILE"
+    playlist-ctl --history -l "$PL_HISTORY_LIMIT" | tee "$PL_HISTORY_CACHE_FILE"
 }
 
 print_history() {
     printf '\000data\037history\n'
     printf '\000keep-filter\037true\n'
     printf '\000keep-selection\037true\n'
-    if ! grep -q '[^[:space:]]' "$HISTORY_CACHE_FILE" 2>/dev/null; then
+    if ! grep -q '[^[:space:]]' "$PL_HISTORY_CACHE_FILE" 2>/dev/null; then
         print_refreshed_history
-    elif [ -f "$HISTORY_CACHE_FILE" ] && [ "$ROFI_RETV" -ne 13 ]; then
+    elif [ -f "$PL_HISTORY_CACHE_FILE" ] && [ "$ROFI_RETV" -ne 13 ]; then
         printf '\000message\037HISTORY [C]\n'
-        awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); print}' "$HISTORY_CACHE_FILE"
+        awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); print}' "$PL_HISTORY_CACHE_FILE"
     else
         print_refreshed_history
     fi

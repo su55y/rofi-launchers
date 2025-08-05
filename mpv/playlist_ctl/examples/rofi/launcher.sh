@@ -5,10 +5,16 @@ SCRIPTPATH="$(
     pwd -P
 )"
 
-[ -f "$SCRIPTPATH/helper.sh" ] || {
+ROFI_MPV_UTILS="${SCRIPTPATH}/../../../mpv_rofi_utils"
+if [ ! -f "$ROFI_MPV_UTILS" ]; then
+    notify-send -i rofi -a playlist-ctl "mpv_rofi_utils file not found in $ROFI_MPV_UTILS"
+    exit 1
+fi
+
+if [ ! -f "$SCRIPTPATH/helper.sh" ]; then
     notify-send -i rofi -a playlist-ctl 'playlist control helper script not found'
     exit 1
-}
+fi
 
 theme() {
     cat <<EOF
@@ -33,6 +39,6 @@ textbox-prompt-colon {
 EOF
 }
 
-HISTORY_LIMIT="$HISTORY_LIMIT" SCRIPTPATH="$SCRIPTPATH" rofi -i -show "playlist_ctl_py" \
-    -modi "playlist_ctl_py:$SCRIPTPATH/helper.sh" \
+ROFI_MPV_UTILS="$ROFI_MPV_UTILS" rofi -i \
+    -show playlist_ctl_py -modi "playlist_ctl_py:$SCRIPTPATH/helper.sh" \
     -no-config -no-custom -theme-str "$(theme)" -normal-window
