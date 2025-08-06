@@ -2,7 +2,7 @@
 
 MPV_START_LOCK=/tmp/mpv_start.lock
 MPV_SOCKET_FILE=/tmp/mpv.sock
-RX_URL='.*youtube\.com\/watch\?v=([-_0-9a-zA-Z]{11})|.*youtu\.be\/([-_0-9a-zA-Z]{11})'
+RX_URL='.*youtube\.com\/watch\?v=([-_0-9a-zA-Z]{11})|.*youtu\.be\/([-_0-9a-zA-Z]{11})|.*twitch\.tv\/(?:videos\/\d{10}|[^?\/]+)'
 
 notify() { [ -n "$1" ] && notify-send -i mpv -a append-script "$1"; }
 

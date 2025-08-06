@@ -18,15 +18,17 @@ def fetch_title(logger: logging.Logger, vid_url: str) -> str | None:
         logger.error("can't fetch title for %r: %r" % (vid_url, e))
 
 
-def validate_url(v: str):
+def validate_url(v: str) -> str:
     if Path(v).exists():
         return v
-    l = r"^((?:https\:\/\/)?(?:www\.)?youtube\.com\/watch\?v=[-_0-9a-zA-Z]{11})(?:&.+)?$"
-    s = r"^((?:https\:\/\/)?youtu\.be\/[-_0-9a-zA-Z]{11})(?:\?.+)?$"
-    if (m := match(l, v)) and len(m.groups()) == 1:
-        (url,) = m.groups()
-    elif (m := match(s, v)) and len(m.groups()) == 1:
-        (url,) = m.groups()
+    for p in (
+        r"^((?:https\:\/\/)?(?:www\.)?youtube\.com\/watch\?v=[-_0-9a-zA-Z]{11})(?:&.+)?$",
+        r"^((?:https\:\/\/)?youtu\.be\/[-_0-9a-zA-Z]{11})(?:\?.+)?$",
+        r"^((?:https?:\/\/)?(?:www\.)?twitch\.tv\/(?:videos\/\d{10}|[^?\/]+))$",
+    ):
+        if (m := match(p, v)) and len(m.groups()) == 1:
+            (url,) = m.groups()
+            break
     else:
         raise ArgumentTypeError("invalid url %r" % v)
     return url

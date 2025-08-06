@@ -3,6 +3,7 @@ import datetime as dt
 import logging
 from pathlib import Path
 import sys
+from typing import NoReturn
 
 from playlist_ctl.config import Config, default_config_path
 from playlist_ctl.mpv_client import MpvClient
@@ -66,7 +67,7 @@ def init_logger(level: int, file: Path) -> logging.Logger:
     return log
 
 
-def die(err: Exception | str) -> None:
+def die(err: Exception | str) -> NoReturn:
     print(err)
     sys.exit(1)
 
@@ -91,15 +92,18 @@ def main():
         if (file := Path(args.append)).exists():
             title = file.name.rstrip(file.suffix)
         elif (title := stor.select_title(args.append)) is None:
-            title = fetch_title(log, args.append)
-            if title is None:
-                die("can't fetch title for %r" % args.append)
-            elif err := stor.insert_title(
-                url=args.append,
-                title=title,
-                created=dt.datetime.now(dt.timezone.utc),
-            ):
-                die(err)
+            if "twitch.tv" in args.append:
+                title = args.append
+            else:
+                title = fetch_title(log, args.append)
+                if title is None:
+                    die("can't fetch title for %r" % args.append)
+                if err := stor.insert_title(
+                    url=args.append,
+                    title=title,
+                    created=dt.datetime.now(dt.timezone.utc),
+                ):
+                    die(err)
         print(title)
     elif args.clean_cache:
         stor.delete_except(config.keep_last)
