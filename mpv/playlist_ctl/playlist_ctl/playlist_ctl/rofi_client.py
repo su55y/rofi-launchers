@@ -30,6 +30,8 @@ class RofiClient:
             if url := vid.get("filename"):
                 if (filepath := Path(url)).exists() and filepath.is_file():
                     title = filepath.name
+                elif title := vid.get("title"):
+                    ...
                 else:
                     title = titles.get(url, url)
             active = "true" if vid.get("current") else "false"

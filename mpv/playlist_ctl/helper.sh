@@ -40,7 +40,7 @@ play_index() {
     exit 0
 }
 
-if [ "$ROFI_DATA" = "history" ]; then
+if [ "$ROFI_DATA" = history ]; then
     case $ROFI_RETV in
     1) _play "$ROFI_INFO" ;;
     # kb-custom-2 (Ctrl+a) - append to playlist
@@ -55,7 +55,7 @@ if [ "$ROFI_DATA" = "history" ]; then
     1 | 11 | 12 | 13 | 14) print_history ;;
     esac
 else
-    pidof -q mpv || _err_msg "mpv process not found"
+    pidof -q mpv || _err_msg 'mpv process not found'
     [ -S "$MPV_SOCKET_FILE" ] || _err_msg "$MPV_SOCKET_FILE not found"
     case $ROFI_RETV in
     0) playlist-ctl ;;
