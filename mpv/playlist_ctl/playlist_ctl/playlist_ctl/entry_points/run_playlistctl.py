@@ -35,6 +35,9 @@ def parse_args() -> argparse.Namespace:
         help="removes all entries from database except last x, defined as `keep_last` in config (default: 100)",
     )
     parser.add_argument(
+        "-D", "--debug", action="store_true", help="print debug log to stdout"
+    )
+    parser.add_argument(
         "--history",
         action="store_true",
         help="prints last entries from history",
@@ -49,8 +52,13 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def init_logger(level: int, file: Path) -> logging.Logger:
+def init_logger(level: int, file: Path, debug: bool = False) -> logging.Logger:
     log = logging.getLogger()
+    if debug:
+        h = logging.StreamHandler()
+        log.addHandler(h)
+        log.setLevel(logging.DEBUG)
+        return log
     if level == logging.NOTSET:
         h = logging.NullHandler()
         log.addHandler(h)
@@ -79,7 +87,8 @@ def main():
         die("%s is invalid data directory" % config.data_dir)
     if not config.data_dir.exists():
         config.data_dir.mkdir()
-    log = init_logger(config.log_level, config.log_file)
+
+    log = init_logger(config.log_level, config.log_file, args.debug)
 
     stor = Storage(config.storage_file)
     if err := stor.init_db():
@@ -104,7 +113,7 @@ def main():
                     created=dt.datetime.now(dt.timezone.utc),
                 ):
                     die(err)
-        print(title)
+        print(title[0] if len(title) == 1 else title)
     elif args.clean_cache:
         stor.delete_except(config.keep_last)
     elif args.history:
