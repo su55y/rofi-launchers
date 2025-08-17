@@ -1,6 +1,6 @@
 #!/bin/sh
 
-clr() { printf '\000urgent\0370\n \000nonselectable\037true\n'; }
+clr() { printf '\000message\037\n \000nonselectable\037true\037urgent\037true\n'; }
 err_msg() {
     printf '\000message\037error: %s\n' "$1"
     clr
@@ -21,7 +21,7 @@ C_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_wiki"
 printf '\000use-hot-keys\037true\n'
 printf '\000markup-rows\037true\n'
 printf '\000keep-selection\037true\n'
-if [ "$ROFI_DATA" = _history ]; then 
+if [ "$ROFI_DATA" = _history ] && [ $ROFI_RETV -ne 14 ]; then
     printf '\000new-selection\0370\n'
 fi
 
@@ -54,7 +54,7 @@ print_history() {
     case $(find "$C_DIR" -maxdepth 1 -type f | wc -l) in
     0) printf '\000message\037history is empty\n\000urgent\0370\n \000nonselectable\037true\n' ;;
     *)
-        printf '\000new-selection\0370\n'
+        [ -z "$1" ] && printf '\000new-selection\0370\n'
         printf '\000message\037history\n\000data\037_history\n'
         find "$C_DIR" -type f -printf '%T@ %f\n' | sort -k 1nr | sed 's/^[^ ]* //' | base64 -d | xargs -I {} printf '%s\n' "{}"
         ;;
@@ -100,5 +100,19 @@ case $ROFI_RETV in
 # kb-custom-4 - history
 13)
     print_history
+    ;;
+# kb-custom-5 - delete history element
+14)
+    [ "$ROFI_DATA" = _history ] || banner
+
+    query="$(printf '%s' "$1" | sed 's/\s/+/g')"
+    results_cache="${C_DIR}/$(echo "$query" | base64)"
+    if [ -f "$results_cache" ]; then
+        rm -f "$results_cache"
+    else
+        printf '\000message\037file %s not found\n' "$results_cache"
+    fi
+    print_history keep-selection
+
     ;;
 esac

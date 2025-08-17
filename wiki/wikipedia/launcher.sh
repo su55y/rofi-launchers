@@ -20,6 +20,8 @@ configuration {
   kb-custom-3: "Ctrl+r";
   kb-remove-char-back: "BackSpace,Shift+BackSpace";
   kb-custom-4: "Ctrl+h";
+  kb-remove-char-forward: "Ctrl+x";
+  kb-custom-5: "Ctrl+d,Delete";
 }
 inputbar {
   children: ["textbox-prompt-colon","entry","num-filtered-rows","textbox-num-sep","num-rows","case-indicator"];
