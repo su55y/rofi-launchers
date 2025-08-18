@@ -136,4 +136,21 @@ case $ROFI_RETV in
     [ "$ROFI_DATA" != _history ] &&
         handle_query "$(basename "$ROFI_DATA" | base64 -d)" R
     ;;
+# kb-custom-8 - delete history item
+17)
+    [ "$ROFI_DATA" != _history ] && exit 1
+    results_cache="$RESULTS_DIR/$(echo "$1" | base64)"
+    if [ ! -f "$results_cache" ]; then
+        printf '\000message\037Not found results for %s\n \000nonselectable\037true\n' "$1"
+        print_history
+        exit 0
+    fi
+    for thumbnail in $(grep -aoP '\037\K\/.+$' "$results_cache"); do
+        [ -f "$thumbnail" ] || continue
+        echo "$thumbnail" | grep -qP "^${THUMBNAILS_DIR}\/[-_0-9a-zA-Z]{11}$" 2>&1 || continue
+        rm -f "$thumbnail" >/dev/null 2>&1 || exit 1
+    done
+    rm -f "$results_cache" >/dev/null 2>&1 || exit 1
+    print_history
+    ;;
 esac

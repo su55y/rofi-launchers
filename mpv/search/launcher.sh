@@ -23,7 +23,7 @@ configuration {
   kb-secondary-copy: "Ctrl+y";
   kb-move-front: "Ctrl+i";
   kb-row-select: "Ctrl+9";
-  kb-remove-char-forward: "Delete";
+  kb-remove-char-forward: "Ctrl+x";
   kb-remove-char-back: "BackSpace,Shift+BackSpace";
   kb-custom-1: "Ctrl+c";
   kb-custom-2: "Ctrl+a";
@@ -32,6 +32,7 @@ configuration {
   kb-custom-5: "Ctrl+h";
   kb-custom-6: "Ctrl+o";
   kb-custom-7: "Ctrl+r";
+  kb-custom-8: "Delete";
 }
 window {
   height: 90%;
