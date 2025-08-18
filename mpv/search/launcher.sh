@@ -22,7 +22,7 @@ configuration {
   font: "NotoSans Nerd Font 18";
   kb-secondary-copy: "Ctrl+y";
   kb-move-front: "Ctrl+i";
-  kb-row-select: "Ctrl+9";
+  kb-row-select: "Ctrl+s";
   kb-remove-char-forward: "Ctrl+x";
   kb-remove-char-back: "BackSpace,Shift+BackSpace";
   kb-custom-1: "Ctrl+c";
