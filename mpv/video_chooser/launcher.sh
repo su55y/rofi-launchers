@@ -15,10 +15,12 @@ theme() {
 configuration {
   kb-move-front: "Ctrl+i";
   kb-row-select: "Ctrl+s";
+  kb-accept-entry: "Control+m,Return,KP_Enter";
   kb-custom-1: "Ctrl+a";
   kb-custom-2: "Ctrl+space";
   kb-custom-3: "Ctrl+r";
   kb-custom-4: "Ctrl+o";
+  kb-custom-5: "Ctrl+j";
 }
 window {
   font: "BlexMono Nerd Font 20";

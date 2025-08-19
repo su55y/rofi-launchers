@@ -29,7 +29,9 @@ case $ROFI_RETV in
 # kb-custom-3 (Ctrl+r) - remove cache
 12) rm -f "$VIDEO_CHOOSER_CACHEFILE" >/dev/null 2>&1 ;;
 # kb-custom-4 (Ctrl+o) - open parent directory in terminal
-13) setsid -f "$TERMINAL" -e  sh -c "cd \"$(dirname "$ROFI_INFO")\" && exec \$SHELL" >/dev/null 2>&1 ;;
+13) setsid -f "$TERMINAL" -e sh -c "cd \"$(dirname "$ROFI_INFO")\" && exec \$SHELL" >/dev/null 2>&1 ;;
+# kb-custom-5 (Ctrl+j) - play random video
+14) setsid -f mpv "$(shuf -n1 "$VIDEO_CHOOSER_CACHEFILE" | grep -aoP 'info\037\K[^\037]+')" >/dev/null 2>&1 ;;
 esac
 
 if [ -f "$VIDEO_CHOOSER_CACHEFILE" ]; then
