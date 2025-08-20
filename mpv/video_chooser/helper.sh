@@ -32,6 +32,8 @@ case $ROFI_RETV in
 13) setsid -f "$TERMINAL" -e sh -c "cd \"$(dirname "$ROFI_INFO")\" && exec \$SHELL" >/dev/null 2>&1 ;;
 # kb-custom-5 (Ctrl+j) - play random video
 14) setsid -f mpv "$(shuf -n1 "$VIDEO_CHOOSER_CACHEFILE" | grep -aoP 'info\037\K[^\037]+')" >/dev/null 2>&1 ;;
+# kb-custom-6 (Ctrl+k) - append to playlist random video
+15) _append "$(shuf -n1 "$VIDEO_CHOOSER_CACHEFILE" | grep -aoP 'info\037\K[^\037]+')"
 esac
 
 if [ -f "$VIDEO_CHOOSER_CACHEFILE" ]; then
