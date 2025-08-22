@@ -16,7 +16,7 @@ configuration {
   kb-move-front: "Ctrl+i";
   kb-row-select: "Ctrl+s";
   kb-accept-entry: "Control+m,Return,KP_Enter";
-  kb-remove-to-eol: "Ctrl+Shift+k";
+  kb-remove-to-eol: "Ctrl+K";
   kb-custom-1: "Ctrl+a";
   kb-custom-2: "Ctrl+space";
   kb-custom-3: "Ctrl+r";
