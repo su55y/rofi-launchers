@@ -6,7 +6,7 @@ SCRIPTPATH="$(
 )"
 
 [ -f "$SCRIPTPATH/helper.sh" ] || {
-    notify-send -i "rofi" -a "wiki search" "wiki helper script not found"
+    notify-send -i rofi -a 'wiki launcher' 'wiki helper script not found'
     exit 1
 }
 
@@ -14,14 +14,14 @@ theme() {
     cat <<EOF
 configuration {
   font: "NotoSans Nerd Font 18";
-  kb-secondary-copy: "Ctrl+y";
-  kb-custom-1: "Ctrl+c";
-  kb-custom-2: "Ctrl+s";
-  kb-custom-3: "Ctrl+r";
-  kb-remove-char-back: "BackSpace,Shift+BackSpace";
-  kb-custom-4: "Ctrl+h";
-  kb-remove-char-forward: "Ctrl+x";
-  kb-custom-5: "Ctrl+d,Delete";
+  kb-secondary-copy: "ctrl+y,ctrl+C";
+  kb-remove-char-back: "BackSpace,Shift+BackSpace,ctrl+H";
+  kb-remove-char-forward: "ctrl+d";
+  kb-custom-1: "ctrl+c";
+  kb-custom-2: "ctrl+s";
+  kb-custom-3: "ctrl+r";
+  kb-custom-4: "ctrl+h";
+  kb-custom-5: "ctrl+x,Delete";
 }
 inputbar {
   children: ["textbox-prompt-colon","entry","num-filtered-rows","textbox-num-sep","num-rows","case-indicator"];
@@ -43,22 +43,9 @@ element-icon {
 element.selected.urgent {
   background-color: #00000000;
 }
-element.normal.urgent {
-  background-color: #00000000;
-}
-element.alternate.urgent {
-  background-color: #00000000;
-}
-element.selected.urgent {
-  background-color: #00000000;
-}
-element.alternate.selected.urgent {
-  background-color: #00000000;
-}
 EOF
 }
 
 rofi -i -no-config \
-    -show "wiki" -modi "wiki:$SCRIPTPATH/helper.sh" \
-    -theme-str "$(theme)" \
-    -normal-window
+    -show wiki -modi "wiki:$SCRIPTPATH/helper.sh" \
+    -theme-str "$(theme)" -normal-window

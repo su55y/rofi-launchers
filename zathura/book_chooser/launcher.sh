@@ -6,7 +6,7 @@ SCRIPTPATH="$(
 )"
 
 [ -f "$SCRIPTPATH/helper.sh" ] || {
-    notify-send -i "rofi" -a "book chooser" "helper script not found"
+    notify-send -i rofi -a 'book chooser' 'helper script not found'
     exit 1
 }
 
@@ -25,5 +25,6 @@ textbox-prompt-colon {
 EOF
 }
 
-rofi -i -show "books" -modi "books:${SCRIPTPATH}/helper.sh" \
-    -no-config -no-custom -sort -theme-str "$(theme)"
+rofi -i -no-config -no-custom -sort \
+    -show books -modi "books:${SCRIPTPATH}/helper.sh" \
+    -theme-str "$(theme)"

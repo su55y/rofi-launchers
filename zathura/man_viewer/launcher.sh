@@ -13,11 +13,9 @@ SCRIPTPATH="$(
 theme() {
     cat <<EOF
 configuration {
-  kb-row-select: "Ctrl+9";
-  kb-custom-1: "Ctrl+space";
-}
-window {
   font: "BlexMono Nerd Font 20";
+  kb-row-select: "ctrl+s";
+  kb-custom-1: "ctrl+space";
 }
 inputbar {
   children: ["textbox-prompt-colon","entry","case-indicator"];
@@ -30,6 +28,5 @@ EOF
 }
 
 rofi -no-config -no-custom -i -sort \
-    -show man_viewer \
-    -modi "man_viewer:${SCRIPTPATH}/helper.sh" \
+    -show man_viewer -modi "man_viewer:${SCRIPTPATH}/helper.sh" \
     -theme-str "$(theme)"

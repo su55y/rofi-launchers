@@ -20,14 +20,14 @@ theme() {
     cat <<EOF
 configuration {
   font: "NotoSans Nerd Font 18";
-  kb-remove-char-back: 'BackSpace,Shift+BackSpace';
-  kb-custom-1: 'Ctrl+h';
-  kb-move-front: 'Ctrl+i';
-  kb-custom-2: 'Ctrl+a';
-  kb-remove-char-forward: 'Delete';
-  kb-custom-3: 'Ctrl+d';
-  kb-custom-4: 'Ctrl+r';
-  kb-custom-5: 'Ctrl+o';
+  kb-remove-char-back: "BackSpace,Shift+BackSpace,ctrl+H";
+  kb-remove-char-forward: "Delete,ctrl+D";
+  kb-move-front: "ctrl+A";
+  kb-custom-1: "ctrl+h";
+  kb-custom-2: "ctrl+a";
+  kb-custom-3: "ctrl+d";
+  kb-custom-4: "ctrl+r";
+  kb-custom-5: "ctrl+o";
 }
 inputbar {
   children: ["textbox-prompt-colon","entry","num-filtered-rows","textbox-num-sep","num-rows","case-indicator"];

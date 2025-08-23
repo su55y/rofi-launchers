@@ -21,6 +21,8 @@ theme() {
     cat <<EOF
 configuration {
   font: "NotoSans Nerd Font 18";
+  kb-secondary-copy: "ctrl+y,ctrl+C";
+  kb-custom-1: "ctrl+c";
 }
 window {
   width: 200px;
@@ -43,6 +45,6 @@ entry {
 EOF
 }
 
-PALETTE_PATH="$PALETTE_PATH" rofi -i -no-config -theme-str "$(theme)" \
+PALETTE_PATH="$PALETTE_PATH" rofi -i -no-config -no-custom \
     -show palette -modi "palette:$SCRIPTPATH/helper.sh" \
-    -kb-secondary-copy 'Ctrl+y' -kb-custom-1 "Ctrl+c"
+    -theme-str "$(theme)"

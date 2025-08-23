@@ -7,7 +7,7 @@ ROFI_PROMPT_=trans
 TRANS_LANG_="$(echo "$ROFI_TRANSLATE_CMD" | grep -oP '([a-z]{2}\:[a-z]{2})')"
 [ -n "$TRANS_LANG_" ] && ROFI_PROMPT_="($TRANS_LANG_)"
 : "${ROFI_RESULT_CMD:=rofi -normal-window -theme-str 'error-message {padding: 25px;\}'}"
-: "${ROFI_PROMPT_CMD:="rofi -dmenu -p '$ROFI_PROMPT_' -theme-str 'listview {lines: 0;}' -kb-remove-char-back BackSpace,Shift+BackSpace -kb-custom-1 Ctrl+h"}"
+: "${ROFI_PROMPT_CMD:="rofi -dmenu -p '$ROFI_PROMPT_' -theme-str 'listview {lines: 0;}' -kb-remove-char-back BackSpace,Shift+BackSpace,ctrl+H -kb-custom-1 ctrl+h"}"
 
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_translate"
 [ -d "$CACHE_DIR" ] || {

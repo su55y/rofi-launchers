@@ -20,19 +20,19 @@ _search_theme() {
     cat <<EOF
 configuration {
   font: "NotoSans Nerd Font 18";
-  kb-secondary-copy: "Ctrl+y";
-  kb-move-front: "Ctrl+i";
-  kb-row-select: "Ctrl+s";
-  kb-remove-char-forward: "Ctrl+x";
-  kb-remove-char-back: "BackSpace,Shift+BackSpace";
-  kb-custom-1: "Ctrl+c";
-  kb-custom-2: "Ctrl+a";
-  kb-custom-3: "Ctrl+space";
-  kb-custom-4: "Ctrl+d";
-  kb-custom-5: "Ctrl+h";
-  kb-custom-6: "Ctrl+o";
-  kb-custom-7: "Ctrl+r";
-  kb-custom-8: "Delete";
+  kb-secondary-copy: "ctrl+C";
+  kb-move-front: "ctrl+A";
+  kb-row-select: "ctrl+s";
+  kb-remove-char-forward: "ctrl+D";
+  kb-remove-char-back: "BackSpace,Shift+BackSpace,ctrl+H";
+  kb-custom-1: "ctrl+c";
+  kb-custom-2: "ctrl+a";
+  kb-custom-3: "ctrl+space";
+  kb-custom-4: "ctrl+d";
+  kb-custom-5: "ctrl+h";
+  kb-custom-6: "ctrl+o";
+  kb-custom-7: "ctrl+r";
+  kb-custom-8: "ctrl+x,Delete";
 }
 window {
   height: 90%;

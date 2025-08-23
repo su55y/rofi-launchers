@@ -13,19 +13,17 @@ SCRIPTPATH="$(
 theme() {
     cat <<EOF
 configuration {
-  kb-move-front: "Ctrl+i";
-  kb-row-select: "Ctrl+s";
-  kb-accept-entry: "Control+m,Return,KP_Enter";
-  kb-remove-to-eol: "Ctrl+K";
-  kb-custom-1: "Ctrl+a";
-  kb-custom-2: "Ctrl+space";
-  kb-custom-3: "Ctrl+r";
-  kb-custom-4: "Ctrl+o";
-  kb-custom-5: "Ctrl+j";
-  kb-custom-6: "Ctrl+k";
-}
-window {
-  font: "BlexMono Nerd Font 20";
+  font: "NotoSans Nerd Font 18";
+  kb-move-front: "ctrl+A";
+  kb-row-select: "ctrl+s";
+  kb-accept-entry: "ctrl+J,ctrl+m,Return,KP_Enter";
+  kb-remove-to-eol: "ctrl+K";
+  kb-custom-1: "ctrl+a";
+  kb-custom-2: "ctrl+space";
+  kb-custom-3: "ctrl+r";
+  kb-custom-4: "ctrl+o";
+  kb-custom-5: "ctrl+j";
+  kb-custom-6: "ctrl+k";
 }
 inputbar {
   children: ["textbox-prompt-colon","entry","case-indicator"];

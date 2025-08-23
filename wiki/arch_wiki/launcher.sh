@@ -14,6 +14,10 @@ theme() {
     cat <<EOF
 configuration {
   font: "NotoSans Nerd Font 18";
+  kb-secondary-copy: "ctrl+y,ctrl+C";
+  kb-row-select: "ctrl+s";
+  kb-custom-1: "ctrl+c";
+  kb-custom-2: "ctrl+space";
 }
 inputbar {
   children: ["textbox-prompt-colon","entry","num-filtered-rows","textbox-num-sep","num-rows","case-indicator"];
@@ -24,14 +28,6 @@ textbox-prompt-colon {
 EOF
 }
 
-rofi -i -show arch_wiki \
-    -modi "arch_wiki:$SCRIPTPATH/helper.sh" \
-    -no-config \
-    -no-custom \
-    -sort true \
-    -kb-secondary-copy 'Ctrl+y' \
-    -kb-custom-1 'Ctrl+c' \
-    -kb-row-select '' \
-    -kb-custom-2 'Ctrl+space' \
-    -theme-str "$(theme)" \
-    -normal-window
+rofi -i -no-config -no-custom -sort true \
+    -show arch_wiki -modi "arch_wiki:$SCRIPTPATH/helper.sh" \
+    -theme-str "$(theme)" -normal-window
