@@ -38,21 +38,29 @@ while :; do
                 base64 -d |
                 grep -Eo '^.+$' |
                 rofi -dmenu -p history -no-custom \
-                    -kb-remove-char-forward Ctrl+x \
-                    -kb-custom-2 Ctrl+d,Delete
+                    -kb-remove-char-forward ctrl+d \
+                    -kb-custom-2 ctrl+x,Delete
         )"
-        if [ $? -eq 11 ]; then
+        case $? in
+        0)
+            [ -z "$word" ] && exit 0
+            print_history_=1
+            translate_ "$word"
+            ;;
+        1)
+            print_history_=0
+            continue
+            ;;
+        11)
             print_history_=1
             results_cache_path="${CACHE_DIR}/$(echo "$word" | base64)"
             if [ -f "$results_cache_path" ] && [ "$(tr -d '\n' <"$results_cache_path")" != "" ]; then
                 rm -f "$results_cache_path" ||
                     rofi -e "Error while deleting '$results_cache_path'"
             fi
-        else
-            [ -z "$word" ] && exit 0
-            print_history_=0
-            translate_ "$word"
-        fi
+            ;;
+        *) exit 0 ;;
+        esac
     elif [ -n "$inp" ]; then
         translate_ "$inp"
     else
