@@ -1,14 +1,6 @@
 #!/bin/sh
 
-SCRIPTPATH="$(
-    cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
-    pwd -P
-)"
-
-[ -f "$SCRIPTPATH/helper.sh" ] || {
-    notify-send -i rofi -a 'book chooser' 'helper script not found'
-    exit 1
-}
+: "${BOOKS_DIR:=$HOME/books}"
 
 theme() {
     cat <<EOF
@@ -25,6 +17,25 @@ textbox-prompt-colon {
 EOF
 }
 
-rofi -i -no-config -no-custom -sort \
-    -show books -modi "books:${SCRIPTPATH}/helper.sh" \
-    -theme-str "$(theme)"
+print_all() {
+    find "$BOOKS_DIR" -type f -name "*.pdf" | sort | while read -r file; do
+        title="${file##*\/}"
+        printf '%s\037%s\n' "$title" "$file"
+    done
+}
+
+choice="$(print_all |
+    rofi -dmenu -i -no-config -no-custom -sort \
+        -display-columns 1 -display-column-separator '\x1f' \
+        -theme-str "$(theme)" -normal-window)"
+if [ -z "$choice" ]; then
+    exit 0
+fi
+
+choice="$(echo "$choice" | grep -aoP "\037\K${BOOKS_DIR}.+$")"
+if [ ! -f "$choice" ]; then
+    rofi -e "'$choice' not found"
+    exit 1
+fi
+
+setsid -f zathura "$choice" >/dev/null 2>&1
