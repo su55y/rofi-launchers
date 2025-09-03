@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"html"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -16,10 +16,11 @@ import (
 )
 
 const (
-	apiUrl         = "https://%s.wikipedia.org/w/api.php?action=opensearch&namespace=0&format=json&formatversion=2&limit=%d&search=%s"
-	entryFmt       = "<span weight='bold'>%d</span>) %s\000icon\037%s_wiki\037info\037%s\n"
-	errMessageRofi = "\000message\037error: %s\n"
-	searchFmt      = "<span weight='bold'>-</span>) search\000icon\037%s_wiki\037info\037https://%s.wikipedia.org/wiki/Special:Search\n"
+	apiUrl           = "https://%s.wikipedia.org/w/api.php?action=opensearch&namespace=0&format=json&formatversion=2&limit=%d&search=%s"
+	entryFmt         = "<span weight='bold'>%d</span>) %s\000icon\037%s_wiki\037info\037%s\n"
+	errMessageRofi   = "\000message\037error: %s\n"
+	searchFmt        = "<span weight='bold'>-</span>) search\000icon\037%s_wiki\037info\037https://%s.wikipedia.org/wiki/Special:Search\n"
+	defaultUserAgent = "SearchBot/0.0 (https://github.com/su55y/rofi-launchers; su55y@protonmail.com)"
 )
 
 var (
@@ -30,6 +31,7 @@ var (
 	timeout            int
 	logFilePath        string
 	defaultLogFilePath string = path.Join(os.TempDir(), "rofi_wiki_helper.log")
+	userAgent          string
 )
 
 type Article struct {
@@ -41,21 +43,27 @@ func formatUrl(lang string) string {
 }
 
 func fetchArticles(c *http.Client, u string) ([]Article, error) {
-	resp, err := c.Get(u)
+	req, err := http.NewRequest("GET", u, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	req.Header.Set("User-Agent", userAgent)
+
+	resp, err := c.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("can't fetch articles: %v", err)
 	}
 	log.Printf("GET %s %s\n", resp.Status, u)
 	defer func() { _ = resp.Body.Close() }()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("can't read response: %v", err)
 	}
 
 	var titles, urls []string
-	if err := json.Unmarshal(body, &[]interface{}{nil, &titles, nil, &urls}); err != nil {
-		return nil, fmt.Errorf("can't parse articles: %v", err)
+	if err := json.Unmarshal(body, &[]any{nil, &titles, nil, &urls}); err != nil {
+		return nil, fmt.Errorf("can't parse articles: %v (%s)", err, string(body))
 	}
 
 	if len(titles) != len(urls) {
@@ -74,7 +82,7 @@ func fetchAndPrint(client *http.Client, wg *sync.WaitGroup, lang string) {
 	defer wg.Done()
 	articles, err := fetchArticles(client, formatUrl(lang))
 	if err != nil {
-		fmt.Printf(errMessageRofi, err.Error()[:79])
+		fmt.Printf(errMessageRofi, err.Error())
 		log.Printf(errMessageRofi, err.Error())
 		fmt.Printf(searchFmt, lang, lang)
 		return
@@ -118,6 +126,7 @@ func main() {
 	flag.IntVar(&timeout, "t", 10, "set http client timeout")
 	flag.BoolVar(&isDebug, "d", false, "enable debug logging")
 	flag.StringVar(&logFilePath, "D", defaultLogFilePath, "log file path")
+	flag.StringVar(&userAgent, "u", defaultUserAgent, "user agent header")
 	flag.Parse()
 
 	initLogger()
