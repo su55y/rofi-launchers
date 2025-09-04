@@ -1,15 +1,15 @@
 #!/bin/sh
-# shellcheck disable=SC2059
-# SC2059: Don't use variables in the printf format string. Use printf "..%s.." "$foo".
+# shellcheck disable=SC2059,SC2046
 
-ROFI_PROMPT_=trans
-: "${ROFI_TRANSLATE_CMD:=trans -j -no-ansi en:uk}" # -j are required
-TRANS_LANG_="$(echo "$ROFI_TRANSLATE_CMD" | grep -oP '([a-z]{2}\:[a-z]{2})')"
-[ -n "$TRANS_LANG_" ] && ROFI_PROMPT_="($TRANS_LANG_)"
+: "${SOURCE_LANG=en}"
+: "${TARGET_LANG=uk}"
+
+TRANS_CMD="trans -j -no-ansi $SOURCE_LANG:$TARGET_LANG" # -j are required
+TRANS_LANG="$SOURCE_LANG:$TARGET_LANG"
 : "${ROFI_RESULT_CMD:=rofi -normal-window -theme-str 'error-message {padding: 25px;\}'}"
-: "${ROFI_PROMPT_CMD:="rofi -dmenu -p '$ROFI_PROMPT_' -theme-str 'listview {lines: 0;}' -kb-remove-char-back BackSpace,Shift+BackSpace,ctrl+H -kb-custom-1 ctrl+h"}"
+: "${ROFI_PROMPT_CMD:="rofi -dmenu -p '$TRANS_LANG' -theme-str 'listview {lines: 0;}' -kb-remove-char-back BackSpace,Shift+BackSpace,ctrl+H -kb-custom-1 ctrl+h"}"
 
-CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_translate"
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_translate/$TRANS_LANG"
 [ -d "$CACHE_DIR" ] || {
     mkdir -p "$CACHE_DIR" || printf "\000message\037error: can't mkdir -p %s\n \000nonselectable\037true\n" "$CACHE_DIR"
 }
@@ -19,7 +19,7 @@ translate_() {
     if [ -f "$results_cache_path" ] && [ "$(tr -d '\n' <"$results_cache_path")" != "" ]; then
         result="$(cat "$results_cache_path")"
     else
-        result="$(sh -c "$ROFI_TRANSLATE_CMD -- $1")"
+        result="$(sh -c "$TRANS_CMD -- $1")"
         echo "$result" >"$results_cache_path"
     fi
 
@@ -30,6 +30,11 @@ print_history_=0
 while :; do
     [ $print_history_ -eq 0 ] && inp="$(sh -c "$ROFI_PROMPT_CMD" 2>/dev/null)"
     if [ $? -eq 10 ] || [ $print_history_ -eq 1 ]; then
+        if [ $(find "$CACHE_DIR" -type f | wc -l) -eq 0 ]; then
+            print_history_=0
+            rofi -e "History for $TRANS_LANG is empty"
+            continue
+        fi
         word="$(
             find "$CACHE_DIR" -type f -printf '%T@ %f\0' |
                 sort -zk 1nr |
