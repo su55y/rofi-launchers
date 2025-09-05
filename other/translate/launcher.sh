@@ -15,7 +15,7 @@ CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_translate/$TRANS_LANG"
 }
 
 translate_() {
-    results_cache_path="${CACHE_DIR}/$(echo "$1" | base64)"
+    results_cache_path="${CACHE_DIR}/$(echo "$1" | base64 | tr '+/' '-_')"
     if [ -f "$results_cache_path" ] && [ "$(tr -d '\n' <"$results_cache_path")" != "" ]; then
         result="$(cat "$results_cache_path")"
     else
@@ -40,6 +40,7 @@ while :; do
                 sort -zk 1nr |
                 sed -z 's/^[^ ]* //' |
                 tr '\0' '\n' |
+                tr '\-_' '+/' |
                 base64 -d |
                 grep -Eo '^.+$' |
                 rofi -dmenu -p history -no-custom \
@@ -58,7 +59,7 @@ while :; do
             ;;
         11)
             print_history_=1
-            results_cache_path="${CACHE_DIR}/$(echo "$word" | base64)"
+            results_cache_path="${CACHE_DIR}/$(echo "$word" | base64 | tr '+/' '-_')"
             if [ -f "$results_cache_path" ] && [ "$(tr -d '\n' <"$results_cache_path")" != "" ]; then
                 rm -f "$results_cache_path" ||
                     rofi -e "Error while deleting '$results_cache_path'"
