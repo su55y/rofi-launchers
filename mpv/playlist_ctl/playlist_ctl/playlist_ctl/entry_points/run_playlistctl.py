@@ -34,6 +34,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="removes all entries from database except last x, defined as `keep_last` in config (default: 100)",
     )
+    parser.add_argument("-d", "--delete", metavar="URL", help="Delete url from history")
     parser.add_argument(
         "-D", "--debug", action="store_true", help="print debug log to stdout"
     )
@@ -114,6 +115,9 @@ def main():
                 ):
                     die(err)
         print(title[0] if len(title) == 1 else title)
+    elif args.delete:
+        ok = stor.delete(args.delete)
+        sys.exit(1 if not ok else 0)
     elif args.clean_cache:
         stor.delete_except(config.keep_last)
     elif args.history:

@@ -84,6 +84,10 @@ class Storage:
         with self.get_cursor() as cur:
             return cur.execute(query, params).rowcount
 
+    def delete(self, url: str) -> bool:
+        query = "DELETE FROM titles WHERE url = ?"
+        return self.get_rowcount(query, (url,)) == 1
+
     def delete_except(self, count: int) -> int:
         query = """
         DELETE FROM titles
