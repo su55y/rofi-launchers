@@ -49,10 +49,16 @@ if [ "$ROFI_DATA" = history ]; then
     12) _download_vid "$ROFI_INFO" "$1" ;;
     # kb-custom-5 (Ctrl+o) - open in browser
     14) setsid -f "$BROWSER" "$ROFI_INFO" >/dev/null 2>&1 ;;
+    # kb-custom-6 (Ctrl+x,Delete) - delete history item
+    15)
+        playlist-ctl -d "$ROFI_INFO" || _err_msg "Can't delete $ROFI_INFO"
+        [ -f "$PL_HISTORY_CACHE_FILE" ] &&
+            sed -i "/$(echo $ROFI_INFO | sed -e 's/[]\/$*.^|[]/\\&/g')/d" "$PL_HISTORY_CACHE_FILE"
+        ;;
     esac
     # kb-custom-4 (Ctrl+r) - refresh history
     case $ROFI_RETV in
-    1 | 11 | 12 | 13 | 14) print_history ;;
+    1 | 11 | 12 | 13 | 14 | 15) print_history ;;
     esac
 else
     pidof -q mpv || _err_msg 'mpv process not found'
