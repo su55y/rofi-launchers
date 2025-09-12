@@ -48,6 +48,17 @@ class MpvClient:
             _, err = self._read_data(self._read_resp(sock))
             return err
 
+    def remove(self, index: int) -> Exception | None:
+        with self.connect() as sock:
+            cmd = '{ "command": ["playlist-remove", %d]}\n' % index
+            self.log.debug(cmd)
+            sock.sendall(cmd.encode())
+            resp = self._read_resp(sock)
+            if not resp:
+                return Exception("can't read response")
+            if (err := resp.get("error", "success")) != "success":
+                return Exception(err)
+
     def _read_data(self, resp: dict | None = None) -> tuple[Any, Exception | None]:
         if not resp:
             return None, Exception("can't read response")

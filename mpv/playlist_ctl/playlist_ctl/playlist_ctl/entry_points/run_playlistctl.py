@@ -50,6 +50,9 @@ def parse_args() -> argparse.Namespace:
         default=100,
         help="history limit (default: %(default)s)",
     )
+    parser.add_argument(
+        "-r", "--remove", type=int, help="'playlist-remove' given index"
+    )
     return parser.parse_args()
 
 
@@ -115,6 +118,9 @@ def main():
                 ):
                     die(err)
         print(title[0] if len(title) == 1 else title)
+    elif args.remove:
+        if err := mpv.remove(args.remove):
+            die(err)
     elif args.delete:
         ok = stor.delete(args.delete)
         sys.exit(1 if not ok else 0)
