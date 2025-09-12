@@ -63,8 +63,10 @@ if [ "$ROFI_DATA" = history ]; then
 else
     pidof -q mpv || _err_msg 'mpv process not found'
     [ -S "$MPV_SOCKET_FILE" ] || _err_msg "$MPV_SOCKET_FILE not found"
+    printf '\000keep-selection\037true\n'
     case $ROFI_RETV in
     0) playlist-ctl ;;
     1) play_index "$ROFI_INFO" ;;
+    15) playlist-ctl -r "$ROFI_INFO" && playlist-ctl ;;
     esac
 fi
