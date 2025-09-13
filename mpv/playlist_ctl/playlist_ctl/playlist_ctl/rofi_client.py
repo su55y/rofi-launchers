@@ -6,9 +6,9 @@ from playlist_ctl.mpv_client import MpvClient
 
 
 class RofiClient:
-    def __init__(self, stor: Storage, client: MpvClient) -> None:
+    def __init__(self, stor: Storage, mpv_client: MpvClient) -> None:
         self.stor = stor
-        self.client = client
+        self.mpv = mpv_client
 
     def print_history(self, limit: int = -1) -> None:
         history = self.stor.select_history(limit)
@@ -16,7 +16,7 @@ class RofiClient:
             print("%s\000info\037%s" % (title, url))
 
     def print_playlist(self) -> None:
-        playlist, err = self.client.mpv_playlist()
+        playlist, err = self.mpv.playlist()
         if err:
             print("\000message\037%s\n \000nonselectable\037true" % err)
             sys.exit(1)

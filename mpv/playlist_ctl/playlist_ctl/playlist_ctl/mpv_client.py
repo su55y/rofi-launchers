@@ -25,41 +25,33 @@ class MpvClient:
         finally:
             s.close()
 
-    def mpv_playlist(self) -> tuple[list[dict], Exception | None]:
-        with self.connect() as sock:
-            cmd = '{"command": ["get_property", "playlist"]}\n'
-            self.log.debug(cmd)
-            sock.sendall(cmd.encode())
-            data, err = self._read_data(self._read_resp(sock))
-            if err:
-                return [], err
-            if not isinstance(data, list):
-                err = Exception("unexpected data type: %s (%r)" % (type(data), data))
-                self.log.error(err)
-                return [], err
-            self.log.info("%d playlist items received" % len(data))
-            return data, None
+    def playlist(self) -> tuple[list[dict], Exception | None]:
+        cmd = '{"command": ["get_property", "playlist"]}\n'
+        data, err = self._parse_data(self._send_cmd(cmd))
+        if err:
+            return [], err
+        if not isinstance(data, list):
+            err = Exception("unexpected data type: %s (%r)" % (type(data), data))
+            self.log.error(err)
+            return [], err
+        self.log.info("%d playlist items received" % len(data))
+        return data, None
 
     def append(self, url: str) -> Exception | None:
-        with self.connect() as sock:
-            cmd = '{ "command": ["loadfile", "%s", "append-play"] }\n' % url
-            self.log.debug(cmd)
-            sock.sendall(cmd.encode())
-            _, err = self._read_data(self._read_resp(sock))
-            return err
+        cmd = '{ "command": ["loadfile", "%s", "append-play"] }\n' % url
+        resp = self._send_cmd(cmd)
+        _, err = self._parse_data(resp)
+        return err
 
     def remove(self, index: int) -> Exception | None:
-        with self.connect() as sock:
-            cmd = '{ "command": ["playlist-remove", %d]}\n' % index
-            self.log.debug(cmd)
-            sock.sendall(cmd.encode())
-            resp = self._read_resp(sock)
-            if not resp:
-                return Exception("can't read response")
-            if (err := resp.get("error", "success")) != "success":
-                return Exception(err)
+        cmd = '{ "command": ["playlist-remove", %d]}\n' % index
+        resp = self._send_cmd(cmd)
+        if not resp:
+            return Exception("can't read response")
+        if (err := resp.get("error", "success")) != "success":
+            return Exception("mpv error: %r" % err)
 
-    def _read_data(self, resp: dict | None = None) -> tuple[Any, Exception | None]:
+    def _parse_data(self, resp: dict | None = None) -> tuple[Any, Exception | None]:
         if not resp:
             return None, Exception("can't read response")
         if (err := resp.get("error")) != "success":
@@ -70,7 +62,17 @@ class MpvClient:
             return None, e
         return data, None
 
-    def _read_resp(self, sock: socket.socket) -> dict | None:
+    def _send_cmd(self, cmd: str) -> dict[str, Any] | None:
+        with self.connect() as sock:
+            self.log.debug(cmd)
+            sock.sendall(cmd.encode())
+            resp = self._read_resp(sock)
+            if not resp:
+                self.log.error(f"{resp=!r}")
+                return None
+            return resp
+
+    def _read_resp(self, sock: socket.socket) -> dict[str, Any] | None:
         data = b""
         try:
             while chunk := sock.recv(1024):
