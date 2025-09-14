@@ -16,15 +16,15 @@ trap cleanup EXIT
 
 input="$1"
 [ -z "$input" ] && input="$(xclip -o -selection clipboard)"
-if [ ! -f "$input" ]; then
+if [ -f "$input" ] || [ -d "$input" ]; then
+    URL="$input"
+else
     [ ${#input} -eq 11 ] && input=https://youtu.be/$input
     echo "$input" | grep -sqP "$RX_URL" || {
         notify "invalid url '$input'"
         exit 1
     }
     URL="$(echo "$input" | grep -oP "$RX_URL")"
-else
-    URL="$input"
 fi
 
 echo '{"command":["get_property","pause"]}' | nc -NU "$MPV_SOCKET_FILE" >/dev/null 2>&1 || {
