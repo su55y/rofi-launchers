@@ -103,7 +103,7 @@ def main():
         if err := mpv.append(args.append):
             die(err)
         if (file := Path(args.append)).exists():
-            title = file.name.rstrip(file.suffix)
+            title = file.with_suffix("").name
         elif (title := stor.select_title(args.append)) is None:
             if "twitch.tv" in args.append:
                 title = args.append
