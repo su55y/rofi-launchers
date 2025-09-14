@@ -30,7 +30,7 @@ fi
 echo '{"command":["get_property","pause"]}' | nc -NU "$MPV_SOCKET_FILE" >/dev/null 2>&1 || {
     touch "$MPV_START_LOCK"
     [ -S "$MPV_SOCKET_FILE" ] && rm "$MPV_SOCKET_FILE"
-    setsid -f mpv --idle --no-terminal --input-ipc-server="$MPV_SOCKET_FILE"
+    setsid -f mpv --idle --no-terminal --input-ipc-server="$MPV_SOCKET_FILE" >/dev/null 2>&1
 
     # 5 sec timeout
     for _ in $(seq 50); do
