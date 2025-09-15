@@ -25,6 +25,7 @@ def validate_url(v: str) -> str:
         r"^((?:https\:\/\/)?(?:www\.)?youtube\.com\/watch\?v=[-_0-9a-zA-Z]{11})(?:&.+)?$",
         r"^((?:https\:\/\/)?youtu\.be\/[-_0-9a-zA-Z]{11})(?:\?.+)?$",
         r"^((?:https?:\/\/)?(?:www\.)?twitch\.tv\/(?:videos\/\d{10}|[^?\/]+))$",
+        r"^((?:https\:\/\/)?(?:www\.)?youtube\.com\/playlist\?list=[A-Za-z0-9\-_]{18,34})",
     ):
         if (m := match(p, v)) and len(m.groups()) == 1:
             (url,) = m.groups()
