@@ -11,6 +11,7 @@ class Storage:
         self.file = file
         self.log = logging.getLogger()
         sqlite3.register_adapter(dt.datetime, lambda v: v.isoformat())
+        self._init_db()
 
     @contextmanager
     def get_cursor(self, reraise: bool = False) -> Generator[sqlite3.Cursor, Any, None]:
@@ -18,8 +19,7 @@ class Storage:
         if self.log.level == logging.DEBUG:
             conn.set_trace_callback(self.log.debug)
         try:
-            cursor = conn.cursor()
-            yield cursor
+            yield conn.cursor()
         except Exception as e:
             self.log.critical(e)
             if reraise:
@@ -29,7 +29,8 @@ class Storage:
         finally:
             conn.close()
 
-    def init_db(self) -> Exception | None:
+    def _init_db(self) -> Exception | None:
+        self.log.debug(f"init_db: {self.file}")
         titles_schema = """
         CREATE TABLE IF NOT EXISTS titles (
             url TEXT PRIMARY KEY NOT NULL,

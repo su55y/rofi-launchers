@@ -19,7 +19,7 @@ def parse_args() -> argparse.Namespace:
         "--append",
         metavar="URL",
         type=validate_url,
-        help="'append-play' and update titles db, prints added title to stdout",
+        help="execute 'append-play' and update titles db, prints added title to stdout",
     )
     parser.add_argument(
         "-c",
@@ -32,7 +32,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--clean-cache",
         action="store_true",
-        help="removes all entries from database except last x, defined as `keep_last` in config (default: 100)",
+        help="removes all entries from database except last `keep_last` value (default: 100)",
     )
     parser.add_argument("-d", "--delete", metavar="URL", help="Delete url from history")
     parser.add_argument(
@@ -48,10 +48,15 @@ def parse_args() -> argparse.Namespace:
         "--limit",
         type=int,
         default=100,
+        metavar="INT",
         help="history limit (default: %(default)s)",
     )
     parser.add_argument(
-        "-r", "--remove", type=int, help="'playlist-remove' given index"
+        "-r",
+        "--remove",
+        type=int,
+        metavar="INDEX",
+        help="execute 'playlist-remove' given index",
     )
     return parser.parse_args()
 
@@ -95,8 +100,6 @@ def main():
     log = init_logger(config.log_level, config.log_file, args.debug)
 
     stor = Storage(config.storage_file)
-    if err := stor.init_db():
-        die("can't create table: %s" % err)
 
     mpv = MpvClient(config.socket_file)
     if args.append:

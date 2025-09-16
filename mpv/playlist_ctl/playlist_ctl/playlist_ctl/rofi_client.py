@@ -28,11 +28,9 @@ class RofiClient:
         for i, vid in enumerate(playlist):
             title = "unknown %d" % i
             if url := vid.get("filename"):
-                if (filepath := Path(url)).exists() and filepath.is_file():
-                    title = filepath.name
-                elif title := vid.get("title"):
-                    ...
+                if (filepath := Path(url)).exists():
+                    title = filepath.with_suffix("").name
                 else:
-                    title = titles.get(url, url)
+                    title = vid.get("title", titles.get(url, url))
             active = "true" if vid.get("current") else "false"
             print("%s\000info\037%d\037active\037%s" % (title, i, active))
