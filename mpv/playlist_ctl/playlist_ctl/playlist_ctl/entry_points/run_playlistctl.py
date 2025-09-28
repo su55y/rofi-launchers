@@ -63,8 +63,13 @@ def parse_args() -> argparse.Namespace:
 
 def init_logger(level: int, file: Path, debug: bool = False) -> logging.Logger:
     log = logging.getLogger()
+    fmt = logging.Formatter(
+        fmt="[%(asctime)s %(levelname)s] %(message)s (%(funcName)s:%(lineno)d)",
+        datefmt="%H:%M:%S %d/%m/%y",
+    )
     if debug:
         h = logging.StreamHandler()
+        h.setFormatter(fmt)
         log.addHandler(h)
         log.setLevel(logging.DEBUG)
         return log
@@ -74,12 +79,7 @@ def init_logger(level: int, file: Path, debug: bool = False) -> logging.Logger:
         return log
     log.setLevel(level)
     fh = logging.FileHandler(file)
-    fh.setFormatter(
-        logging.Formatter(
-            fmt="[%(asctime)s %(levelname)s] %(message)s (%(funcName)s:%(lineno)d)",
-            datefmt="%H:%M:%S %d/%m/%y",
-        )
-    )
+    fh.setFormatter(fmt)
     log.addHandler(fh)
     return log
 
