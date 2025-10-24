@@ -77,9 +77,12 @@ class Storage:
         WHERE url in ({','.join('?' * len(urls))})"""
         return {u: t for u, t in self.fetch_all(query, tuple(urls))}
 
-    def select_history(self, limit: int = -1) -> dict[str, str]:
-        query = "SELECT url, title FROM titles ORDER BY created DESC LIMIT ?"
-        return {url: title for url, title in self.fetch_all(query, (limit,))}
+    def select_history(self, limit: int = -1) -> dict[str, tuple[str, dt.datetime]]:
+        query = "SELECT url, title, created FROM titles ORDER BY created DESC LIMIT ?"
+        return {
+            url: (title, dt.datetime.fromisoformat(created))
+            for url, title, created in self.fetch_all(query, (limit,))
+        }
 
     def get_rowcount(self, query: str, params: tuple[Any, ...] = tuple()) -> int:
         with self.get_cursor() as cur:

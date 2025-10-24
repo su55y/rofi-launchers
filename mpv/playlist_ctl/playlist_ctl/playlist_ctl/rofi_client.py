@@ -1,3 +1,4 @@
+import datetime as dt
 from pathlib import Path
 import sys
 
@@ -9,11 +10,19 @@ class RofiClient:
     def __init__(self, stor: Storage, mpv_client: MpvClient) -> None:
         self.stor = stor
         self.mpv = mpv_client
+        self.history_fmt = "{date} {title}\000info\037{info}"
+        self.date_fmt = "%b %d"
 
     def print_history(self, limit: int = -1) -> None:
         history = self.stor.select_history(limit)
-        for url, title in history.items():
-            print("%s\000info\037%s" % (title, url))
+        for url, (title, created) in history.items():
+            print(
+                self.history_fmt.format(
+                    date=created.strftime(self.date_fmt),
+                    title=title,
+                    info=url,
+                )
+            )
 
     def print_playlist(self) -> None:
         playlist, err = self.mpv.playlist()
