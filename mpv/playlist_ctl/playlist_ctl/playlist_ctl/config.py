@@ -11,6 +11,8 @@ else:
 
 
 DEFAULT_SOCKET_PATH = Path("/tmp/mpv.sock")
+DEFAULT_HISTORY_FMT = "{date} {title}\000info\037{info}"
+DEFAULT_HISTORY_DATE_FMT = "%b %d"
 
 
 def default_config_path() -> Path:
@@ -44,6 +46,8 @@ log_levels_map = {
 @dataclass
 class Config:
     data_dir: Path
+    history_fmt: str
+    history_date_fmt: str
     keep_last: int
     log_file: Path
     log_level: int
@@ -54,6 +58,8 @@ class Config:
         self,
         config_file: Path | None = None,
         data_dir: Path | None = None,
+        history_fmt: str | None = None,
+        history_date_fmt: str | None = None,
         keep_last: int | None = None,
         log_file: Path | None = None,
         log_level: int | None = None,
@@ -61,6 +67,8 @@ class Config:
         storage_file: Path | None = None,
     ) -> None:
         self.data_dir = data_dir or default_datadir_path()
+        self.history_fmt = history_fmt or DEFAULT_HISTORY_FMT
+        self.history_date_fmt = history_date_fmt or DEFAULT_HISTORY_DATE_FMT
         self.keep_last = keep_last if isinstance(keep_last, int) else 100
         self.log_file = log_file or self.data_dir.joinpath("playlist_ctl.log")
         self.log_level = log_level or logging.NOTSET
@@ -77,6 +85,10 @@ class Config:
             self.keep_last = keep_last
         if isinstance((log_level := config.get("log_level")), str):
             self.log_level = log_levels_map.get(log_level.lower(), logging.NOTSET)
+        if history_fmt := config.get("history_fmt"):
+            self.history_fmt = history_fmt
+        if history_date_fmt := config.get("history_date_fmt"):
+            self.history_date_fmt = history_date_fmt
         if data_dir := config.get("data_dir"):
             self.data_dir = expand_path(data_dir)
             self.log_file = self.data_dir.joinpath("playlist_ctl.log")

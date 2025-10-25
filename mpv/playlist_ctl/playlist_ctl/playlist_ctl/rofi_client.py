@@ -1,17 +1,24 @@
-import datetime as dt
 from pathlib import Path
 import sys
 
+from playlist_ctl.config import DEFAULT_HISTORY_FMT, DEFAULT_HISTORY_DATE_FMT
 from playlist_ctl.storage import Storage
 from playlist_ctl.mpv_client import MpvClient
 
 
 class RofiClient:
-    def __init__(self, stor: Storage, mpv_client: MpvClient) -> None:
+    def __init__(
+        self,
+        stor: Storage,
+        mpv_client: MpvClient,
+        *,
+        history_fmt: str = DEFAULT_HISTORY_FMT,
+        history_date_fmt: str = DEFAULT_HISTORY_DATE_FMT,
+    ) -> None:
         self.stor = stor
         self.mpv = mpv_client
-        self.history_fmt = "{date} {title}\000info\037{info}"
-        self.date_fmt = "%b %d"
+        self.history_fmt = history_fmt
+        self.date_fmt = history_date_fmt
 
     def print_history(self, limit: int = -1) -> None:
         history = self.stor.select_history(limit)

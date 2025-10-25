@@ -130,6 +130,11 @@ def main():
     elif args.clean_cache:
         stor.delete_except(config.keep_last)
     elif args.history:
-        RofiClient(stor, mpv).print_history(args.limit)
+        RofiClient(
+            stor,
+            mpv,
+            history_fmt=config.history_fmt,
+            history_date_fmt=config.history_date_fmt,
+        ).print_history(args.limit)
     else:
         RofiClient(stor, mpv).print_playlist()

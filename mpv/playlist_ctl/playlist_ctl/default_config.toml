@@ -1,6 +1,12 @@
 # dir to store db and logs
 data_dir = '$XDG_DATA_HOME/playlist_ctl' # or ~/.local/share/playlist_ctl
 
+# history line format
+history_fmt = "{date} {title}\u0000info\u001f{info}"
+
+# history date format
+history_date_fmt = '%b %d'
+
 # count of last entries to keep on --cache-clean
 keep_last = 100
 
