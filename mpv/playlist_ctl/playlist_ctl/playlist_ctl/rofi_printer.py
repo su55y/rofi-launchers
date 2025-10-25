@@ -6,7 +6,7 @@ from playlist_ctl.storage import Storage
 from playlist_ctl.mpv_client import MpvClient
 
 
-class RofiClient:
+class RofiPrinter:
     def __init__(
         self,
         stor: Storage,

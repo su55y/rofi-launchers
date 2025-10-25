@@ -7,7 +7,7 @@ from typing import NoReturn
 
 from playlist_ctl.config import Config, default_config_path
 from playlist_ctl.mpv_client import MpvClient
-from playlist_ctl.rofi_client import RofiClient
+from playlist_ctl.rofi_printer import RofiPrinter
 from playlist_ctl.storage import Storage
 from playlist_ctl.utils import validate_url, fetch_title
 
@@ -130,11 +130,11 @@ def main():
     elif args.clean_cache:
         stor.delete_except(config.keep_last)
     elif args.history:
-        RofiClient(
+        RofiPrinter(
             stor,
             mpv,
             history_fmt=config.history_fmt,
             history_date_fmt=config.history_date_fmt,
         ).print_history(args.limit)
     else:
-        RofiClient(stor, mpv).print_playlist()
+        RofiPrinter(stor, mpv).print_playlist()

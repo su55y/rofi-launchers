@@ -75,9 +75,9 @@ class Config:
         self.socket_file = socket_file or DEFAULT_SOCKET_PATH
         self.storage_file = storage_file or self.data_dir.joinpath("playlist_ctl.db")
         if config_file and (config_file := expand_path(config_file)).exists():
-            self._override_defaults(config_file)
+            self._read_config_file(config_file)
 
-    def _override_defaults(self, file: Path) -> None:
+    def _read_config_file(self, file: Path) -> None:
         with open(file, "rb") as f:
             config = tomllib.load(f)
 
