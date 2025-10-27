@@ -9,7 +9,7 @@ from playlist_ctl.config import Config, default_config_path
 from playlist_ctl.mpv_client import MpvClient
 from playlist_ctl.rofi_printer import RofiPrinter
 from playlist_ctl.storage import Storage
-from playlist_ctl.utils import validate_url, fetch_title
+from playlist_ctl.utils import validate_url, fetch_yt_title
 
 
 def parse_args() -> argparse.Namespace:
@@ -108,12 +108,11 @@ def main():
         if (file := Path(args.append)).exists():
             title = file.with_suffix("").name
         elif (title := stor.select_title(args.append)) is None:
-            if "twitch.tv" in args.append:
-                title = args.append
-            else:
-                title = fetch_title(log, args.append)
-                if title is None:
-                    die("can't fetch title for %r" % args.append)
+            title = args.append
+            if ("youtube.com" in args.append or "youtu.be" in args.append) and (
+                t := fetch_yt_title(log, args.append)
+            ):
+                title = t
                 if err := stor.insert_title(
                     url=args.append,
                     title=title,

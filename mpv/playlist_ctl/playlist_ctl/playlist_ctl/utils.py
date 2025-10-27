@@ -6,7 +6,7 @@ from re import match
 import urllib.request
 
 
-def fetch_title(logger: logging.Logger, vid_url: str) -> str | None:
+def fetch_yt_title(logger: logging.Logger, vid_url: str) -> str | None:
     try:
         url = "https://youtube.com/oembed?url=%s&format=json" % vid_url
         with urllib.request.urlopen(url, timeout=10) as resp:
