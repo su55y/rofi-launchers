@@ -9,7 +9,7 @@ from playlist_ctl.config import Config, default_config_path
 from playlist_ctl.mpv_client import MpvClient
 from playlist_ctl.rofi_printer import RofiPrinter
 from playlist_ctl.storage import Storage
-from playlist_ctl.utils import validate_url, fetch_yt_title
+from playlist_ctl.utils import clean_url, fetch_yt_title
 
 
 def parse_args() -> argparse.Namespace:
@@ -18,7 +18,7 @@ def parse_args() -> argparse.Namespace:
         "-a",
         "--append",
         metavar="URL",
-        type=validate_url,
+        type=clean_url,
         help="execute 'append-play' and update titles db, prints added title to stdout",
     )
     parser.add_argument(
