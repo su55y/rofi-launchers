@@ -22,6 +22,6 @@ case $ROFI_RETV in
 # ctrl+space - open selected in terminal
 10)
     [ -n "$1" ] || exit 0
-    setsid -f "$TERMINAL" -e sh -c "man --pager='nvim +Man!' $1" >/dev/null 2>&1
+    setsid -f "$TERMINAL" -e sh -c "man --pager='nvim +Man! -u NORC' $1" >/dev/null 2>&1
     ;;
 esac
