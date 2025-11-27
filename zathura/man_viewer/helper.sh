@@ -1,5 +1,7 @@
 #!/bin/sh
 
+TERM_PAGER='nvim +Man! -u NORC +color\ retrobox'
+
 ROFI_MAN_VIEWER_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_man_viewer"
 if [ ! -d "$ROFI_MAN_VIEWER_CACHE" ]; then
     mkdir -p "$ROFI_MAN_VIEWER_CACHE" || exit 1
@@ -22,6 +24,6 @@ case $ROFI_RETV in
 # ctrl+space - open selected in terminal
 10)
     [ -n "$1" ] || exit 0
-    setsid -f "$TERMINAL" -e sh -c "man --pager='nvim +Man! -u NORC' $1" >/dev/null 2>&1
+    setsid -f "$TERMINAL" -e sh -c "man --pager='$TERM_PAGER' $1" >/dev/null 2>&1
     ;;
 esac
