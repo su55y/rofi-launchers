@@ -14,6 +14,13 @@ const (
 	lineFmt   = "<b>%s</b>\r%s <i>%s</i>\000info\037%s\037meta\037%s\n"
 )
 
+type VideoFormatSet map[string]struct{}
+
+func (s VideoFormatSet) Has(f string) bool {
+	_, exists := s[f]
+	return exists
+}
+
 func exitWithError(f string, args ...any) {
 	fmt.Printf(errMsgFmt, fmt.Sprintf(f, args...))
 	os.Exit(1)
@@ -34,12 +41,27 @@ func main() {
 		exitWithError("%#v is not a directory", rootDir)
 	}
 
+	formats := make(VideoFormatSet)
+	for _, f := range []string{
+		".mp4", ".mkv", ".webm", ".avi", ".ogv",
+		".mpg", ".mpeg", ".3gp", ".mov", ".wmv",
+		".flv", ".vob", ".mts", ".m2ts", ".ts",
+		".swf", ".rm", ".rmvb", ".y4m", ".m4v"} {
+		formats[f] = struct{}{}
+	}
+
 	if err := filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
 		if d.IsDir() {
 			return nil
 		}
+
 		baseName := filepath.Base(path)
-		title := html.EscapeString(strings.TrimSuffix(baseName, filepath.Ext(baseName)))
+		ext := filepath.Ext(baseName)
+		if !formats.Has(ext) {
+			return nil
+		}
+
+		title := html.EscapeString(strings.TrimSuffix(baseName, ext))
 		parentDir := filepath.Base(filepath.Dir(path))
 		relativePath := strings.TrimSuffix(strings.TrimPrefix(filepath.Dir(path), rootDir), parentDir)
 		meta := strings.Join(strings.Split(parentDir, "/"), ",")
