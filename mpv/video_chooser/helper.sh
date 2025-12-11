@@ -46,5 +46,5 @@ if [ -f "$VIDEO_CHOOSER_CACHEFILE" ]; then
     }' "$VIDEO_CHOOSER_CACHEFILE"
 else
     printf '\000message\037\n'
-    "${SCRIPTPATH}/printer" "$VIDEO_CHOOSER_ROOTDIR" | tee "$VIDEO_CHOOSER_CACHEFILE"
+    "${SCRIPTPATH}/printer" $VIDEO_CHOOSER_ROOTDIR | tee "$VIDEO_CHOOSER_CACHEFILE"
 fi
