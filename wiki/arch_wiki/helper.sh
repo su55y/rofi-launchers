@@ -38,14 +38,15 @@ case $ROFI_RETV in
     ;;
 11)
     [ -d "$CACHE_DIR" ] || mkdir -p "$CACHE_DIR" >/dev/null 2>&1
-    clean_article="$(basename "$ROFI_INFO")"
-    clean_article="${clean_article%.*}"
-    pdf_path="$CACHE_DIR/${clean_article}.pdf"
+    article_name="$(basename "$ROFI_INFO")"
+    article_name="${article_name%.*}"
+    pdf_path="$CACHE_DIR/${article_name}.pdf"
     if [ ! -f "$pdf_path" ]; then
         [ -f "$ROFI_INFO" ] || err_msg "ERROR: '$ROFI_INFO' not found"
-        clean_article_path="/tmp/${clean_article}.html"
+        clean_article_path="${TEMPDIR:-/tmp}/${article_name}.html"
         rdrview -T title,body -H -u "$1" <"$ROFI_INFO" >"$clean_article_path" 2>/dev/null || err_msg 'readability conversion error'
-        pandoc "$clean_article_path" -t ms -o "$pdf_path" 2>/dev/null || err_msg 'pandoc error'
+        pandoc "$clean_article_path" --pdf-engine=weasyprint -o "$pdf_path" 2>/dev/null || err_msg 'pandoc error'
+        # pandoc "$clean_article_path" -t ms -o "$pdf_path" 2>/dev/null || err_msg 'pandoc error'
     fi
     setsid -f zathura "$pdf_path" >/dev/null 2>&1 || err_msg "can't open in zathura"
     print_list
