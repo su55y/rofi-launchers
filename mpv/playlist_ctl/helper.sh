@@ -2,7 +2,7 @@
 
 # shellcheck source=../mpv_rofi_utils
 . "${ROFI_MPV_UTILS}"
-
+: "${MPV_SOCKET_FILE:=/tmp/mpv.sock}"
 : "${PL_HISTORY_CACHE_FILE:=/tmp/playlist_ctl_history}"
 : "${PL_HISTORY_LIMIT:=100}"
 
@@ -46,7 +46,7 @@ if [ "$ROFI_DATA" = history ]; then
     # kb-custom-2 (Ctrl+a) - append to playlist
     11) _append "$ROFI_INFO" ;;
     # kb-custom-3 (Ctrl+d) - download from history
-    12) _download_vid "$ROFI_INFO" "$1" ;;
+    12) _download_vid "$ROFI_INFO" "$1" playlist-ctl ;;
     # kb-custom-5 (Ctrl+o) - open in browser
     14) setsid -f "$BROWSER" "$ROFI_INFO" >/dev/null 2>&1 ;;
     # kb-custom-6 (Ctrl+x,Delete) - delete history item

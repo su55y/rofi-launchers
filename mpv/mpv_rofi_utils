@@ -1,7 +1,6 @@
 #!/bin/sh
 
 APPEND_SCRIPT="${XDG_DATA_HOME:-$HOME/.local/share}/rofi/append_video.sh"
-MPV_SOCKET_FILE=/tmp/mpv.sock
 DOWNLOAD_OUTPUT="$HOME/Videos/YouTube/%(uploader)s/%(title)s.%(ext)s"
 
 _err_msg() {
@@ -10,9 +9,9 @@ _err_msg() {
 }
 
 _download_vid() {
-    notify-send -i rofi -a mpv_rofi_utils "⬇️Start downloading '$2'..."
-    qid="$(tsp yt-dlp "$1" -R infinite -o "$DOWNLOAD_OUTPUT")"
-    tsp -D "$qid" notify-send -i rofi -a mpv_rofi_utils "✅Download done: '$2'" >/dev/null 2>&1
+    notify-send -i rofi -a "${3:-mpv_rofi_utils}" "⬇️Start downloading '$2'..."
+    qid="$(tsp yt-dlp "$1" -o "$DOWNLOAD_OUTPUT")"
+    tsp -D "$qid" notify-send -i rofi -a "${3:-mpv_rofi_utils}" "✅Download done: '$2'" >/dev/null 2>&1
 }
 
 _play() { [ -n "$1" ] && setsid -f mpv "$1" >/dev/null 2>&1; }
