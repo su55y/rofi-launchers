@@ -39,6 +39,6 @@ listview {
 EOF
 }
 
-rofi -i -no-config -eh 2 \
+rofi -i -no-config -no-custom -eh 2 \
     -show vchooser -modi "vchooser:$SCRIPTPATH/helper.sh" \
     -theme-str "$(theme)" -normal-window

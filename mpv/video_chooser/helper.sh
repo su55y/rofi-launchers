@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# shellcheck disable=SC2086
+# Double quote to prevent globbing and word splitting. [SC2086]
+
 : "${VIDEO_CHOOSER_ROOTDIR:=$HOME/Videos}"
 : "${VIDEO_CHOOSER_CACHEFILE:=${TEMPDIR:-/tmp}/video_chooser.tmp}"
 
@@ -17,15 +20,17 @@ printf '\000keep-selection\037true\n'
 printf '\000keep-filter\037true\n'
 
 case $ROFI_RETV in
-# select line
-1)
-    [ -f "$ROFI_INFO" ] && _play "$ROFI_INFO"
-    exit 0
+1 | 10 | 11) [ -f "$ROFI_INFO" ] || _err_msg "File not found: $ROFI_INFO" ;;
+esac
+
+case $ROFI_RETV in
+# select line - play | kb-custom-2 (Ctrl+space) - play without exit
+1 | 11)
+    _play "$ROFI_INFO"
+    [ $ROFI_RETV -eq 1 ] && exit 0
     ;;
 # kb-custom-1 (Ctrl+a) - append to playlist
-10) [ -f "$ROFI_INFO" ] && _append "$ROFI_INFO" ;;
-# kb-custom-2 (Ctrl+space) - play without exit
-11) [ -f "$ROFI_INFO" ] && _play "$ROFI_INFO" ;;
+10) _append "$ROFI_INFO" ;;
 # kb-custom-3 (Ctrl+r) - remove cache
 12) rm -f "$VIDEO_CHOOSER_CACHEFILE" >/dev/null 2>&1 ;;
 # kb-custom-4 (Ctrl+o) - open parent directory in terminal
@@ -33,7 +38,7 @@ case $ROFI_RETV in
 # kb-custom-5 (Ctrl+j) - play random video
 14) setsid -f mpv "$(shuf -n1 "$VIDEO_CHOOSER_CACHEFILE" | grep -aoP 'info\037\K[^\037]+')" >/dev/null 2>&1 ;;
 # kb-custom-6 (Ctrl+k) - append to playlist random video
-15) _append "$(shuf -n1 "$VIDEO_CHOOSER_CACHEFILE" | grep -aoP 'info\037\K[^\037]+')"
+15) _append "$(shuf -n1 "$VIDEO_CHOOSER_CACHEFILE" | grep -aoP 'info\037\K[^\037]+')" ;;
 esac
 
 if [ -f "$VIDEO_CHOOSER_CACHEFILE" ]; then
