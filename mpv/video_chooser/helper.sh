@@ -24,20 +24,20 @@ case $ROFI_RETV in
 esac
 
 case $ROFI_RETV in
-# select line - play | kb-custom-2 (Ctrl+space) - play without exit
+# select line - play | kb-custom-2 (ctrl+space) - play without exit
 1 | 11)
     _play "$ROFI_INFO"
     [ $ROFI_RETV -eq 1 ] && exit 0
     ;;
-# kb-custom-1 (Ctrl+a) - append to playlist
+# kb-custom-1 (ctrl+a) - append to playlist
 10) _append "$ROFI_INFO" ;;
-# kb-custom-3 (Ctrl+r) - remove cache
+# kb-custom-3 (ctrl+r) - remove cache
 12) rm -f "$VIDEO_CHOOSER_CACHEFILE" >/dev/null 2>&1 ;;
-# kb-custom-4 (Ctrl+o) - open parent directory in terminal
+# kb-custom-4 (ctrl+o) - open parent directory in terminal
 13) setsid -f "$TERMINAL" -e sh -c "cd \"$(dirname "$ROFI_INFO")\" && exec \$SHELL" >/dev/null 2>&1 ;;
-# kb-custom-5 (Ctrl+j) - play random video
+# kb-custom-5 (ctrl+j) - play random video
 14) setsid -f mpv "$(shuf -n1 "$VIDEO_CHOOSER_CACHEFILE" | grep -aoP 'info\037\K[^\037]+')" >/dev/null 2>&1 ;;
-# kb-custom-6 (Ctrl+k) - append to playlist random video
+# kb-custom-6 (ctrl+k) - append to playlist random video
 15) _append "$(shuf -n1 "$VIDEO_CHOOSER_CACHEFILE" | grep -aoP 'info\037\K[^\037]+')" ;;
 esac
 

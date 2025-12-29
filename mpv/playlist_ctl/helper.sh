@@ -34,7 +34,7 @@ play_index() {
     [ "$error" = "success" ] || _err_msg "$error"
 }
 
-# kb-custom-1 (Ctrl+h) - prints history
+# kb-custom-1 (ctrl+h) - prints history
 [ "$ROFI_RETV" -eq 10 ] && {
     print_history
     exit 0
@@ -43,20 +43,20 @@ play_index() {
 if [ "$ROFI_DATA" = history ]; then
     case $ROFI_RETV in
     1) _play "$ROFI_INFO" ;;
-    # kb-custom-2 (Ctrl+a) - append to playlist
+    # kb-custom-2 (ctrl+a) - append to playlist
     11) _append "$ROFI_INFO" ;;
-    # kb-custom-3 (Ctrl+d) - download from history
+    # kb-custom-3 (ctrl+d) - download from history
     12) _download_vid "$ROFI_INFO" "$1" playlist-ctl ;;
-    # kb-custom-5 (Ctrl+o) - open in browser
+    # kb-custom-5 (ctrl+o) - open in browser
     14) setsid -f "$BROWSER" "$ROFI_INFO" >/dev/null 2>&1 ;;
-    # kb-custom-6 (Ctrl+x,Delete) - delete history item
+    # kb-custom-6 (ctrl+x,Delete) - delete history item
     15)
         playlist-ctl -d "$ROFI_INFO" || _err_msg "Can't delete $ROFI_INFO"
         [ -f "$PL_HISTORY_CACHE_FILE" ] &&
             sed -i "/$(echo $ROFI_INFO | sed -e 's/[]\/$*.^|[]/\\&/g')/d" "$PL_HISTORY_CACHE_FILE"
         ;;
     esac
-    # kb-custom-4 (Ctrl+r) - refresh history
+    # kb-custom-4 (ctrl+r) - refresh history
     case $ROFI_RETV in
     1 | 11 | 12 | 13 | 14 | 15) print_history ;;
     esac
