@@ -36,7 +36,7 @@ play() {
 
 print_from_cache() {
     [ -f "$1" ] || _err_msg 'no recent results found in cache'
-    printf '\000message\037[Cache]\n'
+    _msg '[Cache]'
     printf '\000data\037%s\n' "$1"
     awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); print}' "$1"
 }
@@ -47,10 +47,7 @@ handle_query() {
     results_cache="$RESULTS_DIR/$(echo "$query" | base64)"
     if [ -f "$results_cache" ]; then
         case $2 in
-        R)
-            rm -f "$results_cache" >/dev/null 2>&1 &&
-                printf '\000message\037\n'
-            ;;
+        R) rm -f "$results_cache" >/dev/null 2>&1 && _msg ' ' ;;
         *)
             print_from_cache "$results_cache"
             return

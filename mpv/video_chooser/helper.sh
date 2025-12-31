@@ -42,7 +42,7 @@ case $ROFI_RETV in
 esac
 
 if [ -f "$VIDEO_CHOOSER_CACHEFILE" ]; then
-    printf '\000message\037[Cache]\n'
+    _msg '[Cache]'
     awk '{
         gsub(/\\000/, "\0");
         gsub(/\\037/, "\037");
@@ -50,6 +50,6 @@ if [ -f "$VIDEO_CHOOSER_CACHEFILE" ]; then
         print
     }' "$VIDEO_CHOOSER_CACHEFILE"
 else
-    printf '\000message\037\n'
+    _msg ' '
     "${SCRIPTPATH}/printer" $VIDEO_CHOOSER_ROOTDIR | tee "$VIDEO_CHOOSER_CACHEFILE"
 fi

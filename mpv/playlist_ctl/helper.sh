@@ -9,7 +9,7 @@
 printf '\000use-hot-keys\037true\n'
 
 print_refreshed_history() {
-    printf '\000message\037HISTORY\n'
+    _msg HISTORY
     playlist-ctl --history -l "$PL_HISTORY_LIMIT" | tee "$PL_HISTORY_CACHE_FILE"
 }
 
@@ -20,7 +20,7 @@ print_history() {
     if ! grep -q '[^[:space:]]' "$PL_HISTORY_CACHE_FILE" 2>/dev/null; then
         print_refreshed_history
     elif [ -f "$PL_HISTORY_CACHE_FILE" ] && [ "$ROFI_RETV" -ne 13 ]; then
-        printf '\000message\037HISTORY [C]\n'
+        _msg 'HISTORY [C]'
         awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); print}' "$PL_HISTORY_CACHE_FILE"
     else
         print_refreshed_history
