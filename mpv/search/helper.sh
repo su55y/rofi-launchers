@@ -6,7 +6,7 @@ SCRIPTPATH="$(
     cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
     pwd -P
 )"
-. "${SCRIPTPATH}/../mpv_rofi_utils"
+. "${SCRIPTPATH}/../common_utils"
 
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/mpv_rofi_yt_search"
 THUMBNAILS_DIR="${CACHE_DIR}/thumbnails"

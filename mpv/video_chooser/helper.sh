@@ -10,7 +10,7 @@ SCRIPTPATH="$(
     cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
     pwd -P
 )"
-. "${SCRIPTPATH}/../mpv_rofi_utils"
+. "${SCRIPTPATH}/../common_utils"
 
 [ -f "${SCRIPTPATH}/printer" ] || _err_msg "$SCRIPTPATH/printer not found"
 

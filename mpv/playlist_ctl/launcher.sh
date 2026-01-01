@@ -5,14 +5,14 @@ SCRIPTPATH="$(
     pwd -P
 )"
 
-ROFI_MPV_UTILS="${SCRIPTPATH}/../mpv_rofi_utils"
+ROFI_MPV_UTILS="${SCRIPTPATH}/../common_utils"
 if [ ! -f "$ROFI_MPV_UTILS" ]; then
-    notify-send -i rofi -a playlist-ctl "mpv_rofi_utils file not found in $ROFI_MPV_UTILS"
+    rofi -e "$ROFI_MPV_UTILS not found"
     exit 1
 fi
 
 if [ ! -f "$SCRIPTPATH/helper.sh" ]; then
-    notify-send -i rofi -a playlist-ctl 'playlist control helper script not found'
+    rofi -e 'playlist control helper script not found'
     exit 1
 fi
 

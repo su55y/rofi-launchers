@@ -6,7 +6,7 @@ SCRIPTPATH="$(
 )"
 
 [ -f "$SCRIPTPATH/helper.sh" ] || {
-    notify-send -i rofi -a 'video chooser' 'helper script not found'
+    rofi -e 'helper script not found'
     exit 1
 }
 
