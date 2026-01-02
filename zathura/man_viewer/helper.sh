@@ -2,7 +2,8 @@
 
 TERM_PAGER='nvim +Man! -u NORC +color\ retrobox'
 
-ROFI_MAN_VIEWER_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_man_viewer"
+[ -n "$ROFI_MAN_VIEWER_CACHE" ] ||
+    ROFI_MAN_VIEWER_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_man_viewer"
 if [ ! -d "$ROFI_MAN_VIEWER_CACHE" ]; then
     mkdir -p "$ROFI_MAN_VIEWER_CACHE" || exit 1
 fi

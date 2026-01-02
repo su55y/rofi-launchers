@@ -1,14 +1,16 @@
 #!/bin/sh
 
+MODENAME=man_viewer
 SCRIPTPATH="$(
     cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
     pwd -P
 )"
+HELPER="$SCRIPTPATH/helper.sh"
 
-[ -f "$SCRIPTPATH/helper.sh" ] || {
-    notify-send -i rofi -a 'man viewer' 'helper script not found'
+if [ ! -f "$HELPER" ]; then
+    printf '<b>%s</b>\n%s not found' "$MODENAME" "$HELPER" | rofi -markup -e -
     exit 1
-}
+fi
 
 theme() {
     cat <<EOF
@@ -28,5 +30,5 @@ EOF
 }
 
 rofi -no-config -no-custom -i -sort \
-    -show man_viewer -modi "man_viewer:${SCRIPTPATH}/helper.sh" \
+    -show "$MODENAME" -modi "$MODENAME:$HELPER" \
     -theme-str "$(theme)"
