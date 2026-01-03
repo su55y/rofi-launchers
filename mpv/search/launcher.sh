@@ -1,20 +1,29 @@
 #!/bin/sh
 
+MODENAME=yt_search
+
 SCRIPTPATH="$(
     cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
     pwd -P
 )"
 
-[ -f "$SCRIPTPATH/helper.sh" ] || {
-    rofi -e 'helper script not found'
+HELPER="$SCRIPTPATH/helper.sh"
+if [ ! -f "$HELPER" ]; then
+    printf '<b>%s</b>\n%s not found' "$MODENAME" "$HELPER" | rofi -markup -e -
     exit 1
-}
-[ -f "$SCRIPTPATH/downloader" ] || {
-    rofi -e 'downloader executable not found'
-    exit 1
-}
+fi
 
-. "${SCRIPTPATH}/../mpv_rofi_utils"
+DOWNLOADER_PATH="$SCRIPTPATH/downloader"
+if [ ! -f "$DOWNLOADER_PATH" ]; then
+    printf '<b>%s</b>\ndownloader executable not found at %s' \
+        "$MODENAME" "$DOWNLOADER_PATH" | rofi -markup -e -
+    exit 1
+fi
+
+UTILS_PATH="$SCRIPTPATH/../common_utils"
+if [ ! -f "$UTILS_PATH" ]; then
+    printf '<b>%s</b>\n%s not found' "$MODENAME" "$UTILS_PATH" | rofi -markup -e -
+fi
 
 _search_theme() {
     cat <<EOF
@@ -62,6 +71,6 @@ element.selected.urgent {
 EOF
 }
 
-rofi -i -no-config \
-    -show yt_search -modi "yt_search:$SCRIPTPATH/helper.sh" \
+DOWNLOADER_PATH="$DOWNLOADER_PATH" UTILS_PATH="$UTILS_PATH" rofi -i -no-config \
+    -show "$MODENAME" -modi "$MODENAME:$HELPER" \
     -theme-str "$(_search_theme)" -normal-window

@@ -2,11 +2,8 @@
 
 # inspired by https://github.com/sayan01/scripts/blob/master/yt
 
-SCRIPTPATH="$(
-    cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
-    pwd -P
-)"
-. "${SCRIPTPATH}/../common_utils"
+# shellcheck source=../common_utils
+. "$UTILS_PATH"
 
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/mpv_rofi_yt_search"
 THUMBNAILS_DIR="${CACHE_DIR}/thumbnails"
@@ -76,7 +73,7 @@ handle_query() {
     done
     printf '\000data\037%s\n' "$results_cache"
 
-    "$SCRIPTPATH/downloader" -o="$THUMBNAILS_DIR" -l="$THUMB_URLS"
+    "$DOWNLOADER_PATH" -o="$THUMBNAILS_DIR" -l="$THUMB_URLS"
 }
 
 print_history() {
@@ -116,7 +113,7 @@ case $ROFI_RETV in
 13)
     validate_id "$ROFI_INFO"
     if [ "$ROFI_DATA" != _history ]; then
-        _download_vid "https://youtu.be/$ROFI_INFO" "$1"
+        _download_vid "https://youtu.be/$ROFI_INFO" "$1" yt_search
         print_from_cache "$ROFI_DATA"
     fi
     ;;
