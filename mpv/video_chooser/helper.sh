@@ -6,13 +6,8 @@
 : "${VIDEO_CHOOSER_ROOTDIR:=$HOME/Videos}"
 : "${VIDEO_CHOOSER_CACHEFILE:=${TEMPDIR:-/tmp}/video_chooser.tmp}"
 
-SCRIPTPATH="$(
-    cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
-    pwd -P
-)"
-. "${SCRIPTPATH}/../common_utils"
-
-[ -f "${SCRIPTPATH}/printer" ] || _err_msg "$SCRIPTPATH/printer not found"
+# shellcheck source=../common_utils
+. "$UTILS_PATH"
 
 printf '\000use-hot-keys\037true\n'
 printf '\000markup-rows\037true\n'
@@ -50,6 +45,7 @@ if [ -f "$VIDEO_CHOOSER_CACHEFILE" ]; then
         print
     }' "$VIDEO_CHOOSER_CACHEFILE"
 else
-    _msg ' '
-    "${SCRIPTPATH}/printer" $VIDEO_CHOOSER_ROOTDIR | tee "$VIDEO_CHOOSER_CACHEFILE"
+    printf '\000message\037\n'
+    # Leave VIDEO_CHOOSER_ROOTDIR unquoted to allow multiple dirs
+    "$PRINTER_PATH" $VIDEO_CHOOSER_ROOTDIR | tee "$VIDEO_CHOOSER_CACHEFILE"
 fi

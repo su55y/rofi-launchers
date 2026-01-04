@@ -5,10 +5,25 @@ SCRIPTPATH="$(
     pwd -P
 )"
 
-[ -f "$SCRIPTPATH/helper.sh" ] || {
-    rofi -e 'helper script not found'
+MODENAME=video_chooser
+
+HELPER="$SCRIPTPATH/helper.sh"
+if [ ! -f "$HELPER" ]; then
+    printf '<b>%s</b>\n%s not found' "$MODENAME" "$HELPER" | rofi -markup -e -
     exit 1
-}
+fi
+
+PRINTER_PATH="$SCRIPTPATH/printer"
+if [ ! -f "$PRINTER_PATH" ]; then
+    printf '<b>%s</b>\n%s not found' "$MODENAME" "$PRINTER_PATH" | rofi -markup -e -
+    exit 1
+fi
+
+UTILS_PATH="$SCRIPTPATH/../common_utils"
+if [ ! -f "$UTILS_PATH" ]; then
+    printf '<b>%s</b>\n%s not found' "$MODENAME" "$UTILS_PATH" | rofi -markup -e -
+    exit 1
+fi
 
 theme() {
     cat <<EOF
@@ -39,6 +54,7 @@ listview {
 EOF
 }
 
-rofi -i -no-config -no-custom -eh 2 \
-    -show vchooser -modi "vchooser:$SCRIPTPATH/helper.sh" \
+PRINTER_PATH="$PRINTER_PATH" UTILS_PATH="$UTILS_PATH" rofi -i -no-config \
+    -no-custom -eh 2 \
+    -show "$MODENAME" -modi "$MODENAME:$HELPER" \
     -theme-str "$(theme)" -normal-window
