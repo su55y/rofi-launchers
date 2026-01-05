@@ -1,5 +1,7 @@
 #!/bin/sh
 
+MODENAME=palette_picker
+
 SCRIPTPATH="$(
     cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
     pwd -P
@@ -7,15 +9,16 @@ SCRIPTPATH="$(
 
 : "${PALETTE_PATH:=$SCRIPTPATH/palette}"
 
-[ -f "$PALETTE_PATH" ] || {
-    notify-send -i rofi -a palette "$PALETTE_PATH not found"
+if [ ! -f "$PALETTE_PATH" ]; then
+    printf '<b>%s</b>\n%s not found' "$MODENAME" "$PALETTE_PATH" | rofi -markup -e -
     exit 1
-}
+fi
 
-[ -f "$SCRIPTPATH/helper.sh" ] || {
-    notify-send -i rofi -a palette 'helper script not found'
+HELPER="$SCRIPTPATH/helper.sh"
+if [ ! -f "$HELPER" ]; then
+    printf '<b>%s</b>\n%s not found' "$MODENAME" "$HELPER" | rofi -markup -e -
     exit 1
-}
+fi
 
 theme() {
     cat <<EOF
@@ -46,5 +49,5 @@ EOF
 }
 
 PALETTE_PATH="$PALETTE_PATH" rofi -i -no-config -no-custom \
-    -show palette -modi "palette:$SCRIPTPATH/helper.sh" \
+    -show "$MODENAME" -modi "$MODENAME:$HELPER" \
     -theme-str "$(theme)"
