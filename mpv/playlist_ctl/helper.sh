@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# shellcheck source=../mpv_rofi_utils
-. "${ROFI_MPV_UTILS}"
+# shellcheck source=../common_utils
+. "${UTILS_PATH}"
 : "${MPV_SOCKET_FILE:=/tmp/mpv.sock}"
 : "${PL_HISTORY_CACHE_FILE:=/tmp/playlist_ctl_history}"
 : "${PL_HISTORY_LIMIT:=100}"

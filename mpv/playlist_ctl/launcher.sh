@@ -1,18 +1,25 @@
 #!/bin/sh
 
+MODENAME=playlist_ctl
+
 SCRIPTPATH="$(
     cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
     pwd -P
 )"
 
-ROFI_MPV_UTILS="${SCRIPTPATH}/../common_utils"
-if [ ! -f "$ROFI_MPV_UTILS" ]; then
-    rofi -e "$ROFI_MPV_UTILS not found"
+UTILS_PATH="$SCRIPTPATH/../common_utils"
+if [ ! -f "$UTILS_PATH" ]; then
+    printf '<b>%s</b>\n%s not found' "$MODENAME" "$UTILS_PATH" | rofi -markup -e -
+fi
+
+HELPER="$SCRIPTPATH/helper.sh"
+if [ ! -f "$HELPER" ]; then
+    printf '<b>%s</b>\n%s not found' "$MODENAME" "$HELPER" | rofi -markup -e -
     exit 1
 fi
 
-if [ ! -f "$SCRIPTPATH/helper.sh" ]; then
-    rofi -e 'playlist control helper script not found'
+if ! command -v playlist-ctl >/dev/null 2>&1; then
+    printf '<b>%s</b>\nplaylist-ctl executable not in PATH' "$MODENAME" | rofi -markup -e -
     exit 1
 fi
 
@@ -40,6 +47,6 @@ textbox-prompt-colon {
 EOF
 }
 
-ROFI_MPV_UTILS="$ROFI_MPV_UTILS" rofi -i -no-config -no-custom \
-    -show playlist_ctl_py -modi "playlist_ctl_py:$SCRIPTPATH/helper.sh" \
+UTILS_PATH="$UTILS_PATH" rofi -i -no-config -no-custom \
+    -show "$MODENAME" -modi "$MODENAME:$HELPER" \
     -theme-str "$(theme)" -normal-window
