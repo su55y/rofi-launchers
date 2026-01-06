@@ -1,14 +1,18 @@
 #!/bin/sh
 
+MODENAME=arch_wiki
+: "${WIKIDIR:=/usr/share/doc/arch-wiki/html/en/}"
+
 SCRIPTPATH="$(
     cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
     pwd -P
 )"
 
-[ -f "$SCRIPTPATH/helper.sh" ] || {
-    notify-send -i rofi -a 'arch wiki' 'helper script not found'
+HELPER="$SCRIPTPATH/helper.sh"
+if [ ! -f "$HELPER" ]; then
+    printf '<b>%s</b>\n%s not found' "$MODENAME" "$HELPER" | rofi -markup -e -
     exit 1
-}
+fi
 
 theme() {
     cat <<EOF
@@ -28,6 +32,6 @@ textbox-prompt-colon {
 EOF
 }
 
-rofi -i -no-config -no-custom -sort true \
-    -show arch_wiki -modi "arch_wiki:$SCRIPTPATH/helper.sh" \
+WIKIDIR="$WIKIDIR" rofi -i -no-config -no-custom \
+    -show "$MODENAME" -modi "$MODENAME:$HELPER" \
     -theme-str "$(theme)" -normal-window

@@ -1,6 +1,5 @@
 #!/bin/sh
 
-WIKIDIR=/usr/share/doc/arch-wiki/html/en/
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/arch_wiki"
 
 printf '\000use-hot-keys\037true\n'
@@ -22,12 +21,12 @@ print_list() {
 }
 
 case $ROFI_RETV in
+1 | 11) [ -f "$ROFI_INFO" ] || err_msg "can't find '$ROFI_INFO'" ;;
+esac
+
+case $ROFI_RETV in
 0) print_list ;;
 1)
-    [ -f "$ROFI_INFO" ] || {
-        notify-send -i rofi -a 'arch wiki' "can't find '$ROFI_INFO'"
-        exit 1
-    }
     setsid -f "$BROWSER" "$ROFI_INFO" >/dev/null 2>&1
     print_list
     ;;
