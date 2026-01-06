@@ -7,16 +7,10 @@ err_msg() {
     exit 1
 }
 
-SCRIPTPATH="$(
-    cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
-    pwd -P
-)"
-[ -f "$SCRIPTPATH/helper" ] || err_msg "go helper not found"
-
 C_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_wiki"
-[ -d "$C_DIR" ] || {
+if [ ! -d "$C_DIR" ]; then
     mkdir -p "$C_DIR" || err_msg "can't mkdir -p $C_DIR"
-}
+fi
 
 printf '\000use-hot-keys\037true\n'
 printf '\000markup-rows\037true\n'
@@ -42,12 +36,12 @@ handle_query() {
     [ -n "$1" ] || exit 1
     query="$(printf '%s' "$1" | sed 's/\s/+/g')"
     results_cache="${C_DIR}/$(echo "$query" | base64)"
-    [ -f "$results_cache" ] && {
+    if [ -f "$results_cache" ] && [ "$(wc -c <"$results_cache")" != 0 ]; then
         print_from_cache "$results_cache"
-        return
-    }
-    printf '\000data\037%s\n' "$results_cache"
-    "$SCRIPTPATH/helper" -q="$1" | tee -a "$results_cache"
+    else
+        printf '\000data\037%s\n' "$results_cache"
+        "$GO_HELPER" -q="$1" | tee -a "$results_cache"
+    fi
 }
 
 print_history() {

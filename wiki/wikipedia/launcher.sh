@@ -1,14 +1,22 @@
 #!/bin/sh
 
+MODENAME=wiki
 SCRIPTPATH="$(
     cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
     pwd -P
 )"
 
-[ -f "$SCRIPTPATH/helper.sh" ] || {
-    notify-send -i rofi -a 'wiki launcher' 'wiki helper script not found'
+HELPER="$SCRIPTPATH/helper.sh"
+if [ ! -f "$HELPER" ]; then
+    printf '<b>%s</b>\n%s not found' "$MODENAME" "$HELPER" | rofi -markup -e -
     exit 1
-}
+fi
+
+GO_HELPER="$SCRIPTPATH/helper"
+if [ ! -f "$HELPER" ]; then
+    printf '<b>%s</b>\n%s not found' "$MODENAME" "$GO_HELPER" | rofi -markup -e -
+    exit 1
+fi
 
 theme() {
     cat <<EOF
@@ -46,6 +54,6 @@ element.selected.urgent {
 EOF
 }
 
-rofi -i -no-config \
-    -show wiki -modi "wiki:$SCRIPTPATH/helper.sh" \
+GO_HELPER="$GO_HELPER" rofi -i -no-config \
+    -show "$MODENAME" -modi "$MODENAME:$HELPER" \
     -theme-str "$(theme)" -normal-window
