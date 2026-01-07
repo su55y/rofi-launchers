@@ -5,7 +5,7 @@
 # shellcheck source=../common_utils
 . "$UTILS_PATH"
 
-CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/mpv_rofi_yt_search"
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_yt_search"
 THUMBNAILS_DIR="${CACHE_DIR}/thumbnails"
 RESULTS_DIR="${CACHE_DIR}/results"
 mkdir -p "$THUMBNAILS_DIR" || _err_msg "can't mkdir -p $THUMBNAILS_DIR"
@@ -33,6 +33,12 @@ play() {
 
 print_from_cache() {
     [ -f "$1" ] || _err_msg 'no recent results found in cache'
+    case $(wc -c <"$results_cache") in
+    0 | 1)
+        _msg 'invalid results file %s' "$1"
+        return
+        ;;
+    esac
     _msg '[Cache]'
     printf '\000data\037%s\n' "$1"
     awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); print}' "$1"
@@ -42,7 +48,7 @@ handle_query() {
     [ -n "$1" ] || exit 1
     query="$1"
     results_cache="$RESULTS_DIR/$(echo "$query" | base64)"
-    if [ -f "$results_cache" ]; then
+    if [ -f "$results_cache" ] && [ "$(wc -c <"$results_cache")" != 0 ]; then
         case $2 in
         R) rm -f "$results_cache" >/dev/null 2>&1 && _msg ' ' ;;
         *)
