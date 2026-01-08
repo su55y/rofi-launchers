@@ -8,7 +8,7 @@ window {
   font: "BlexMono Nerd Font 20";
 }
 inputbar {
-  children: ["textbox-prompt-colon","entry","case-indicator"];
+  children: ["textbox-prompt-colon","entry","num-filtered-rows","textbox-num-sep","num-rows","case-indicator"];
 }
 textbox-prompt-colon {
   str: "";
