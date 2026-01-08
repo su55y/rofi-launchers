@@ -1,19 +1,23 @@
 #!/bin/sh
 
+MODENAME=dunstlog
+
 SCRIPTPATH="$(
     cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
     pwd -P
 )"
 
-[ -f "$SCRIPTPATH/helper.sh" ] || {
-    notify-send -i rofi -a dunstlog 'helper script not found'
+HELPER="$SCRIPTPATH/helper.sh"
+if [ ! -f "$HELPER" ]; then
+    printf '<b>%s</b>\n%s not found' "$MODENAME" "$HELPER" | rofi -markup -e -
     exit 1
-}
+fi
 
-[ -f "$SCRIPTPATH/helper.py" ] || {
-    notify-send -i rofi -a dunstlog 'helper.py script not found'
+PY_HELPER="$SCRIPTPATH/helper.py"
+if [ ! -f "$PY_HELPER" ]; then
+    printf '<b>%s</b>\n%s not found' "$MODENAME" "$PY_HELPER" | rofi -markup -e -
     exit 1
-}
+fi
 
 theme() {
     cat <<EOF
@@ -43,6 +47,6 @@ listview {
 EOF
 }
 
-HELPER_PY="${SCRIPTPATH}/helper.py" rofi -i -no-custom -no-config \
-    -show dunstlog -modi "dunstlog:$SCRIPTPATH/helper.sh" \
+PY_HELPER="$PY_HELPER" rofi -i -no-custom -no-config \
+    -show "$MODENAME" -modi "$MODENAME:$HELPER" \
     -theme-str "$(theme)" -eh 2 -normal-window
