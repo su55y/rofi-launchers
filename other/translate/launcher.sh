@@ -8,6 +8,7 @@ TRANS_CMD="trans -j -no-ansi $SOURCE_LANG:$TARGET_LANG" # -j are required
 TRANS_LANG="$SOURCE_LANG:$TARGET_LANG"
 : "${ROFI_RESULT_CMD:=rofi -normal-window -theme-str 'error-message {padding: 25px;\}'}"
 : "${ROFI_PROMPT_CMD:="rofi -dmenu -p '$TRANS_LANG' -theme-str 'listview {lines: 0;}' -kb-remove-char-back BackSpace,Shift+BackSpace,ctrl+H -kb-custom-1 ctrl+h"}"
+: "${ROFI_HISTORY_CMD:=rofi -dmenu -p history -no-custom -kb-remove-char-forward ctrl+d -kb-custom-2 ctrl+x,Delete}"
 
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_translate/$TRANS_LANG"
 if [ ! -d "$CACHE_DIR" ]; then
@@ -45,17 +46,12 @@ while :; do
             rofi -e "History for $TRANS_LANG is empty"
             continue
         fi
-        word="$(
-            print_history |
-                rofi -dmenu -p history -no-custom \
-                    -kb-remove-char-forward ctrl+d \
-                    -kb-custom-2 ctrl+x,Delete
-        )"
+        choice="$(print_history | sh -c "$ROFI_HISTORY_CMD")"
         case $? in
         0)
-            [ -z "$word" ] && exit 1
+            [ -z "$choice" ] && exit 1
             print_history_=1
-            translate_ "$word"
+            translate_ "$choice"
             ;;
         1)
             print_history_=0
@@ -63,7 +59,7 @@ while :; do
             ;;
         11)
             print_history_=1
-            results_cache_path="${CACHE_DIR}/$(echo "$word" | base64 | tr '+/' '-_')"
+            results_cache_path="${CACHE_DIR}/$(echo "$choice" | base64 | tr '+/' '-_')"
             if [ -f "$results_cache_path" ] &&
                 [ "$(tr -d '\n' <"$results_cache_path")" != "" ]; then
                 rm "$results_cache_path" ||
