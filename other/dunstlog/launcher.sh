@@ -13,7 +13,7 @@ if [ ! -f "$HELPER" ]; then
     exit 1
 fi
 
-PY_HELPER="$SCRIPTPATH/helper.py"
+: "${PY_HELPER:="$SCRIPTPATH/helper.py"}"
 if [ ! -f "$PY_HELPER" ]; then
     printf '<b>%s</b>\n%s not found' "$MODENAME" "$PY_HELPER" | rofi -markup -e -
     exit 1
