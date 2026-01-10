@@ -1,12 +1,13 @@
 #!/bin/sh
 
 MODENAME=man_viewer
+
 SCRIPTPATH="$(
     cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
     pwd -P
 )"
-HELPER="$SCRIPTPATH/helper.sh"
 
+HELPER="$SCRIPTPATH/helper.sh"
 if [ ! -f "$HELPER" ]; then
     printf '<b>%s</b>\n%s not found' "$MODENAME" "$HELPER" | rofi -markup -e -
     exit 1

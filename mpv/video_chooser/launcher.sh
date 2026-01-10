@@ -1,11 +1,11 @@
 #!/bin/sh
 
+MODENAME=video_chooser
+
 SCRIPTPATH="$(
     cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1
     pwd -P
 )"
-
-MODENAME=video_chooser
 
 HELPER="$SCRIPTPATH/helper.sh"
 if [ ! -f "$HELPER" ]; then
