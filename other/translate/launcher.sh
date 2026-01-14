@@ -10,9 +10,14 @@ TRANS_LANG="$SOURCE_LANG:$TARGET_LANG"
 : "${ROFI_PROMPT_CMD:="rofi -dmenu -p '$TRANS_LANG' -theme-str 'listview {lines: 0;}' -kb-remove-char-back BackSpace,Shift+BackSpace,ctrl+H -kb-custom-1 ctrl+h"}"
 : "${ROFI_HISTORY_CMD:=rofi -dmenu -p history -no-custom -kb-remove-char-forward ctrl+d -kb-custom-2 ctrl+x,Delete}"
 
-CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_translate/$TRANS_LANG"
+DEFAULT_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_translate/$TRANS_LANG"
+: "${CACHE_DIR:=$DEFAULT_CACHE_DIR}"
 if [ ! -d "$CACHE_DIR" ]; then
-    mkdir -p "$CACHE_DIR" || exit 1
+    err_="$(mkdir -p "$CACHE_DIR" 2>&1)"
+    if [ $? -ne 0 ]; then
+        rofi -e "$err_"
+        exit 1
+    fi
 fi
 
 translate_() {
@@ -60,8 +65,8 @@ while :; do
         11)
             print_history_=1
             results_cache_path="${CACHE_DIR}/$(echo "$choice" | base64 | tr '+/' '-_')"
-            if [ -f "$results_cache_path" ] &&
-                [ "$(tr -d '\n' <"$results_cache_path")" != "" ]; then
+            if [ "$(echo "$results_cache_path" | tr -d '\n ')" != '' ] &&
+                [ -f "$results_cache_path" ]; then
                 rm "$results_cache_path" ||
                     rofi -e "Error while deleting '$results_cache_path'"
             fi
