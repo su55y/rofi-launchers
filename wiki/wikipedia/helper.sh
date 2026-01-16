@@ -2,8 +2,7 @@
 
 clr() { printf '\000message\037\n \000nonselectable\037true\037urgent\037true\n'; }
 err_msg() {
-    printf '\000message\037error: %s\n' "$1"
-    clr
+    printf '\000message\037error: %s\n \000nonselectable\037true\037urgent\037true\n' "$1"
     exit 1
 }
 
@@ -20,7 +19,9 @@ if [ "$ROFI_DATA" = _history ] && [ $ROFI_RETV -ne 14 ]; then
 fi
 
 banner() {
-    printf 'search\000icon\037en_wiki\037info\037https://en.wikipedia.org/wiki/Special:Search\nua search\000icon\037uk_wiki\037info\037https://uk.wikipedia.org/wiki/Special:Search\n'
+    printf '\000message\037\n
+search\000icon\037en_wiki\037info\037https://en.wikipedia.org/wiki/Special:Search\n
+ua search\000icon\037uk_wiki\037info\037https://uk.wikipedia.org/wiki/Special:Search\n'
     exit 0
 }
 
@@ -56,8 +57,8 @@ print_history() {
 }
 
 case $ROFI_RETV in
-# print banner on start and kb-custom-1
-0 | 10) banner ;;
+# print banner on start and kb-custom-2 (ctrl-s)
+0 | 11) banner ;;
 # select line
 1)
     if [ "$ROFI_DATA" = _history ]; then
@@ -75,27 +76,29 @@ case $ROFI_RETV in
         print_from_cache "$ROFI_DATA"
     fi
     ;;
-# execute custom input
+# handle custom input
 2) handle_query "$@" ;;
-# kb-custom-2 - clear list rows
-11)
-    printf '\000message\037\n'
-    clr
-    ;;
-# kb-custom-3 - remove cached result
+# kb-custom-1 (ctrl-c) - clear list rows
+10) clr ;;
+# kb-custom-3 (ctrl-r) - refresh cached result
 12)
-    [ -n "$ROFI_DATA" ] || banner
-    [ -f "$ROFI_DATA" ] || banner
+    if [ "$ROFI_DATA" = _history ]; then
+        print_history
+        exit 0
+    fi
+    if [ -z "$ROFI_DATA" ] || [ ! -f "$ROFI_DATA" ]; then
+        banner
+    fi
     subj="$(basename "$ROFI_DATA" | base64 -d)"
     [ -n "$subj" ] || banner
-    rm -f "$ROFI_DATA" || banner
+    if ! rm -f "$ROFI_DATA"; then
+        err_msg "Error while deleting $ROFI_DATA"
+    fi
     handle_query "$subj"
     ;;
-# kb-custom-4 - history
-13)
-    print_history
-    ;;
-# kb-custom-5 - delete history element
+# kb-custom-4 (ctrl-h) - history
+13) print_history ;;
+# kb-custom-5 (ctrl-x,Delete) - delete history element
 14)
     [ "$ROFI_DATA" = _history ] || banner
 
