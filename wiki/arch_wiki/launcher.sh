@@ -14,6 +14,11 @@ if [ ! -f "$HELPER" ]; then
     exit 1
 fi
 
+if [ ! -d "$WIKIDIR" ]; then
+    printf '<b>%s</b>\n%s not found' "$MODENAME" "$WIKIDIR" | rofi -markup -e -
+    exit 1
+fi
+
 theme() {
     cat <<EOF
 configuration {

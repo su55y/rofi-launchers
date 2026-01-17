@@ -11,13 +11,9 @@ err_msg() {
     exit 1
 }
 
-print_list() {
-    find "$WIKIDIR" -iname '*.html' -printf '%f %p\n' |
-        awk '{
-            gsub("_"," ",$1);
-            sub(/\.html$/,"",$1);
-            printf "%s\000info\037%s\n", $1, $NF}' |
-        sort -g
+copy_() {
+    printf '%s' "$1" | xsel -i -b
+    printf '\000message\037%s copied to clipboard\n' "$1"
 }
 
 case $ROFI_RETV in
@@ -25,16 +21,11 @@ case $ROFI_RETV in
 esac
 
 case $ROFI_RETV in
-0) print_list ;;
-1)
-    setsid -f "$BROWSER" "$ROFI_INFO" >/dev/null 2>&1
-    print_list
-    ;;
-10)
-    printf '%s' "$ROFI_INFO" | xsel -i -b
-    printf '\000message\037%s copied to clipboard\n' "$ROFI_INFO"
-    print_list
-    ;;
+# select line
+1) setsid -f "$BROWSER" "$ROFI_INFO" >/dev/null 2>&1 ;;
+# kb-custom-1 (ctrl-c) - copy filepath to clipboard
+10) copy_ "$ROFI_INFO" ;;
+# kb-custom-2 (ctrl-space) - open file as pdf in zathura
 11)
     [ -d "$CACHE_DIR" ] || mkdir -p "$CACHE_DIR" >/dev/null 2>&1
     article_name="$(basename "$ROFI_INFO")"
@@ -48,6 +39,16 @@ case $ROFI_RETV in
         # pandoc "$clean_article_path" -t ms -o "$pdf_path" 2>/dev/null || err_msg 'pandoc error'
     fi
     setsid -f zathura "$pdf_path" >/dev/null 2>&1 || err_msg "can't open in zathura"
-    print_list
     ;;
 esac
+
+print_list() {
+    find "$WIKIDIR" -iname '*.html' -printf '%f %p\n' |
+        awk '{
+            gsub("_"," ",$1);
+            sub(/\.html$/,"",$1);
+            printf "%s\000info\037%s\n", $1, $NF}' |
+        sort -g
+}
+
+print_list
