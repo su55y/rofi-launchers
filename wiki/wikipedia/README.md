@@ -1,15 +1,14 @@
-## wiki search rofi launcher
+## wikipedia search
+
+> `BROWSER` environment variable must be set, e.g. `BROWSER=firefox`
 
 ### dependencies
 
-- go (_for building helper_)
+- [go](https://go.dev/) (_for building helper_)
 
-> also an environment variable for the browser must be set, for example `BROWSER=firefox`
-
-### building helper
+### building go helper
 
 ```bash
-# to build helper
 go build helper.go
 ```
 
