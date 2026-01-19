@@ -18,7 +18,7 @@ import (
 const (
 	apiUrl           = "https://%s.wikipedia.org/w/api.php?action=opensearch&namespace=0&format=json&formatversion=2&limit=%d&search=%s"
 	entryFmt         = "<span weight='bold'>%d</span>) %s\000icon\037%s_wiki\037info\037%s\n"
-	errMessageRofi   = "\000message\037error: %s\n"
+	errMsgFmt        = "\000message\037error: %s\n"
 	searchFmt        = "<span weight='bold'>-</span>) search\000icon\037%s_wiki\037info\037https://%s.wikipedia.org/wiki/Special:Search\n"
 	defaultUserAgent = "SearchBot/0.0 (https://github.com/su55y/rofi-launchers; su55y@protonmail.com)"
 )
@@ -45,7 +45,7 @@ func formatUrl(lang string) string {
 func fetchArticles(c *http.Client, u string) ([]Article, error) {
 	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {
-		log.Fatal(err)
+		die(err)
 	}
 	req.Header.Set("User-Agent", userAgent)
 
@@ -82,13 +82,14 @@ func fetchAndPrint(client *http.Client, wg *sync.WaitGroup, lang string) {
 	defer wg.Done()
 	articles, err := fetchArticles(client, formatUrl(lang))
 	if err != nil {
-		fmt.Printf(errMessageRofi, err.Error())
-		log.Printf(errMessageRofi, err.Error())
+		log.Printf("fetch error (%s): %s\n", lang, err.Error())
+		fmt.Printf(errMsgFmt, err.Error())
 		fmt.Printf(searchFmt, lang, lang)
 		return
 	}
+
+	log.Printf("%s: %d articles\n", lang, len(articles))
 	if len(articles) == 0 {
-		log.Printf("%s: 0 articles\n", lang)
 		fmt.Printf(searchFmt, lang, lang)
 		return
 	}
@@ -98,9 +99,8 @@ func fetchAndPrint(client *http.Client, wg *sync.WaitGroup, lang string) {
 }
 
 func die(err error) {
-	fmt.Printf("\000message\037err: %s\n \000nonselectable\037true\n", err.Error())
-	log.Printf("!! die(%s)\n", err.Error())
-	os.Exit(1)
+	fmt.Printf("%s\n \000nonselectable\037true\n", fmt.Sprintf(errMsgFmt, err.Error()))
+	log.Fatal(err)
 }
 
 func initLogger() {
@@ -113,7 +113,7 @@ func initLogger() {
 		logFile, err = os.Open(os.DevNull)
 	}
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 
 	log.SetOutput(logFile)
