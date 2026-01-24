@@ -30,6 +30,6 @@ textbox-prompt-colon {
 EOF
 }
 
-rofi -no-config -no-custom -i -sort \
+rofi -no-config -no-custom -i \
     -show "$MODENAME" -modi "$MODENAME:$HELPER" \
     -theme-str "$(theme)"

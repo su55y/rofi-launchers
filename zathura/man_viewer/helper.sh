@@ -1,6 +1,7 @@
 #!/bin/sh
 
 TERM_PAGER='nvim +Man! -u NORC +color\ retrobox'
+: "${HL_ROW_FMT:="<b>%s</b> <span weight='bold' color='red'>p</span>"}"
 
 [ -n "$ROFI_MAN_VIEWER_CACHE" ] ||
     ROFI_MAN_VIEWER_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/rofi_man_viewer"
@@ -9,6 +10,17 @@ if [ ! -d "$ROFI_MAN_VIEWER_CACHE" ]; then
 fi
 
 printf '\000use-hot-keys\037true\n'
+printf '\000markup-rows\037true\n'
+
+print_manpages() {
+    man -k . | awk '$1 !~ /[_:]/ {print $1}' | sort | while read -r manpage; do
+        row="$manpage"
+        if [ -f "$ROFI_MAN_VIEWER_CACHE/$manpage.pdf" ]; then
+            row="$(printf "$HL_ROW_FMT" "$manpage")"
+        fi
+        printf '%s\000info\037%s\n' "$row" "$manpage"
+    done
+}
 
 open_as_pdf() {
     [ -n "$1" ] || exit 1
@@ -26,9 +38,9 @@ open_in_terminal() {
 
 case $ROFI_RETV in
 # print manpages on start
-0) man -k . | awk '$1 !~ /[_:]/ {print $1}' | sort ;;
+0) print_manpages ;;
 # select line
-1) open_as_pdf "$1" ;;
+1) open_as_pdf "$ROFI_INFO" ;;
 # ctrl+space - open selected in terminal
-10) open_in_terminal "$1" ;;
+10) open_in_terminal "$ROFI_INFO" ;;
 esac
