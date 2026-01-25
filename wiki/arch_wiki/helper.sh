@@ -17,7 +17,7 @@ copy_() {
 }
 
 case $ROFI_RETV in
-1 | 11) [ -f "$ROFI_INFO" ] || err_msg "can't find '$ROFI_INFO'" ;;
+1 | 11) [ -f "$ROFI_INFO" ] || err_msg "'$ROFI_INFO' not found" ;;
 esac
 
 case $ROFI_RETV in
@@ -38,7 +38,7 @@ case $ROFI_RETV in
         pandoc "$clean_article_path" --pdf-engine=weasyprint -o "$pdf_path" 2>/dev/null || err_msg 'pandoc error'
         # pandoc "$clean_article_path" -t ms -o "$pdf_path" 2>/dev/null || err_msg 'pandoc error'
     fi
-    setsid -f zathura "$pdf_path" >/dev/null 2>&1 || err_msg "can't open in zathura"
+    setsid -f zathura "$pdf_path" >/dev/null 2>&1 || err_msg "can't open '$pdf_path' in zathura"
     ;;
 esac
 
