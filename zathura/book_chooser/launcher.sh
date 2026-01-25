@@ -18,7 +18,7 @@ EOF
 }
 
 print_all() {
-    find "$BOOKS_DIR" -type f -name "*.pdf" | sort | while read -r file; do
+    find -L "$BOOKS_DIR" -type f -iregex '.*.\(pdf\|djvu\|cbz\|cbr\)' | sort | while read -r file; do
         title="${file##*\/}"
         printf '%s\037%s\n' "$title" "$file"
     done
