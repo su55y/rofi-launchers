@@ -99,7 +99,10 @@ func fetchAndPrint(client *http.Client, wg *sync.WaitGroup, lang string) {
 }
 
 func die(err error) {
-	fmt.Printf("%s\n \000nonselectable\037true\n", fmt.Sprintf(errMsgFmt, err.Error()))
+	fmt.Printf(
+		"%s\n \000nonselectable\037true\n",
+		html.EscapeString(fmt.Sprintf(errMsgFmt, err.Error())),
+	)
 	log.Fatal(err)
 }
 

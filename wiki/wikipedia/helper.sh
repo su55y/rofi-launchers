@@ -30,7 +30,7 @@ print_from_cache() {
     printf '\000message\037[Cache]\n'
     printf '\000data\037%s\n' "$1"
     printf '\000keep-filter\037true\n'
-    awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); gsub(/&/, "&amp;"); print}' "$1"
+    awk '{gsub(/\\000/, "\0"); gsub(/\\037/, "\037"); print}' "$1"
 }
 
 handle_query() {
@@ -45,13 +45,21 @@ handle_query() {
     fi
 }
 
+escape_() {
+    printf '%s' "$1" | sed 's/[&]/\&amp;/g; s/[<]/\&lt;/g; s/[>]/\&gt;/g; s/["]/\&quot;/g; s/['"'"']/\&\#39;/g'
+}
+
 print_history() {
     case $(find "$C_DIR" -maxdepth 1 -type f | wc -l) in
     0) printf '\000message\037history is empty\n\000urgent\0370\n \000nonselectable\037true\n' ;;
     *)
         [ -z "$1" ] && printf '\000new-selection\0370\n'
         printf '\000message\037history\n\000data\037_history\n'
-        find "$C_DIR" -type f -printf '%T@ %f\n' | sort -k 1nr | sed 's/^[^ ]* //' | base64 -d | xargs -I {} printf '%s\n' "{}"
+        find "$C_DIR" -type f -printf '%T@ %f\n' |
+            sort -k 1nr | sed 's/^[^ ]* //' | base64 -d |
+            while read -r line; do
+                echo "$(escape_ "$line")"
+            done
         ;;
     esac
 }
