@@ -45,20 +45,18 @@ handle_query() {
     fi
 }
 
-escape_() {
-    printf '%s' "$1" | sed 's/[&]/\&amp;/g; s/[<]/\&lt;/g; s/[>]/\&gt;/g; s/["]/\&quot;/g; s/['"'"']/\&\#39;/g'
-}
-
 print_history() {
     case $(find "$C_DIR" -maxdepth 1 -type f | wc -l) in
     0) printf '\000message\037history is empty\n\000urgent\0370\n \000nonselectable\037true\n' ;;
     *)
         [ -z "$1" ] && printf '\000new-selection\0370\n'
         printf '\000message\037history\n\000data\037_history\n'
-        find "$C_DIR" -type f -printf '%T@ %f\n' |
-            sort -k 1nr | sed 's/^[^ ]* //' | base64 -d |
-            while read -r line; do
-                echo "$(escape_ "$line")"
+        find "$C_DIR" -type f -printf '%T@ %p\n' |
+            sort -k 1nr | cut -d' ' -f2- |
+            while read -r file; do
+                query="$(basename "$file" | base64 -d |
+                    sed 's/[+]/ /g; s/[&]/\&amp;/g; s/[<]/\&lt;/g; s/[>]/\&gt;/g; s/["]/\&quot;/g; s/['"'"']/\&\#39;/g')"
+                printf '%s\000info\037%s\n' "$query" "$file"
             done
         ;;
     esac
@@ -70,7 +68,7 @@ case $ROFI_RETV in
 # select line
 1)
     if [ "$ROFI_DATA" = _history ]; then
-        handle_query "$@"
+        print_from_cache "$ROFI_INFO"
         exit 0
     fi
     case $ROFI_INFO in
