@@ -18,11 +18,17 @@ EOF
 }
 
 print_all() {
-    find -L "$BOOKS_DIR" -type f -iregex '.*.\(pdf\|djvu\|cbz\|cbr\)' | sort | while read -r file; do
-        title="${file##*\/}"
-        printf '%s\037%s\n' "$title" "$file"
-    done
+    if command -v fd >/dev/null 2>&1; then
+        fd . "$BOOKS_DIR" -aLt f \
+            -e pdf -e djv -e djvu -e epub -e ps -e eps -e cbz -e cbr -e cbt |
+            awk '{split($0, a, "/"); printf "%s\037%s\n", a[length(a)], $0}'
+    else
+        find -L "$BOOKS_DIR" -type f -iregex '.*.\(pdf\|djv\|djvu\|epub\|ps\|eps\|cbz\|cbr\|cbt\)' |
+            sort | awk '{split($0, a, "/"); printf "%s\037%s\n", a[length(a)], $0}'
+    fi
 }
+# print_all
+# exit 0
 
 choice="$(print_all |
     rofi -dmenu -i -no-config -no-custom -sort \
