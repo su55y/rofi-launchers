@@ -43,12 +43,20 @@ case $ROFI_RETV in
 esac
 
 print_list() {
-    find "$WIKIDIR" -iname '*.html' -printf '%f %p\n' |
-        awk '{
+    if command -v fd >/dev/null 2>&1; then
+        fd . "$WIKIDIR" -at f -e html --format '{/.} {}' |
+            awk '{
+            gsub("_"," ",$1);
+            printf "%s\000info\037%s\n", $1, $NF}' |
+            sort -g
+    else
+        find "$WIKIDIR" -name '*.html' -printf '%f %p\n' |
+            awk '{
             gsub("_"," ",$1);
             sub(/\.html$/,"",$1);
             printf "%s\000info\037%s\n", $1, $NF}' |
-        sort -g
+            sort -g
+    fi
 }
 
 print_list

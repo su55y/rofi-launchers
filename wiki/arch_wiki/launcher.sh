@@ -37,6 +37,6 @@ textbox-prompt-colon {
 EOF
 }
 
-WIKIDIR="$WIKIDIR" rofi -i -no-config -no-custom \
+WIKIDIR="$WIKIDIR" rofi -i -no-config -no-custom -sort \
     -show "$MODENAME" -modi "$MODENAME:$HELPER" \
     -theme-str "$(theme)" -normal-window
