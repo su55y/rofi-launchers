@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # shellcheck disable=SC2086
 # Double quote to prevent globbing and word splitting. [SC2086]
@@ -35,6 +35,20 @@ case $ROFI_RETV in
 # kb-custom-6 (ctrl+k) - append to playlist random video
 15) _append "$(shuf -n1 "$VIDEO_CHOOSER_CACHEFILE" | grep -aoP 'info\037\K[^\037]+')" ;;
 esac
+
+if command -v fd >/dev/null 2>&1; then
+    fd . "$VIDEO_CHOOSER_ROOTDIR" -at f -0 | perl -ne '
+    BEGIN { $/ = "\0" }
+    chomp($p = $_);
+    ($d, $n) = $p =~ m|([^/]+)/([^/]+)$|;
+    if (!$n) { $n = $p; $d = "."; }
+    $n =~ s/\.[^.]+$//;
+    $n =~ s/&/&amp;/g;
+    $d =~ s/&/&amp;/g;
+    print "<b>$n</b>\r$d\000info\037$p\n"
+'
+    exit 0
+fi
 
 if [ -f "$VIDEO_CHOOSER_CACHEFILE" ]; then
     _msg '[Cache]'
