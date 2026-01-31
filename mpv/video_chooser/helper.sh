@@ -36,20 +36,6 @@ case $ROFI_RETV in
 15) _append "$(shuf -n1 "$VIDEO_CHOOSER_CACHEFILE" | grep -aoP 'info\037\K[^\037]+')" ;;
 esac
 
-if command -v fd >/dev/null 2>&1; then
-    fd . "$VIDEO_CHOOSER_ROOTDIR" -at f -0 | perl -ne '
-    BEGIN { $/ = "\0" }
-    chomp($p = $_);
-    ($d, $n) = $p =~ m|([^/]+)/([^/]+)$|;
-    if (!$n) { $n = $p; $d = "."; }
-    $n =~ s/\.[^.]+$//;
-    $n =~ s/&/&amp;/g;
-    $d =~ s/&/&amp;/g;
-    print "<b>$n</b>\r$d\000info\037$p\n"
-'
-    exit 0
-fi
-
 if [ -f "$VIDEO_CHOOSER_CACHEFILE" ]; then
     _msg '[Cache]'
     awk '{
@@ -58,8 +44,24 @@ if [ -f "$VIDEO_CHOOSER_CACHEFILE" ]; then
         gsub(/\\n/, "\n");
         print
     }' "$VIDEO_CHOOSER_CACHEFILE"
+elif command -v fd >/dev/null 2>&1; then
+    # Leave VIDEO_CHOOSER_ROOTDIR unquoted to allow multiple dirs
+    fd . $VIDEO_CHOOSER_ROOTDIR -at f -0 \
+        -e mp4 -e mkv -e webm -e avi -e ogv \
+        -e mpg -e mpeg -e 3gp -e mov -e wmv \
+        -e flv -e vob -e mts -e m2ts -e ts \
+        -e swf -e rm -e rmvb -e y4m -e m4v | perl -ne '
+    BEGIN { $/ = "\0" }
+    chomp($p = $_);
+    ($d, $n) = $p =~ m|([^/]+)/([^/]+)$|;
+    if (!$n) { $n = $p; $d = "."; }
+    $n =~ s/\.[^.]+$//;
+    $n =~ s/&/&amp;/g;
+    $d =~ s/&/&amp;/g;
+    print "<b>$n</b>\r$d\000info\037$p\n"
+' | tee "$VIDEO_CHOOSER_CACHEFILE"
 else
     printf '\000message\037\n'
     # Leave VIDEO_CHOOSER_ROOTDIR unquoted to allow multiple dirs
-    "$PRINTER_PATH" $VIDEO_CHOOSER_ROOTDIR | tee "$VIDEO_CHOOSER_CACHEFILE"
+    "$GO_HELPER" $VIDEO_CHOOSER_ROOTDIR | tee "$VIDEO_CHOOSER_CACHEFILE"
 fi

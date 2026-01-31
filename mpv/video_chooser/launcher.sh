@@ -13,10 +13,12 @@ if [ ! -f "$HELPER" ]; then
     exit 1
 fi
 
-PRINTER_PATH="$SCRIPTPATH/printer"
-if [ ! -f "$PRINTER_PATH" ]; then
-    printf '<b>%s</b>\n%s not found' "$MODENAME" "$PRINTER_PATH" | rofi -markup -e -
-    exit 1
+GO_HELPER="$SCRIPTPATH/printer"
+if [ ! -f "$GO_HELPER" ]; then
+    if ! command -v fd >/dev/null 2>&1; then
+        printf '<b>%s</b>\n%s not found' "$MODENAME" "$GO_HELPER" | rofi -markup -e -
+        exit 1
+    fi
 fi
 
 UTILS_PATH="$SCRIPTPATH/../common_utils"
@@ -54,7 +56,7 @@ listview {
 EOF
 }
 
-PRINTER_PATH="$PRINTER_PATH" UTILS_PATH="$UTILS_PATH" rofi -i -no-config \
+GO_HELPER="$GO_HELPER" UTILS_PATH="$UTILS_PATH" rofi -i -no-config \
     -no-custom -eh 2 \
     -show "$MODENAME" -modi "$MODENAME:$HELPER" \
     -theme-str "$(theme)" -normal-window
