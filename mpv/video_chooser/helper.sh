@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # shellcheck disable=SC2086
 # Double quote to prevent globbing and word splitting. [SC2086]
@@ -44,7 +44,7 @@ if [ -f "$VIDEO_CHOOSER_CACHEFILE" ]; then
         gsub(/\\n/, "\n");
         print
     }' "$VIDEO_CHOOSER_CACHEFILE"
-elif command -v fd >/dev/null 2>&1; then
+elif command -v fd >/dev/null 2>&1 && command -v perl >/dev/null 2>&1; then
     # Leave VIDEO_CHOOSER_ROOTDIR unquoted to allow multiple dirs
     fd . $VIDEO_CHOOSER_ROOTDIR -at f -0 \
         -e mp4 -e mkv -e webm -e avi -e ogv \
@@ -58,7 +58,7 @@ elif command -v fd >/dev/null 2>&1; then
     $n =~ s/\.[^.]+$//;
     $n =~ s/&/&amp;/g;
     $d =~ s/&/&amp;/g;
-    print "<b>$n</b>\r$d\000info\037$p\n"
+    print "<b>$n</b>\r$d\000info\037$p\037meta\037$p\n"
 ' | tee "$VIDEO_CHOOSER_CACHEFILE"
 else
     printf '\000message\037\n'
