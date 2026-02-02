@@ -34,8 +34,7 @@ print_from_cache() {
 
 handle_query() {
     [ -n "$1" ] || exit 1
-    query="$(printf '%s' "$1" | sed 's/\s/+/g')"
-    results_cache="${C_DIR}/$(echo "$query" | base64)"
+    results_cache="${C_DIR}/$(echo "$1" | base64)"
     if [ -f "$results_cache" ] && [ "$(wc -c <"$results_cache")" != 0 ]; then
         print_from_cache "$results_cache"
     else
@@ -54,7 +53,7 @@ print_history() {
             sort -k 1nr | cut -d' ' -f2- |
             while read -r file; do
                 query="$(basename "$file" | base64 -d |
-                    sed 's/[+]/ /g; s/[&]/\&amp;/g; s/[<]/\&lt;/g; s/[>]/\&gt;/g; s/["]/\&quot;/g; s/['"'"']/\&\#39;/g')"
+                    sed 's/[&]/\&amp;/g; s/[<]/\&lt;/g; s/[>]/\&gt;/g; s/["]/\&quot;/g; s/['"'"']/\&\#39;/g')"
                 printf '%s\000info\037%s\n' "$query" "$file"
             done
         ;;
@@ -107,8 +106,7 @@ case $ROFI_RETV in
 14)
     [ "$ROFI_DATA" = _history ] || banner
 
-    query="$(printf '%s' "$1" | sed 's/\s/+/g')"
-    results_cache="${C_DIR}/$(echo "$query" | base64)"
+    results_cache="${C_DIR}/$(echo "$1" | base64)"
     if [ -f "$results_cache" ]; then
         rm -f "$results_cache"
     else
