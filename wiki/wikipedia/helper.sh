@@ -104,15 +104,12 @@ case $ROFI_RETV in
 13) print_history ;;
 # kb-custom-5 (ctrl-x,Delete) - delete history element
 14)
-    [ "$ROFI_DATA" = _history ] || banner
-
-    results_cache="${C_DIR}/$(echo "$1" | base64)"
-    if [ -f "$results_cache" ]; then
-        rm -f "$results_cache"
-    else
-        printf '\000message\037file %s not found\n' "$results_cache"
+    if [ "$ROFI_DATA" != _history ]; then
+        banner
+    elif [ -f "$ROFI_INFO" ]; then
+        rm "$ROFI_INFO" 2>&1
+        print_history keep-selection
     fi
-    print_history keep-selection
 
     ;;
 esac
