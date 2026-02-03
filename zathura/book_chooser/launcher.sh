@@ -19,7 +19,7 @@ EOF
 
 print_all() {
     if command -v fd >/dev/null 2>&1; then
-        fd . "$BOOKS_DIR" -aLt f \
+        fd . "$BOOKS_DIR" -aHLt f \
             -e pdf -e djv -e djvu -e epub -e ps -e eps -e cbz -e cbr -e cbt \
             -x printf '%s\037%s\n' {/} {}
     else

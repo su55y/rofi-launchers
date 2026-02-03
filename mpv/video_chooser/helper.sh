@@ -46,7 +46,7 @@ if [ -f "$VIDEO_CHOOSER_CACHEFILE" ]; then
     }' "$VIDEO_CHOOSER_CACHEFILE"
 elif command -v fd >/dev/null 2>&1 && command -v perl >/dev/null 2>&1; then
     # Leave VIDEO_CHOOSER_ROOTDIR unquoted to allow multiple dirs
-    fd . $VIDEO_CHOOSER_ROOTDIR -at f -0 \
+    fd . $VIDEO_CHOOSER_ROOTDIR -aHt f -0 \
         -e mp4 -e mkv -e webm -e avi -e ogv \
         -e mpg -e mpeg -e 3gp -e mov -e wmv \
         -e flv -e vob -e mts -e m2ts -e ts \

@@ -44,7 +44,7 @@ esac
 
 print_list() {
     if command -v fd >/dev/null 2>&1; then
-        fd . "$WIKIDIR" -at f -e html --format '{/.} {}' |
+        fd . "$WIKIDIR" -aHt f -e html --format '{/.} {}' |
             awk '{
             gsub("_"," ",$1);
             printf "%s\000info\037%s\n", $1, $NF}' |
