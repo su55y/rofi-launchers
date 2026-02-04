@@ -32,6 +32,7 @@ var (
 	logFilePath        string
 	defaultLogFilePath string = path.Join(os.TempDir(), "rofi_wiki_helper.log")
 	userAgent          string
+	isErrPrinted       bool = false
 )
 
 type Article struct {
@@ -83,7 +84,7 @@ func fetchAndPrint(client *http.Client, wg *sync.WaitGroup, lang string) {
 	articles, err := fetchArticles(client, formatUrl(lang))
 	if err != nil {
 		log.Printf("fetch error (%s): %s\n", lang, err.Error())
-		fmt.Printf(errMsgFmt, err.Error())
+		printErr(err)
 		fmt.Printf(searchFmt, lang, lang)
 		return
 	}
@@ -98,11 +99,14 @@ func fetchAndPrint(client *http.Client, wg *sync.WaitGroup, lang string) {
 	}
 }
 
+func printErr(err error) {
+	fmt.Printf(errMsgFmt, html.EscapeString(err.Error()))
+	isErrPrinted = true
+}
+
 func die(err error) {
-	fmt.Printf(
-		"%s\n \000nonselectable\037true\n",
-		html.EscapeString(fmt.Sprintf(errMsgFmt, err.Error())),
-	)
+	printErr(err)
+	fmt.Print(" \000nonselectable\037true\n")
 	log.Fatal(err)
 }
 
@@ -147,4 +151,8 @@ func main() {
 		go fetchAndPrint(client, &wg, lang)
 	}
 	wg.Wait()
+
+	if !isErrPrinted {
+		fmt.Print("\000message\037 \n")
+	}
 }
