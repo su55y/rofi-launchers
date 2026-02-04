@@ -16,7 +16,8 @@ fi
 GO_HELPER="$SCRIPTPATH/printer"
 if [ ! -f "$GO_HELPER" ]; then
     if ! command -v fd >/dev/null 2>&1; then
-        printf '<b>%s</b>\n%s not found' "$MODENAME" "$GO_HELPER" | rofi -markup -e -
+        printf '<b>%s</b>\ngo helper not found at <i>%s</i>\nand <b>fd</b> not available' \
+            "$MODENAME" "$GO_HELPER" | rofi -markup -e -
         exit 1
     fi
 fi
