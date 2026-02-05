@@ -1,6 +1,9 @@
+#!/usr/bin/env -S python -u
+
 from dataclasses import dataclass
 import html
-from os.path import exists
+import os
+import subprocess as sp
 import sys
 
 DUNSTLOG_PATH = "/tmp/dunstlog"
@@ -36,9 +39,23 @@ def build_info(e: Entry) -> str:
 
 
 if __name__ == "__main__":
-    if not exists(DUNSTLOG_PATH):
+    if not os.path.exists(DUNSTLOG_PATH):
         print(f"\000message\037error: {DUNSTLOG_PATH!r} not found")
         sys.exit(1)
+
+    ROFI_RETV = int(os.environ.get("ROFI_RETV", -1))
+    if ROFI_RETV < 0:
+        print("\000message\037error: undefined ROFI_RETV")
+        sys.exit(1)
+
+    if ROFI_RETV == 1:
+        ROFI_INFO = os.environ.get("ROFI_INFO", "")
+        if not ROFI_INFO:
+            print("\000message\037error: ROFI_INFO is empty\n \000nonselectable\037true")
+            sys.exit(1)
+        sys.exit(sp.run(f"notify-send {ROFI_INFO}", shell=True, stdout=sp.DEVNULL).returncode)
+
+    print("\000markup-rows\037true")
     lines = []
     with open(DUNSTLOG_PATH) as f:
         lines = [l.strip() for l in f.readlines()]

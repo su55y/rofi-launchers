@@ -1,7 +1,10 @@
+#!/usr/bin/env -S python -u
+
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 import json
 import html
+import os
 import subprocess as sp
 import sys
 import time
@@ -74,6 +77,18 @@ def print_error(msg: str) -> None:
 
 
 if __name__ == "__main__":
+    ROFI_RETV = int(os.environ.get("ROFI_RETV", -1))
+    if ROFI_RETV < 0:
+        print("\000message\037error: undefined ROFI_RETV")
+        sys.exit(1)
+
+    if ROFI_RETV == 1:
+        ROFI_INFO = os.environ.get("ROFI_INFO", "")
+        if not ROFI_INFO:
+            print("\000message\037error: ROFI_INFO is empty\n \000nonselectable\037true")
+            sys.exit(1)
+        sys.exit(sp.run(f"notify-send {ROFI_INFO}", shell=True, stdout=sp.DEVNULL).returncode)
+
     code, out = sp.getstatusoutput(DUNST_HISTORY_CMD)
     if code != 0:
         print_error(f"{DUNST_HISTORY_CMD!r} returns status {code}: {out}")

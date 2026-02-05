@@ -7,12 +7,6 @@ SCRIPTPATH="$(
     pwd -P
 )"
 
-HELPER="$SCRIPTPATH/helper.sh"
-if [ ! -f "$HELPER" ]; then
-    printf '<b>%s</b>\n%s not found' "$MODENAME" "$HELPER" | rofi -markup -e -
-    exit 1
-fi
-
 : "${PY_HELPER:="$SCRIPTPATH/helper.py"}"
 if [ ! -f "$PY_HELPER" ]; then
     printf '<b>%s</b>\n%s not found' "$MODENAME" "$PY_HELPER" | rofi -markup -e -
@@ -47,6 +41,6 @@ listview {
 EOF
 }
 
-PY_HELPER="$PY_HELPER" rofi -i -no-custom -no-config \
-    -show "$MODENAME" -modi "$MODENAME:$HELPER" \
+rofi -i -no-custom -no-config \
+    -show "$MODENAME" -modi "$MODENAME:$PY_HELPER" \
     -theme-str "$(theme)" -eh 2 -normal-window
