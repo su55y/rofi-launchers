@@ -8,7 +8,7 @@ import os
 import subprocess as sp
 import sys
 import time
-from typing import Self
+from typing import Self, NoReturn
 
 DATETIME_FMT = "%I:%M %p"
 DUNST_HISTORY_CMD = "dunstctl history"
@@ -72,34 +72,32 @@ def build_info(e: Entry) -> str:
     return info
 
 
-def print_error(msg: str) -> None:
-    print(f"\000message\037{msg}\n \000urgent\037true")
+def die(msg: str | Exception) -> NoReturn:
+    print(f"\000message\037error: {msg}\n \000nonselectable\037true")
+    sys.exit(1)
 
 
 if __name__ == "__main__":
     ROFI_RETV = int(os.environ.get("ROFI_RETV", -1))
     if ROFI_RETV < 0:
-        print("\000message\037error: undefined ROFI_RETV")
-        sys.exit(1)
+        die("undefined ROFI_RETV")
 
     if ROFI_RETV == 1:
         ROFI_INFO = os.environ.get("ROFI_INFO", "")
         if not ROFI_INFO:
-            print("\000message\037error: ROFI_INFO is empty\n \000nonselectable\037true")
-            sys.exit(1)
+            die("ROFI_INFO is empty")
         sys.exit(sp.run(f"notify-send {ROFI_INFO}", shell=True, stdout=sp.DEVNULL).returncode)
 
     code, out = sp.getstatusoutput(DUNST_HISTORY_CMD)
     if code != 0:
-        print_error(f"{DUNST_HISTORY_CMD!r} returns status {code}: {out}")
-        sys.exit(1)
+        die(f"{DUNST_HISTORY_CMD!r} returns status {code}: {out}")
 
     try:
         history = parse_history(out)
     except (Exception, InvalidJSON) as e:
-        print_error(f"Error: ({type(e).__name__}) {e}")
-        sys.exit(1)
+        die(e)
 
+    print("\000markup-rows\037true")
     fmt = LINE_FMT + "\000icon\037{icon}\037info\037{info}\037urgent\037{urgent}"
     for e in history:
         print(
@@ -109,6 +107,6 @@ if __name__ == "__main__":
                 body=(e.body or e.summary).replace("\n", " "),
                 icon=e.icon_path,
                 info=build_info(e),
-                urgent="true" if e.urgency.lower() == "critical" else "false",
+                urgent=["false", "true"][e.urgency.lower() == "critical"],
             ),
         )
