@@ -77,16 +77,26 @@ def die(msg: str | Exception) -> NoReturn:
     sys.exit(1)
 
 
+def select_line() -> NoReturn:
+    ROFI_INFO = os.environ.get("ROFI_INFO", "")
+    if not ROFI_INFO:
+        die("ROFI_INFO is empty")
+    sys.exit(sp.run(f"notify-send {ROFI_INFO}", shell=True, stdout=sp.DEVNULL).returncode)
+
+
 if __name__ == "__main__":
-    ROFI_RETV = int(os.environ.get("ROFI_RETV", -1))
-    if ROFI_RETV < 0:
-        die("undefined ROFI_RETV")
+    ROFI_RETV = -1
+    try:
+        ROFI_RETV = int(os.environ.get("ROFI_RETV", ROFI_RETV))
+        if ROFI_RETV < 0:
+            die("ROFI_RETV is undefined")
+    except ValueError:
+        die(f"unexpected ROFI_RETV value {ROFI_RETV!r}")
+    except Exception as e:
+        die(e)
 
     if ROFI_RETV == 1:
-        ROFI_INFO = os.environ.get("ROFI_INFO", "")
-        if not ROFI_INFO:
-            die("ROFI_INFO is empty")
-        sys.exit(sp.run(f"notify-send {ROFI_INFO}", shell=True, stdout=sp.DEVNULL).returncode)
+        select_line()
 
     code, out = sp.getstatusoutput(DUNST_HISTORY_CMD)
     if code != 0:
