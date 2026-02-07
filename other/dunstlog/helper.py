@@ -7,7 +7,7 @@ import subprocess as sp
 import sys
 from typing import NoReturn
 
-DUNSTLOG_PATH = "/tmp/dunstlog"
+DUNSTLOG_PATH = os.environ.get("DUNSTLOG_PATH", "/tmp/dunstlog")
 LINE_FMT = "<b>{title}</b> <i>{timestamp}</i>\r{body}"
 
 
