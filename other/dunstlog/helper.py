@@ -10,6 +10,8 @@ from typing import NoReturn
 DUNSTLOG_PATH = os.environ.get("DUNSTLOG_PATH", "/tmp/dunstlog")
 LINE_FMT = "<b>{title}</b> <i>{timestamp}</i>\r{body}"
 
+ROFI_RETV = -1
+
 
 @dataclass(slots=True)
 class Entry:
@@ -51,23 +53,7 @@ def select_line() -> NoReturn:
     sys.exit(sp.run(f"notify-send {ROFI_INFO}", shell=True, stdout=sp.DEVNULL).returncode)
 
 
-if __name__ == "__main__":
-    if not os.path.exists(DUNSTLOG_PATH):
-        die(f"{DUNSTLOG_PATH!r} not found")
-
-    ROFI_RETV = -1
-    try:
-        ROFI_RETV = int(os.environ.get("ROFI_RETV", ROFI_RETV))
-        if ROFI_RETV < 0:
-            die("ROFI_RETV is undefined")
-    except ValueError:
-        die(f"unexpected ROFI_RETV value {ROFI_RETV!r}")
-    except Exception as e:
-        die(e)
-
-    if ROFI_RETV == 1:
-        select_line()
-
+def print_log() -> None:
     lines = []
     try:
         with open(DUNSTLOG_PATH) as f:
@@ -92,7 +78,7 @@ if __name__ == "__main__":
 
     print("\000markup-rows\037true")
     fmt = LINE_FMT + "\000icon\037{icon}\037info\037{info}\037urgent\037{urgent}"
-    for i, e in enumerate(entries[::-1]):
+    for e in entries[::-1]:
         print(
             fmt.format(
                 title=e.app,
@@ -103,3 +89,22 @@ if __name__ == "__main__":
                 urgent=["false", "true"][e.level.lower() == "critical"],
             ),
         )
+
+
+if __name__ == "__main__":
+    if not os.path.exists(DUNSTLOG_PATH):
+        die(f"{DUNSTLOG_PATH!r} not found")
+
+    try:
+        ROFI_RETV = int(os.environ.get("ROFI_RETV", ROFI_RETV))
+        if ROFI_RETV < 0:
+            die("ROFI_RETV is undefined")
+    except ValueError:
+        die(f"unexpected ROFI_RETV value {ROFI_RETV!r}")
+    except Exception as e:
+        die(e)
+
+    if ROFI_RETV == 1:
+        select_line()
+
+    print_log()

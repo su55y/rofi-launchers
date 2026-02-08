@@ -14,6 +14,8 @@ DATETIME_FMT = "%I:%M %p"
 DUNST_HISTORY_CMD = "dunstctl history"
 LINE_FMT = "<b>{title}</b> <i>{timestamp}</i>\r{body}"
 
+ROFI_RETV = -1
+
 
 class InvalidJSON(Exception):
     pass
@@ -84,20 +86,7 @@ def select_line() -> NoReturn:
     sys.exit(sp.run(f"notify-send {ROFI_INFO}", shell=True, stdout=sp.DEVNULL).returncode)
 
 
-if __name__ == "__main__":
-    ROFI_RETV = -1
-    try:
-        ROFI_RETV = int(os.environ.get("ROFI_RETV", ROFI_RETV))
-        if ROFI_RETV < 0:
-            die("ROFI_RETV is undefined")
-    except ValueError:
-        die(f"unexpected ROFI_RETV value {ROFI_RETV!r}")
-    except Exception as e:
-        die(e)
-
-    if ROFI_RETV == 1:
-        select_line()
-
+def print_history() -> None:
     code, out = sp.getstatusoutput(DUNST_HISTORY_CMD)
     if code != 0:
         die(f"{DUNST_HISTORY_CMD!r} returns status {code}: {out}")
@@ -120,3 +109,20 @@ if __name__ == "__main__":
                 urgent=["false", "true"][e.urgency.lower() == "critical"],
             ),
         )
+
+
+if __name__ == "__main__":
+    ROFI_RETV = -1
+    try:
+        ROFI_RETV = int(os.environ.get("ROFI_RETV", ROFI_RETV))
+        if ROFI_RETV < 0:
+            die("ROFI_RETV is undefined")
+    except ValueError:
+        die(f"unexpected ROFI_RETV value {ROFI_RETV!r}")
+    except Exception as e:
+        die(e)
+
+    if ROFI_RETV == 1:
+        select_line()
+
+    print_history()
