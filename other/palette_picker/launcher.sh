@@ -48,6 +48,41 @@ entry {
 EOF
 }
 
-PALETTE_PATH="$PALETTE_PATH" rofi -i -no-config -no-custom \
-    -show "$MODENAME" -modi "$MODENAME:$HELPER" \
-    -theme-str "$(theme)"
+copy() {
+    [ "$(printf '%s' "$1" |
+        grep -oP "^#[0-9a-fA-F]{6}$")" = "$1" ] && {
+        printf '%s' "$1" | xsel -ib
+    }
+}
+
+print_palette() {
+    awk '{printf "<span background=\047%s\047>\t</span> <span color=\047%s\047>%s</span>\037%s\n",$2,$2,$1,$2}' "$PALETTE_PATH"
+}
+
+choice=
+while :; do
+    if [ -n "$choice" ] && [ "$(echo "$choice" | grep -oP '^#[0-9a-fA-F]{6}$')" = "$choice" ]; then
+        choice="$(
+            print_palette |
+                rofi -dmenu -i -no-config -no-custom -markup-rows -theme-str "$(theme)" \
+                    -display-columns 1 -display-column-separator '\x1f' \
+                    -mesg "<span color='$choice'>$choice</span>"
+        )"
+    else
+        choice="$(
+            print_palette |
+                rofi -dmenu -i -no-config -no-custom -markup-rows -theme-str "$(theme)" \
+                    -display-columns 1 -display-column-separator '\x1f'
+        )"
+    fi
+    ret=$?
+    case $ret in
+    0 | 10)
+        choice="$(echo "$choice" | grep -aoP "\037\K.+$")"
+        [ -n "$choice" ] || exit 0
+        copy "$choice"
+        [ $ret -eq 10 ] && continue
+        ;;
+    esac
+    exit 0
+done
