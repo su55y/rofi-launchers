@@ -50,7 +50,8 @@ def select_line() -> NoReturn:
     ROFI_INFO = os.environ.get("ROFI_INFO", "")
     if not ROFI_INFO:
         die("ROFI_INFO is empty")
-    sys.exit(sp.run(f"notify-send {ROFI_INFO}", shell=True, stdout=sp.DEVNULL).returncode)
+    p = sp.run(f"notify-send {ROFI_INFO}", shell=True, stdout=sp.DEVNULL)
+    sys.exit(p.returncode)
 
 
 def print_log() -> None:
